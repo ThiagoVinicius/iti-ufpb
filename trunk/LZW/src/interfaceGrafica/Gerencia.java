@@ -72,6 +72,8 @@ public class Gerencia extends Thread {
 
             for (int i = 0; i < file.length(); i++) {
                 lzw.codifica((char) input.read() + "");
+
+
                 pro.setValue(i + 1);
             }
 
