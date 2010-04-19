@@ -16,7 +16,7 @@ public class DicionarioAdaptativoComDeslocamento extends Tabela{
 
 
     private final int TAMANHO = 256;
-    public final int LIMITE = 65536;
+    public final int LIMITE = 2097152;
     //private int cont;
 
     public DicionarioAdaptativoComDeslocamento()
@@ -41,13 +41,7 @@ public class DicionarioAdaptativoComDeslocamento extends Tabela{
     @Override
     public int addDicionario(String letra)
     {
-        if(dicionario.size() == LIMITE)
-        {
-            table.remove(dicionario.get(dicionario.size()-1));
-            table.put((frase + letra), new Posicoes(dicionario.size()-1));
-            dicionario.set(dicionario.size()-1, frase+letra);
-        }
-        else
+        if(dicionario.size() < LIMITE)
         {
             dicionario.add(frase + letra);
             table.put((frase + letra), new Posicoes(dicionario.size()-1));
@@ -84,24 +78,8 @@ public class DicionarioAdaptativoComDeslocamento extends Tabela{
 
     @Override
     public int addUltimoDicionario() {
-        if(table.containsKey(frase))
-        {
+        
             return table.get(frase).pos;
-        }
-        else
-        {
-            if (dicionario.size() == LIMITE) {
-                table.remove(dicionario.get(dicionario.size() - 1));
-                table.put((frase), new Posicoes(dicionario.size()-1));
-                dicionario.set(dicionario.size()-1, frase);
-            } else {
-                dicionario.add(frase);
-                table.put((frase), new Posicoes(dicionario.size()-1));
-
-                //cont++;
-            }
-            return table.get(frase).pos;
-        }
 
     }
 
@@ -133,8 +111,6 @@ public class DicionarioAdaptativoComDeslocamento extends Tabela{
     @Override
     public String addDicionario(int cod) {
 
-        //saidaDecodificacao = dicionario.get(codigo);
-
         frase = dicionario.get(codigo);
         
         int pos = codigo;
@@ -152,14 +128,7 @@ public class DicionarioAdaptativoComDeslocamento extends Tabela{
 
         char c = dicionario.get(cod).charAt(0);
 
-        if(dicionario.size() == LIMITE)
-        {
-            table.remove(dicionario.get(dicionario.size()-1));
-            table.put(frase + c, new Posicoes(dicionario.size() - 1));
-
-            dicionario.set((dicionario.size() - 1), frase + c);
-        }
-        else
+        if(dicionario.size() < LIMITE)
         {
             dicionario.add(frase + c);
             table.put(frase + c, new Posicoes(dicionario.size() - 1));
@@ -177,14 +146,7 @@ public class DicionarioAdaptativoComDeslocamento extends Tabela{
 
         char c = dicionario.get(codigo).charAt(0);
 
-        if(dicionario.size() == LIMITE)
-        {
-            table.remove(dicionario.get(dicionario.size()-1));
-            table.put(frase + c, new Posicoes(dicionario.size() - 1));
-
-            dicionario.set((dicionario.size() - 1), frase + c);
-        }
-        else
+        if(dicionario.size() < LIMITE)
         {
             dicionario.add(frase + c);
             table.put(frase + c, new Posicoes(dicionario.size() - 1));

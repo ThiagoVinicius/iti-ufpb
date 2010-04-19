@@ -15,7 +15,7 @@ import java.util.Hashtable;
 public class DicionarioAdaptativo extends Tabela{
 
     public final int TAMANHO = 256;
-    public final int LIMITE = 65536;
+    public final int LIMITE = 65536;//2097152;
     //private int cont;
 
     public DicionarioAdaptativo()
@@ -43,23 +43,15 @@ public class DicionarioAdaptativo extends Tabela{
     @Override
     public int addDicionario(String letra)
     {
-        saidaCodificacao = table.get(frase).pos;
+        //saidaCodificacao = table.get(frase).pos;
 
-        if(dicionario.size() == LIMITE)
-        {
-            table.remove(dicionario.get(dicionario.size()-1));
-            table.put((frase + letra), new Posicoes(dicionario.size()-1));
-            dicionario.set(dicionario.size()-1, frase+letra);
-        }
-        else
+        if(dicionario.size() < LIMITE)
         {
             dicionario.add(frase + letra);
             table.put((frase + letra), new Posicoes(dicionario.size()-1));
-
-            //cont++;
         }
 
-        //System.out.println(frase.length());
+        saidaCodificacao = table.get(frase).pos;
         
         frase = letra;
 
@@ -69,26 +61,37 @@ public class DicionarioAdaptativo extends Tabela{
 
     @Override
     public int addUltimoDicionario() {
-        if(table.containsKey(frase))
+        /*if(table.containsKey(frase))
         {
             return table.get(frase).pos;
         } 
         else
         {
-            saidaCodificacao = table.get(frase).pos;
+            //saidaCodificacao = table.get(frase).pos;
             
             if (dicionario.size() == LIMITE) {
-                table.remove(dicionario.get(dicionario.size() - 1));
-                table.put((frase), new Posicoes(dicionario.size()-1));
-                dicionario.set(dicionario.size() - 1, frase);
+
+                if (dicionario.get(dicionario.size() - 1).equals(frase))
+                {
+                    table.remove(dicionario.get(dicionario.size() - 2));
+                    table.put((frase), new Posicoes(dicionario.size() - 2));
+                    dicionario.set(dicionario.size() - 2, frase);
+                } else {
+                    table.remove(dicionario.get(dicionario.size() - 1));
+                    table.put((frase), new Posicoes(dicionario.size() - 1));
+                    dicionario.set(dicionario.size() - 1, frase);
+                }
             } else {
                 dicionario.add(frase);
                 table.put((frase), new Posicoes(dicionario.size()-1));
 
                 //cont++;
             }
-            return saidaCodificacao;
-        }
+        }*/
+
+        saidaCodificacao = table.get(frase).pos;
+        return saidaCodificacao;
+        
     }    
 
     @Override
@@ -102,24 +105,23 @@ public class DicionarioAdaptativo extends Tabela{
     @Override
     public String addDicionario(int cod) {
 
-        saidaDecodificacao = dicionario.get(cod);
+        //saidaDecodificacao = dicionario.get(cod);
 
-        frase = dicionario.get(codigo);
+        frase = dicionario.get(codigo);        
 
         char c = dicionario.get(cod).charAt(0);
 
-        if(dicionario.size() == LIMITE)
-        {
-            table.remove(dicionario.get(dicionario.size()-1));
-            table.put(frase + c, new Posicoes(dicionario.size() - 1));
+        //System.out.println("entrei " + frase + c);
 
-            dicionario.set((dicionario.size() - 1), frase + c);
-        }
-        else
-        {
+        if(dicionario.size() < LIMITE)
+        {            
             dicionario.add(frase + c);
             table.put(frase + c, new Posicoes(dicionario.size() - 1));
         }
+
+        saidaDecodificacao = dicionario.get(cod);
+
+        //System.out.println("saida " +saidaDecodificacao);
 
         codigo = cod;
 
@@ -132,15 +134,8 @@ public class DicionarioAdaptativo extends Tabela{
         frase = dicionario.get(codigo);
         char c = dicionario.get(codigo).charAt(0);
 
-        if(dicionario.size() == LIMITE)
-        {
-            table.remove(dicionario.get(dicionario.size()-1));
-            table.put(frase + c, new Posicoes(dicionario.size() - 1));
-
-            dicionario.set((dicionario.size() - 1), frase + c);
-        }
-        else
-        {
+        if(dicionario.size() < LIMITE)
+        {            
             dicionario.add(frase + c);
             table.put(frase + c, new Posicoes(dicionario.size() - 1));
         }
@@ -167,6 +162,14 @@ public class DicionarioAdaptativo extends Tabela{
         return table.containsKey(dicionario.get(cod));
     }
 
+    @Override
+    public void imprimeDicionario()
+    {
+        for(int i = 95; i < dicionario.size(); i++)
+        {
+            System.out.println(i + " = " + dicionario.get(i));
+        }
+    }
     
 
 }

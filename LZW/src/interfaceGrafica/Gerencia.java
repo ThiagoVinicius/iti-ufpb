@@ -11,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import lzw.LZWPai;
@@ -102,17 +103,27 @@ public class Gerencia extends Thread {
 
     private void decodifica() {
         try {
+
+            String f = (file+"").endsWith(".comp") ? (file+"") : (file+".comp");
+
+            File fi = new File(f);
+
             DataInputStream input;
             DataOutputStream output;
 
-            input = new DataInputStream(new BufferedInputStream(new FileInputStream(file), BUFFER));
+            input = new DataInputStream(new BufferedInputStream(new FileInputStream(f), BUFFER));
+
+            if((new File(f.replaceAll(".comp", ""))).exists())
+            {
+                f = JOptionPane.showInputDialog(null, "Diretorio já existe!\nSe desejar renomeie o arquivo.", f.replaceAll(".comp", ""));
+            }
 
             output = new DataOutputStream(new BufferedOutputStream(
-                                          new FileOutputStream((file+"").replaceAll(".comp", "")), BUFFER));
+                                          new FileOutputStream(f), BUFFER));
 
             lzw.setOutput(output);
 
-            pro.setMaximum((int) file.length());
+            pro.setMaximum((int) fi.length());
 
             long t1 = System.currentTimeMillis();
 
@@ -120,7 +131,7 @@ public class Gerencia extends Thread {
 
             lzw.inicioDaDecodificacao(con+"");
 
-            for (int i = 2; i < file.length(); i = i + 2) {
+            for (int i = 2; i < fi.length(); i = i + 2) {
                 con = input.readChar();
                 lzw.decodifica(con+"");
                 pro.setValue(i+2);
