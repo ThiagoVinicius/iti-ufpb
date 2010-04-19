@@ -43,6 +43,8 @@ public class DicionarioAdaptativo extends Tabela{
     @Override
     public int addDicionario(String letra)
     {
+        saidaCodificacao = table.get(frase).pos;
+
         if(dicionario.size() == LIMITE)
         {
             table.remove(dicionario.get(dicionario.size()-1));
@@ -57,7 +59,8 @@ public class DicionarioAdaptativo extends Tabela{
             //cont++;
         }
 
-        saidaCodificacao = table.get(frase).pos;
+        //System.out.println(frase.length());
+        
         frase = letra;
 
         return saidaCodificacao;
@@ -72,6 +75,8 @@ public class DicionarioAdaptativo extends Tabela{
         } 
         else
         {
+            saidaCodificacao = table.get(frase).pos;
+            
             if (dicionario.size() == LIMITE) {
                 table.remove(dicionario.get(dicionario.size() - 1));
                 table.put((frase), new Posicoes(dicionario.size()-1));
@@ -82,7 +87,7 @@ public class DicionarioAdaptativo extends Tabela{
 
                 //cont++;
             }
-            return table.get(frase).pos;
+            return saidaCodificacao;
         }
     }    
 

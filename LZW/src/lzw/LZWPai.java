@@ -44,8 +44,7 @@ public abstract class LZWPai extends Modelo
     public void codifica(String letra) throws IOException
     {
 
-        //System.out.print(letra);
-        
+               
         if(dicionario.contemFrase(letra))
         {
             dicionario.addLetra(letra);
