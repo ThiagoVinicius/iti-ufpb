@@ -179,8 +179,7 @@ public class InterfaceLZW extends javax.swing.JFrame {
         jProgressBar1.setValue(0);
 
         if(file != null)
-        {
-            jMenuItem1.setEnabled(false);
+        {            
             jMenuItem2.setEnabled(true);
             jMenuItem3.setEnabled(true);
             jMenuItem4.setEnabled(true);
@@ -196,11 +195,7 @@ public class InterfaceLZW extends javax.swing.JFrame {
 
         LZWAdaptativo lzw = new LZWAdaptativo();
 
-        jMenuItem1.setEnabled(true);
-        jMenuItem2.setEnabled(false);
-        jMenuItem3.setEnabled(false);
-        jMenuItem4.setEnabled(false);
-        jMenuItem5.setEnabled(false);
+        
         
         Gerencia gerencia = new Gerencia(lzw, jProgressBar1, jTextArea1, file, 0);
 
@@ -212,12 +207,8 @@ public class InterfaceLZW extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
 
         LZWAdaptativoComDeslocamento lzw = new LZWAdaptativoComDeslocamento();
-        jMenuItem1.setEnabled(true);
-        jMenuItem2.setEnabled(false);
-        jMenuItem3.setEnabled(false);
-        jMenuItem4.setEnabled(false);
-        jMenuItem5.setEnabled(false);
-
+        
+        
         Gerencia gerencia = new Gerencia(lzw, jProgressBar1, jTextArea1, file, 0);
 
         gerencia.start();
@@ -227,11 +218,6 @@ public class InterfaceLZW extends javax.swing.JFrame {
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
 
         LZWAdaptativoComDeslocamento lzw = new LZWAdaptativoComDeslocamento();
-        jMenuItem1.setEnabled(true);
-        jMenuItem2.setEnabled(false);
-        jMenuItem3.setEnabled(false);
-        jMenuItem4.setEnabled(false);
-        jMenuItem5.setEnabled(false);
 
         Gerencia gerencia = new Gerencia(lzw, jProgressBar1, jTextArea1, file, 1);
 
@@ -241,11 +227,6 @@ public class InterfaceLZW extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
 
         LZWAdaptativo lzw = new LZWAdaptativo();
-        jMenuItem1.setEnabled(true);
-        jMenuItem2.setEnabled(false);
-        jMenuItem3.setEnabled(false);
-        jMenuItem4.setEnabled(false);
-        jMenuItem5.setEnabled(false);
 
         Gerencia gerencia = new Gerencia(lzw, jProgressBar1, jTextArea1, file, 1);
 
