@@ -15,8 +15,8 @@ import java.util.Hashtable;
 public class DicionarioAdaptativoComDeslocamento extends Tabela{
 
 
-    private final int TAMANHO = 256;
-    public final int LIMITE = 2097152;
+    private int TAMANHO = 256;
+    public int LIMITE = 65536;
     //private int cont;
 
     public DicionarioAdaptativoComDeslocamento()

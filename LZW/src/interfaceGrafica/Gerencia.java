@@ -4,6 +4,7 @@
  */
 package interfaceGrafica;
 
+import codificador.CodificadorInteiroPorTamanho;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -56,6 +57,8 @@ public class Gerencia extends Thread {
     private void codifica() {
         
         try {
+            CodificadorInteiroPorTamanho cod = new CodificadorInteiroPorTamanho();
+
             DataInputStream input;
             DataOutputStream output;
 
@@ -67,6 +70,9 @@ public class Gerencia extends Thread {
 
             lzw.setOutput(output);
 
+            //cod.setOutput(output);
+            lzw.setCodificador(cod);
+
             pro.setMaximum((int) file.length());
 
             long t1 = System.currentTimeMillis();
@@ -77,6 +83,8 @@ public class Gerencia extends Thread {
 
                 pro.setValue(i + 1);
             }
+
+            //cod.flush();
 
             lzw.fimDaCodificacao();
 
@@ -103,7 +111,7 @@ public class Gerencia extends Thread {
 
     private void decodifica() {
         try {
-
+            CodificadorInteiroPorTamanho cod = new CodificadorInteiroPorTamanho();
             String f = (file+"").endsWith(".comp") ? (file+"") : (file+".comp");
 
             File fi = new File(f);
@@ -122,14 +130,33 @@ public class Gerencia extends Thread {
                                           new FileOutputStream(f), BUFFER));
 
             lzw.setOutput(output);
+            //cod.setInput(input);
+            lzw.setCodificador(cod);
 
             pro.setMaximum((int) fi.length());
 
             long t1 = System.currentTimeMillis();
 
             int con = input.readChar();
+            //int con = 0;
 
             lzw.inicioDaDecodificacao(con+"");
+
+            /*pro.setIndeterminate(true);
+
+            try
+            {
+                while(true)
+                {
+                    lzw.decodifica(con+"");
+                }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            pro.setIndeterminate(false);*/
 
             for (int i = 2; i < fi.length(); i = i + 2) {
                 con = input.readChar();
