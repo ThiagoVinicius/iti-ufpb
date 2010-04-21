@@ -14,8 +14,8 @@ import java.util.Hashtable;
  */
 public class DicionarioAdaptativo extends Tabela{
 
-    public final int TAMANHO = 256;
-    public final int LIMITE = 65536;//2097152;
+    public int TAMANHO = 256;
+    public int LIMITE = 65536;//2097152;
     //private int cont;
 
     public DicionarioAdaptativo()
