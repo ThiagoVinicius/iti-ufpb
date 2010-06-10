@@ -58,8 +58,6 @@ public final class ModeloBinario {
 		int endS = end0+simbolo;				//endereco do contador do simbolo
 
 		contadores[endS]++;
-
-		resize(end0,end1);
 	}
 
 	public int[] getTabela(int k) {
@@ -83,19 +81,4 @@ public final class ModeloBinario {
 		tabela[2] = cont0 + cont1;
 		return tabela;
 	}
-
-	public void resize(int end0, int end1){
-		if( (contadores[end0] == LIMITE) || (contadores[end1] == LIMITE) ){
-			if(contadores[end0] > 1)
-				contadores[end0] >>= 1;//divide por 2 se > 1
-			if(contadores[end1] > 1)
-				contadores[end1] >>= 1;//divide por 2 se > 1
-		}
-	}
-
-	public void reset(){
-		for (int i = 0; i < contadores.length; i++)
-			contadores[i] = 1;
-	}
-
 }

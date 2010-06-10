@@ -43,11 +43,7 @@ public final class PPMBinDecoder{
 		modeloBinario.atualizaModelo();						//adiciona simbolo
 		modeloBinario.addSimbToLeitura();
 	}
-	
-	public void resetModelo(){
-		modeloBinario.reset();
-	}
-	
+        
 	public int descomprimeBit() throws Exception{
 		decodifica();
 		return modeloBinario.simbolo;
