@@ -40,10 +40,6 @@ public final class PPMBinEncoder{
 		modeloBinario.addSimbToLeitura();
 	}
 	
-	public void resetModelo(){
-		modeloBinario.reset();
-	}
-	
 	public void comprimeBit(int bit) throws Exception{
 		modeloBinario.simbolo = bit;
 		codifica();
