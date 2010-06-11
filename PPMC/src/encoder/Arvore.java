@@ -50,12 +50,15 @@ public class Arvore {
                     //insercao de um novo simbolo em um contexto maior que 0
                     
                     if (filho.temFilhos()) {
+                        //AQUI DEVE SER IMPLEMENTADA A EXCLUSAO; NAO ME PARECE SER TAO SIMPLES...
                         //mandando o escape para o aritmetico
                         //(filho.getFrequenciaFilhos(), filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos(),
                         //filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos)
                         //frequenciaEscape == procurado.size - 1
                     }
 
+                    //nao tenho certeza se caso esse no nao tenha filhos se deve ser mandado para o aritmetico tambem
+                    //acredito que nao
                     filho.adicionaFilho(simbolo);
                 }
             }
@@ -64,17 +67,18 @@ public class Arvore {
             No filho = raiz.getFilho(simbolo);
             if (filho != null) {
                 //atualizacao de um simbolo que ja apareceu antes (esta presente em k = 0)
-                filho.incrementaContador();
-                
                 //SE NECESSARIO, MANDA PARA O ARITMETICO
+                //(raiz.getFrequenciaAte(simbolo), raiz.getFrequenciaAte(simbolo) + raiz.getContador(),
+                //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
                 //quantidadeEscape == filho.size
+                filho.incrementaContador();
             }
             else {
                 //insercao do simbolo no contexto k = 0
                 //MANDA PARA O ARITMETICO 
                 //envia o escape
                 //(raiz.getFrequenciaFilhos(), raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos(),
-                //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos)
+                //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
                 //envia a letra
                 //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
                 //simbolosNaoCodificados.size())
