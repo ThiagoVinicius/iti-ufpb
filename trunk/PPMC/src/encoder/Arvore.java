@@ -44,17 +44,17 @@ public class Arvore {
                     procurado.incrementaContador();
                     
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
-                    //frequenciaEscape == procurado.size
                 }
                 else {
                     //insercao de um novo simbolo em um contexto maior que 0
                     
                     if (filho.temFilhos()) {
-                        //AQUI DEVE SER IMPLEMENTADA A EXCLUSAO; NAO ME PARECE SER TAO SIMPLES...
                         //mandando o escape para o aritmetico
                         //(filho.getFrequenciaFilhos(), filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos(),
                         //filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos)
-                        //frequenciaEscape == procurado.size - 1
+
+                        //AQUI DEVE SER IMPLEMENTADA A EXCLUSAO A SER USADA NO CONTEXTO MENOR QUE ESSE;
+                        //NAO ME PARECE SER TAO SIMPLES...
                     }
 
                     //nao tenho certeza se caso esse no nao tenha filhos se deve ser mandado para o aritmetico tambem
@@ -70,7 +70,7 @@ public class Arvore {
                 //SE NECESSARIO, MANDA PARA O ARITMETICO
                 //(raiz.getFrequenciaAte(simbolo), raiz.getFrequenciaAte(simbolo) + raiz.getContador(),
                 //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
-                //quantidadeEscape == filho.size
+                
                 filho.incrementaContador();
             }
             else {
