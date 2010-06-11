@@ -5,6 +5,8 @@
 
 package encoder;
 
+import java.util.LinkedList;
+
 /**
  *
  * @author Administrador
@@ -13,10 +15,16 @@ public class Arvore {
     private No raiz;
     private final int tamanhoContexto;
     private String contexto = "";
+    private LinkedList<Character> simbolosNaoCodificados;
 
     public Arvore(int sizeContext) {
         raiz = new No(-1, (char)255);
         tamanhoContexto = sizeContext;
+
+        simbolosNaoCodificados = new LinkedList<Character>();
+        for (int i = 0; i < 256; i++) {
+            simbolosNaoCodificados.add((char)i);
+        }
     }
 
     public void processaSimbolo(char simbolo) {
@@ -32,42 +40,54 @@ public class Arvore {
 
                 No procurado = filho.getFilho(simbolo);
                 if (procurado != null) {
+                    //caso em que e encontrada uma ocorrencia em um contexto maior que 0
                     procurado.incrementaContador();
                     
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
-                    //caso em que e encontrada uma ocorrencia em um contexto maior que 0
-                    //quantidadeEscape == procurado.size
+                    //frequenciaEscape == procurado.size
                 }
                 else {
-                    filho.adicionaFilho(simbolo);
-
-                    //SE NECESSARIO, MANDA PARA O ARITMETICO
                     //insercao de um novo simbolo em um contexto maior que 0
-                    //quantidadeEscape == procurado.size - 1
+                    
+                    if (filho.temFilhos()) {
+                        //mandando o escape para o aritmetico
+                        //(filho.getFrequenciaFilhos(), filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos(),
+                        //filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos)
+                        //frequenciaEscape == procurado.size - 1
+                    }
+
+                    filho.adicionaFilho(simbolo);
                 }
             }
 
             //atualiza k = 0
             No filho = raiz.getFilho(simbolo);
             if (filho != null) {
+                //atualizacao de um simbolo que ja apareceu antes (esta presente em k = 0)
                 filho.incrementaContador();
                 
                 //SE NECESSARIO, MANDA PARA O ARITMETICO
-                //atualizacao de um simbolo que ja apareceu antes (esta presente em k = 0)
                 //quantidadeEscape == filho.size
             }
             else {
-                raiz.adicionaFilho(simbolo);
-                
-                //SE NECESSARIO, MANDA PARA O ARITMETICO
                 //insercao do simbolo no contexto k = 0
-                //quantidadeEscape == filho.size
+                //MANDA PARA O ARITMETICO 
+                //envia o escape
+                //(raiz.getFrequenciaFilhos(), raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos(),
+                //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos)
+                //envia a letra
+                //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
+                //simbolosNaoCodificados.size())
+                raiz.adicionaFilho(simbolo);
+                simbolosNaoCodificados.remove(simbolo);
             }
         }
         else {
+            //leitura e codificacao do primeiro simbolo do fluxo de entrada
             raiz.adicionaFilho(simbolo);
             //MANDA PARA O ARITMETICO
-            //leitura do primeiro simbolo do fluxo de entrada
+            //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1, 256)
+            simbolosNaoCodificados.remove(simbolo);
         }
 
         if (contexto.length() == tamanhoContexto) {

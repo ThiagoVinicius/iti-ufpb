@@ -56,4 +56,16 @@ public class No {
     public void adicionaFilho(char simbolo) {
         filhos.add(new No(1, simbolo));
     }
+
+    public int getFrequenciaFilhos() {
+        int retorno = 0;
+        for (No no : filhos) {
+            retorno += no.contador;
+        }
+        return retorno;
+    }
+
+    public int getQuantidadeFilhos() {
+        return filhos.size();
+    }
 }
