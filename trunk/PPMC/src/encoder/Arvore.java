@@ -32,7 +32,7 @@ public class Arvore {
 
                 No procurado = filho.getFilho(simbolo);
                 if (procurado != null) {
-                    filho.incrementaContador();
+                    procurado.incrementaContador();
                     
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
                     //quantidadeEscape == procurado.size
