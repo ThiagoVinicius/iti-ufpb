@@ -65,6 +65,17 @@ public class No {
         return retorno;
     }
 
+    public int getFrequenciaAte(char simbolo) {
+        int retorno = 0;
+        for (No no : filhos) {
+            if (no.simbolo == simbolo) {
+                break;
+            }
+            retorno += no.contador;
+        }
+        return retorno;
+    }
+
     public int getQuantidadeFilhos() {
         return filhos.size();
     }
