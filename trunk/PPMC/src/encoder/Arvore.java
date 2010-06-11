@@ -5,8 +5,6 @@
 
 package encoder;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author Administrador
@@ -25,15 +23,15 @@ public class Arvore {
         if (raiz.temFilhos()) {
             int tamanho = contexto.length();
             
-            //atualiza de k = tamanhoContexto ate k = 1
+            //atualiza de k = tamanhoContexto ate k = 1, nessa ordem
             for (int i = 0; i < tamanho; i++) {
                 No filho = raiz;
                 for (int j = i; j < tamanho; j++) {
                     filho = filho.getFilho(contexto.charAt(j));
                 }
 
-                filho = filho.getFilho(simbolo);
-                if (filho != null) {
+                No procurado = filho.getFilho(simbolo);
+                if (procurado != null) {
                     filho.incrementaContador();
                     
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
@@ -56,7 +54,7 @@ public class Arvore {
                 //quantidadeEscape == filho.size
             }
             else {
-                filho.adicionaFilho(simbolo);
+                raiz.adicionaFilho(simbolo);
                 
                 //SE NECESSARIO, MANDA PARA O ARITMETICO
                 //quantidadeEscape == filho.size
