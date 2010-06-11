@@ -35,12 +35,14 @@ public class Arvore {
                     procurado.incrementaContador();
                     
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
+                    //caso em que e encontrada uma ocorrencia em um contexto maior que 0
                     //quantidadeEscape == procurado.size
                 }
                 else {
                     filho.adicionaFilho(simbolo);
 
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
+                    //insercao de um novo simbolo em um contexto maior que 0
                     //quantidadeEscape == procurado.size - 1
                 }
             }
@@ -51,18 +53,21 @@ public class Arvore {
                 filho.incrementaContador();
                 
                 //SE NECESSARIO, MANDA PARA O ARITMETICO
+                //atualizacao de um simbolo que ja apareceu antes (esta presente em k = 0)
                 //quantidadeEscape == filho.size
             }
             else {
                 raiz.adicionaFilho(simbolo);
                 
                 //SE NECESSARIO, MANDA PARA O ARITMETICO
+                //insercao do simbolo no contexto k = 0
                 //quantidadeEscape == filho.size
             }
         }
         else {
             raiz.adicionaFilho(simbolo);
             //MANDA PARA O ARITMETICO
+            //leitura do primeiro simbolo do fluxo de entrada
         }
 
         if (contexto.length() == tamanhoContexto) {
