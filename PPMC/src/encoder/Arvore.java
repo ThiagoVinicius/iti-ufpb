@@ -5,6 +5,7 @@
 
 package encoder;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -16,6 +17,7 @@ public class Arvore {
     private final int tamanhoContexto;
     private String contexto = "";
     private LinkedList<Character> simbolosNaoCodificados;
+    private ArrayList<Character> simbolosExcluidos;
 
     public Arvore(int sizeContext) {
         raiz = new No(-1, (char)255);
@@ -55,6 +57,7 @@ public class Arvore {
 
                         //AQUI DEVE SER IMPLEMENTADA A EXCLUSAO A SER USADA NO CONTEXTO MENOR QUE ESSE;
                         //NAO ME PARECE SER TAO SIMPLES...
+                        simbolosExcluidos = filho.getSimbolosFilhos();
                     }
 
                     //nao tenho certeza se caso esse no nao tenha filhos se deve ser mandado para o aritmetico tambem
@@ -77,8 +80,9 @@ public class Arvore {
                 //insercao do simbolo no contexto k = 0
                 //MANDA PARA O ARITMETICO 
                 //envia o escape
-                //(raiz.getFrequenciaFilhos(), raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos(),
-                //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
+                //lowcount(raiz.getFrequenciaFilhos(simbolosExcluidos),
+                //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
+                //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
                 //envia a letra
                 //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
                 //simbolosNaoCodificados.size())
@@ -100,6 +104,6 @@ public class Arvore {
         else {
             contexto += simbolo;
         }
+        simbolosExcluidos.clear();
     }
-    
 }

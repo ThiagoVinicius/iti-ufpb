@@ -38,6 +38,14 @@ public class No {
         return filhos;
     }
 
+    public ArrayList<Character> getSimbolosFilhos() {
+        ArrayList<Character> simbolos = new ArrayList<Character>();
+        for (No no : filhos) {
+            simbolos.add(no.simbolo);
+        }
+        return simbolos;
+    }
+
     public No getFilho(char simbolo) {
         int tamanho = filhos.size();
         
@@ -65,6 +73,16 @@ public class No {
         return retorno;
     }
 
+    public int getFrequenciaFilhos(ArrayList<Character> simbolosExcluidos) {
+        int retorno = 0;
+        for (No no : filhos) {
+            if (!simbolosExcluidos.contains(no.simbolo)) {
+                retorno += no.contador;
+            }
+        }
+        return retorno;
+    }
+
     public int getFrequenciaAte(char simbolo) {
         int retorno = 0;
         for (No no : filhos) {
@@ -79,4 +97,15 @@ public class No {
     public int getQuantidadeFilhos() {
         return filhos.size();
     }
+
+//    public int getQuantidadeFilhos(ArrayList<Character> simbolosExcluidos) {
+//        int retorno = 0;
+//        for (No no : filhos) {
+//            if (!simbolosExcluidos.contains(no.simbolo)) {
+//                retorno++;
+//            }
+//        }
+//        //return filhos.size();
+//        return retorno;
+//    }
 }
