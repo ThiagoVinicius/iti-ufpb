@@ -52,16 +52,13 @@ public class Arvore {
                     
                     if (filho.temFilhos()) {
                         //mandando o escape para o aritmetico
-                        //(filho.getFrequenciaFilhos(), filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos(),
-                        //filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos)
+                        //lowcount (filho.getQuantidadeFilhos(),
+                        //highcount -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos(),
+                        //total -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
 
-                        //AQUI DEVE SER IMPLEMENTADA A EXCLUSAO A SER USADA NO CONTEXTO MENOR QUE ESSE;
-                        //NAO ME PARECE SER TAO SIMPLES...
                         simbolosExcluidos = filho.getSimbolosFilhos();
                     }
 
-                    //nao tenho certeza se caso esse no nao tenha filhos se deve ser mandado para o aritmetico tambem
-                    //acredito que nao
                     filho.adicionaFilho(simbolo);
                 }
             }
@@ -80,10 +77,13 @@ public class Arvore {
                 //insercao do simbolo no contexto k = 0
                 //MANDA PARA O ARITMETICO 
                 //envia o escape
-                //lowcount(raiz.getFrequenciaFilhos(simbolosExcluidos),
+
+                //lowcount(raiz.getQuantidadeFilhos(),
                 //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
                 //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
+
                 //envia a letra
+
                 //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
                 //simbolosNaoCodificados.size())
                 raiz.adicionaFilho(simbolo);

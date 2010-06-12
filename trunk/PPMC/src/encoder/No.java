@@ -95,6 +95,11 @@ public class No {
     }
 
     public int getQuantidadeFilhos() {
+        //se o escape tem frequencia igual ao tamanho do alfabeto (nenhum simbolo novo aparecera)
+        //retorna 0
+        if (filhos.size() == 256) {
+            return 0;
+        }
         return filhos.size();
     }
 
@@ -105,7 +110,7 @@ public class No {
 //                retorno++;
 //            }
 //        }
-//        //return filhos.size();
+//
 //        return retorno;
 //    }
 }
