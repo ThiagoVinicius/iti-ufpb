@@ -18,6 +18,7 @@ public class Arvore {
     private String contexto = "";
     private LinkedList<Character> simbolosNaoCodificados;
     private ArrayList<Character> simbolosExcluidos;
+    private boolean mandouAritmetico = false;
 
     public Arvore(int sizeContext) {
         raiz = new No(-1, (char)255);
@@ -43,18 +44,26 @@ public class Arvore {
                 No procurado = filho.getFilho(simbolo);
                 if (procurado != null) {
                     //caso em que e encontrada uma ocorrencia em um contexto maior que 0
+                    if (!mandouAritmetico) {
+                        //MANDA PARA O ARITMETICO
+                        //(procurado.getFrequenciaAte(simbolo), procurado.getFrequenciaAte(simbolo) + procurado.getContador(),
+                        //procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos())
+                        mandouAritmetico = true;
+                    }
+
                     procurado.incrementaContador();
-                    
-                    //SE NECESSARIO, MANDA PARA O ARITMETICO
                 }
                 else {
                     //insercao de um novo simbolo em um contexto maior que 0
                     
                     if (filho.temFilhos()) {
-                        //mandando o escape para o aritmetico
-                        //lowcount (filho.getQuantidadeFilhos(),
-                        //highcount -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos(),
-                        //total -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
+                        if (!mandouAritmetico) {
+                            //mandando o escape para o aritmetico
+                            //lowcount (filho.getQuantidadeFilhos(),
+                            //highcount -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos(),
+                            //total -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
+                            mandouAritmetico = true;
+                        }
 
                         simbolosExcluidos = filho.getSimbolosFilhos();
                     }
@@ -67,25 +76,33 @@ public class Arvore {
             No filho = raiz.getFilho(simbolo);
             if (filho != null) {
                 //atualizacao de um simbolo que ja apareceu antes (esta presente em k = 0)
-                //SE NECESSARIO, MANDA PARA O ARITMETICO
-                //(raiz.getFrequenciaAte(simbolo), raiz.getFrequenciaAte(simbolo) + raiz.getContador(),
-                //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
-                
+                if (!mandouAritmetico) {
+                    //SE NECESSARIO, MANDA PARA O ARITMETICO
+                    //(raiz.getFrequenciaAte(simbolo), raiz.getFrequenciaAte(simbolo) + raiz.getContador(),
+                    //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
+                    mandouAritmetico = true;
+                }
+
                 filho.incrementaContador();
             }
             else {
                 //insercao do simbolo no contexto k = 0
-                //MANDA PARA O ARITMETICO 
-                //envia o escape
+                if (!mandouAritmetico) {
+                    //MANDA PARA O ARITMETICO 
+                    //envia o escape
 
-                //lowcount(raiz.getQuantidadeFilhos(),
-                //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
-                //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
+                    //lowcount(raiz.getQuantidadeFilhos(),
+                    //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
+                    //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
 
-                //envia a letra
+                    //envia a letra
 
-                //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
-                //simbolosNaoCodificados.size())
+                    //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
+                    //simbolosNaoCodificados.size())
+                    
+                    mandouAritmetico = true;
+                }
+
                 raiz.adicionaFilho(simbolo);
                 simbolosNaoCodificados.remove(simbolo);
             }
@@ -105,5 +122,6 @@ public class Arvore {
             contexto += simbolo;
         }
         simbolosExcluidos.clear();
+        mandouAritmetico = false;
     }
 }
