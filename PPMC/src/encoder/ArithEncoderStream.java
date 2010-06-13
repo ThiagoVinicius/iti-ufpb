@@ -5,8 +5,8 @@ import java.io.DataOutputStream;
 public final class ArithEncoderStream {
 
 	static final int CODE_VALUE_BITS = 31;
-	//static final long TOP_VALUE = ((long) 1 << CODE_VALUE_BITS) - 1;
-        static final long TOP_VALUE = 1;
+	static final long TOP_VALUE = ((long) 1 << CODE_VALUE_BITS) - 1;
+        //static final long TOP_VALUE = 1;
 	static final long FIRST_QUARTER = TOP_VALUE / 4 + 1;
 	static final long HALF = 2 * FIRST_QUARTER;
 	static final long THIRD_QUARTER = 3 * FIRST_QUARTER;

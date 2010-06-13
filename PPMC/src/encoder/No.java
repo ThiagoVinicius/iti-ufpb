@@ -104,7 +104,7 @@ public class No {
         return filhos.size();
     }
 
-//    public int getQuantidadeFilhos(ArrayList<Character> simbolosExcluidos) {
+//    public int getQuantidadeFilhos(Collection<Character> simbolosExcluidos) {
 //        int retorno = 0;
 //        for (No no : filhos) {
 //            if (!simbolosExcluidos.contains(no.simbolo)) {

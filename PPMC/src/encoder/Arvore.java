@@ -5,8 +5,11 @@
 
 package encoder;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -14,42 +17,51 @@ import java.util.Set;
  * @author Administrador
  */
 public class Arvore {
-    private No raiz;
+
+    public static final int LOW = 0;
+    public static final int HIGH = 1;
+    public static final int TOTAL = 2;
+    public static final int ESTADO = 3;
+
+    public static final int ESTADO_PARE = 0x01;
+    public static final int ESTADO_CODIFIQUE = 0x02;
+    public static final int ESTADO_IGNORANCIA_ABSOLUTA = 0x04;
+
+    private final int tabela[] = new int[4];
+    public No raiz;
+    private int contadorImortal;
     private final int tamanhoContexto;
-    private String contexto = "";
-    private LinkedList<Character> simbolosNaoCodificados;
+    private Queue <Character> contexto;
+    private Queue <Character> contextoAux;
     private Set<Character> simbolosExcluidos;
     private boolean mandouAritmetico = false;
-    private final ArithEncoderStream aritmetico;
 
-    public Arvore(int sizeContext, ArithEncoderStream aritmetico) {
-
-        this.aritmetico = aritmetico;
+    public Arvore(int sizeContext) {
 
         raiz = new No(-1, (char)255);
         tamanhoContexto = sizeContext;
 
-        simbolosNaoCodificados = new LinkedList<Character>();
-        for (int i = 0; i < 256; i++) {
-            simbolosNaoCodificados.add((char)i);
-        }
-
         simbolosExcluidos = new HashSet<Character>();
+
+        contexto = new ArrayDeque <Character> (tamanhoContexto);
+        contextoAux = new ArrayDeque <Character> (tamanhoContexto);
+
     }
 
-    public void processaSimbolo(char simbolo) throws Exception {
+    public int [] processaSimbolo(char simbolo) throws Exception {
 
-        int low, high, total;
-        low = high = total = 0;
+        int resultado[] = tabela;
 
         if (raiz.temFilhos()) {
-            int tamanho = contexto.length();
+            int tamanho = contexto.size();
             
             //atualiza de k = tamanhoContexto ate k = 1, nessa ordem
-            for (int i = 0; i < tamanho; i++) {
+            while (contadorImortal < tamanho) {
+
                 No filho = raiz;
-                for (int j = i; j < tamanho; j++) {
-                    filho = filho.getFilho(contexto.charAt(j));
+
+                for (char a : contextoAux) {
+                    filho = filho.getFilho(a);
                 }
 
                 No procurado = filho.getFilho(simbolo);
@@ -60,10 +72,10 @@ public class Arvore {
                         //(procurado.getFrequenciaAte(simbolo), procurado.getFrequenciaAte(simbolo) + procurado.getContador(),
                         //procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos())
                         int frequenciaParcial = procurado.getFrequenciaAte(simbolo);
-                        low = frequenciaParcial;
-                        high = frequenciaParcial + procurado.getContador();
-                        total = procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos();
-                        aritmetico.encode(low, high, total);
+                        tabela[LOW] = frequenciaParcial;
+                        tabela[HIGH] = frequenciaParcial + procurado.getContador();
+                        tabela[TOTAL] = procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos();
+                        tabela[ESTADO] = ESTADO_CODIFIQUE;
                         mandouAritmetico = true;
                     }
 
@@ -77,13 +89,13 @@ public class Arvore {
                             //mandando o escape para o aritmetico
                             //lowcount (filho.getFrequenciaFilhos(simbolosExcluidos),
                             //highcount -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos(),
-                            //total -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
-                            int frequenciasRestantes = filho.getFrequenciaFilhos(simbolosExcluidos), 
+                            //tabela[TOTAL] -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
+                            int frequenciasRestantes = filho.getFrequenciaFilhos(simbolosExcluidos),
                                 totalFrequencias = frequenciasRestantes + filho.getQuantidadeFilhos();
-                            low = frequenciasRestantes;
-                            high = totalFrequencias;
-                            total = totalFrequencias;
-                            aritmetico.encode(low, high, total);
+                            tabela[LOW] = frequenciasRestantes;
+                            tabela[HIGH] = totalFrequencias;
+                            tabela[TOTAL] = totalFrequencias;
+                            tabela[ESTADO] = ESTADO_CODIFIQUE;
                         }
 
                         simbolosExcluidos.addAll(filho.getSimbolosFilhos());
@@ -91,6 +103,11 @@ public class Arvore {
 
                     filho.adicionaFilho(simbolo);
                 }
+
+                contextoAux.poll();
+                ++contadorImortal;
+                return resultado;
+
             }
 
             //atualiza k = 0
@@ -102,10 +119,11 @@ public class Arvore {
                     //(raiz.getFrequenciaAte(simbolo), raiz.getFrequenciaAte(simbolo) + raiz.getContador(),
                     //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
                     int frequenciaAte = raiz.getFrequenciaAte(simbolo);
-                    low = frequenciaAte;
-                    high = frequenciaAte + raiz.getContador();
-                    total = raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos();
-                    aritmetico.encode(low, high, total);
+                    tabela[LOW] = frequenciaAte;
+                    tabela[HIGH] = frequenciaAte + raiz.getContador();
+                    tabela[TOTAL] = raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos();
+                    tabela[ESTADO] = ESTADO_CODIFIQUE | ESTADO_PARE;
+                    resultado = tabela;
                 }
 
                 filho.incrementaContador();
@@ -119,47 +137,39 @@ public class Arvore {
 
                 //lowcount(raiz.getQuantidadeFilhos(),
                 //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
-                //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
+                //tabela[TOTAL] -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
                 int quantidade = raiz.getQuantidadeFilhos(),
                     valorAlto = raiz.getFrequenciaFilhos(simbolosExcluidos) + quantidade;
-                low = quantidade;
-                high = valorAlto;
-                total = valorAlto;
-                aritmetico.encode(low, high, total);
+                tabela[LOW] = quantidade;
+                tabela[HIGH] = valorAlto;
+                tabela[TOTAL] = valorAlto;
+                tabela[ESTADO] = ESTADO_CODIFIQUE | ESTADO_PARE | ESTADO_IGNORANCIA_ABSOLUTA;
 
                 //envia a letra
 
                 //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
                 //simbolosNaoCodificados.size())
-                int indice = simbolosNaoCodificados.indexOf(simbolo);
-                low = indice;
-                high = indice + 1;
-                total = simbolosNaoCodificados.size();
-                aritmetico.encode(low, high, total);
-                    
-                raiz.adicionaFilho(simbolo);
-                simbolosNaoCodificados.remove(simbolo);
+
             }
+
         }
         else {
+
+            tabela[ESTADO] = ESTADO_IGNORANCIA_ABSOLUTA | ESTADO_PARE;
             //leitura e codificacao do primeiro simbolo do fluxo de entrada
-            raiz.adicionaFilho(simbolo);
-            //MANDA PARA O ARITMETICO
-            //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1, 256)
-            low = simbolosNaoCodificados.indexOf(simbolo);
-            high = simbolosNaoCodificados.indexOf(simbolo);
-            total = 256;
-            aritmetico.encode(low, high, total);
-            simbolosNaoCodificados.remove(simbolo);
         }
 
-        if (contexto.length() == tamanhoContexto) {
-            contexto = contexto.substring(1) + simbolo;
+        if (contexto.size() == tamanhoContexto) {
+            contexto.poll();
         }
-        else {
-            contexto += simbolo;
-        }
+
+        contexto.offer(simbolo);
         simbolosExcluidos.clear();
         mandouAritmetico = false;
+        assert contextoAux.size() == 0;
+        contextoAux.addAll(contexto);
+        contadorImortal = 0;
+
+        return tabela;
     }
 }
