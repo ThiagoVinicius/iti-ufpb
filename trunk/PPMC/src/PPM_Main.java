@@ -25,17 +25,17 @@ public final class PPM_Main {
 
         //String[] nomes = {"Ecg1_dec", "Ecg2_dec", "Ecg3_dec", "Ecg4_dec", "Emg_dec", "Emg2_dec", "Claudid3_dec", "ecg105_dec", "1hz_senoide_dec", "3canais_dec"};
 
-        String[] nomes = { "faroestecaboclo" };
-        gravatxt("Arquivo" + ";;" + "Contexto" + ";;" + "RC", "Resultados\\Tabela.csv");
+        String[] nomes = { "fichamento", "fichamento-tiny" };
+        gravatxt("Arquivo" + ";;" + "Contexto" + ";;" + "RC", "Resultados/Tabela.csv");
 
         System.out.println("\ncomprimindo ... descomprimindo");
 
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j <= 9; j++) {
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j <= 4; j++) {
 
                 File original = new File(nomes[i] + ".txt");//arquivo de entrada tem que ter tamanho par
-                File comprimido = new File("Resultados\\" + nomes[i] + "_comprimido.txt");
-                File descomprimido = new File("Resultados\\" + nomes[i] + "_descomprimido.txt");
+                File comprimido = new File("Resultados/" + nomes[i] + j + "_comprimido.txt");
+                File descomprimido = new File("Resultados/" + nomes[i] + "_descomprimido.txt");
 
 
 
@@ -65,10 +65,10 @@ public final class PPM_Main {
 
                 String rc1 = "_" + rc;
 
-                gravatxt(nomes[i] + ";;" + j + ";;" + rc1, "Resultados\\Tabela.csv");
+                gravatxt(nomes[i] + ";;" + j + ";;" + rc1, "Resultados/Tabela.csv");
             }
 
-            gravatxt("", "Resultados\\Tabela.csv");
+            gravatxt("", "Resultados/Tabela.csv");
         }
 
         System.out.println("Fim");
