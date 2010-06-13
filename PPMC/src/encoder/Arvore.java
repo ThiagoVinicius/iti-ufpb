@@ -81,7 +81,6 @@ public class Arvore {
                             high = totalFrequencias;
                             total = totalFrequencias;
                             aritmetico.encode(low, high, total);
-                            mandouAritmetico = true;
                         }
 
                         simbolosExcluidos.addAll(filho.getSimbolosFilhos());
