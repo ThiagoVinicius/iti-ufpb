@@ -5,8 +5,9 @@
 
 package encoder;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  *
@@ -17,7 +18,7 @@ public class Arvore {
     private final int tamanhoContexto;
     private String contexto = "";
     private LinkedList<Character> simbolosNaoCodificados;
-    private ArrayList<Character> simbolosExcluidos;
+    private Set<Character> simbolosExcluidos;
     private boolean mandouAritmetico = false;
     private final ArithEncoderStream aritmetico;
 
@@ -32,6 +33,8 @@ public class Arvore {
         for (int i = 0; i < 256; i++) {
             simbolosNaoCodificados.add((char)i);
         }
+
+        simbolosExcluidos = new HashSet<Character>();
     }
 
     public void processaSimbolo(char simbolo) throws Exception {
