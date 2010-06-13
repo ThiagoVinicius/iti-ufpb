@@ -23,8 +23,9 @@ public final class PPM_Main {
 
     public static void main(String[] args) throws Exception {
 
-        String[] nomes = {"Ecg1_dec", "Ecg2_dec", "Ecg3_dec", "Ecg4_dec", "Emg_dec", "Emg2_dec", "Claudid3_dec", "ecg105_dec", "1hz_senoide_dec", "3canais_dec"};
+        //String[] nomes = {"Ecg1_dec", "Ecg2_dec", "Ecg3_dec", "Ecg4_dec", "Emg_dec", "Emg2_dec", "Claudid3_dec", "ecg105_dec", "1hz_senoide_dec", "3canais_dec"};
 
+        String[] nomes = { "faroestecaboclo" };
         gravatxt("Arquivo" + ";;" + "Contexto" + ";;" + "RC", "Resultados\\Tabela.csv");
 
         System.out.println("\ncomprimindo ... descomprimindo");
@@ -32,7 +33,7 @@ public final class PPM_Main {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j <= 9; j++) {
 
-                File original = new File("Biodados\\" + nomes[i] + ".txt");//arquivo de entrada tem que ter tamanho par
+                File original = new File(nomes[i] + ".txt");//arquivo de entrada tem que ter tamanho par
                 File comprimido = new File("Resultados\\" + nomes[i] + "_comprimido.txt");
                 File descomprimido = new File("Resultados\\" + nomes[i] + "_descomprimido.txt");
 
@@ -116,7 +117,7 @@ public final class PPM_Main {
         //comprime o arquivo
         for (int i = 0; i < tam; i++) {
             int simbolo = input.read();
-            encoder.comprimeSimbolo(simbolo);
+            encoder.comprimeSimbolo((char)simbolo);
 
         }
 
@@ -131,6 +132,9 @@ public final class PPM_Main {
     }
 
     public static void descomprimir(File comprimido, File descomprimido) throws Exception {
+
+        if (true)
+            return;
 
         //abre os 2 arquivos
         DataInputStream input = LeituraEscrita.getInput(comprimido);
