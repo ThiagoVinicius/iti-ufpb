@@ -6,6 +6,7 @@
 package encoder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
@@ -73,7 +74,7 @@ public class No {
         return retorno;
     }
 
-    public int getFrequenciaFilhos(ArrayList<Character> simbolosExcluidos) {
+    public int getFrequenciaFilhos(Collection<Character> simbolosExcluidos) {
         int retorno = 0;
         for (No no : filhos) {
             if (!simbolosExcluidos.contains(no.simbolo)) {
