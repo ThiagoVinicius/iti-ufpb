@@ -71,7 +71,7 @@ public class Arvore {
                     if (filho.temFilhos()) {
                         if (!mandouAritmetico) {
                             //mandando o escape para o aritmetico
-                            //lowcount (filho.getQuantidadeFilhos(),
+                            //lowcount (filho.getFrequenciaFilhos(simbolosExcluidos),
                             //highcount -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos(),
                             //total -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
                             low = filho.getQuantidadeFilhos();
@@ -81,7 +81,7 @@ public class Arvore {
                             mandouAritmetico = true;
                         }
 
-                        simbolosExcluidos = filho.getSimbolosFilhos();
+                        simbolosExcluidos.addAll(filho.getSimbolosFilhos());
                     }
 
                     filho.adicionaFilho(simbolo);
@@ -107,30 +107,28 @@ public class Arvore {
             }
             else {
                 //insercao do simbolo no contexto k = 0
-                if (!mandouAritmetico) {
-                    //MANDA PARA O ARITMETICO 
-                    //envia o escape
+                
+                //MANDA PARA O ARITMETICO
+                
+                //envia o escape
 
-                    //lowcount(raiz.getQuantidadeFilhos(),
-                    //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
-                    //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
+                //lowcount(raiz.getQuantidadeFilhos(),
+                //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
+                //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
                     low = raiz.getQuantidadeFilhos();
                     high = raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos();
                     total = raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos();
                     aritmetico.encode(low, high, total);
 
-                    //envia a letra
+                //envia a letra
 
-                    //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
-                    //simbolosNaoCodificados.size())
+                //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
+                //simbolosNaoCodificados.size())
                     low = simbolosNaoCodificados.indexOf(simbolo);
                     high = simbolosNaoCodificados.indexOf(simbolo) + 1;
                     total = simbolosNaoCodificados.size();
                     aritmetico.encode(low, high, total);
                     
-                    mandouAritmetico = true;
-                }
-
                 raiz.adicionaFilho(simbolo);
                 simbolosNaoCodificados.remove(simbolo);
             }
