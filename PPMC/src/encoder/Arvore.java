@@ -56,8 +56,9 @@ public class Arvore {
                         //MANDA PARA O ARITMETICO
                         //(procurado.getFrequenciaAte(simbolo), procurado.getFrequenciaAte(simbolo) + procurado.getContador(),
                         //procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos())
-                        low = procurado.getFrequenciaAte(simbolo);
-                        high = procurado.getFrequenciaAte(simbolo) + procurado.getContador();
+                        int frequenciaParcial = procurado.getFrequenciaAte(simbolo);
+                        low = frequenciaParcial;
+                        high = frequenciaParcial + procurado.getContador();
                         total = procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos();
                         aritmetico.encode(low, high, total);
                         mandouAritmetico = true;
@@ -74,9 +75,11 @@ public class Arvore {
                             //lowcount (filho.getFrequenciaFilhos(simbolosExcluidos),
                             //highcount -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos(),
                             //total -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
-                            low = filho.getQuantidadeFilhos();
-                            high = filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos();
-                            total = filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos();
+                            int frequenciasRestantes = filho.getFrequenciaFilhos(simbolosExcluidos), 
+                                totalFrequencias = frequenciasRestantes + filho.getQuantidadeFilhos();
+                            low = frequenciasRestantes;
+                            high = totalFrequencias;
+                            total = totalFrequencias;
                             aritmetico.encode(low, high, total);
                             mandouAritmetico = true;
                         }
@@ -96,8 +99,9 @@ public class Arvore {
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
                     //(raiz.getFrequenciaAte(simbolo), raiz.getFrequenciaAte(simbolo) + raiz.getContador(),
                     //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
-                    low = raiz.getFrequenciaAte(simbolo);
-                    high = raiz.getFrequenciaAte(simbolo) + raiz.getContador();
+                    int frequenciaAte = raiz.getFrequenciaAte(simbolo);
+                    low = frequenciaAte;
+                    high = frequenciaAte + raiz.getContador();
                     total = raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos();
                     aritmetico.encode(low, high, total);
                     mandouAritmetico = true;
@@ -115,19 +119,22 @@ public class Arvore {
                 //lowcount(raiz.getQuantidadeFilhos(),
                 //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
                 //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
-                    low = raiz.getQuantidadeFilhos();
-                    high = raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos();
-                    total = raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos();
-                    aritmetico.encode(low, high, total);
+                int quantidade = raiz.getQuantidadeFilhos(),
+                    valorAlto = raiz.getFrequenciaFilhos(simbolosExcluidos) + quantidade;
+                low = quantidade;
+                high = valorAlto;
+                total = valorAlto;
+                aritmetico.encode(low, high, total);
 
                 //envia a letra
 
                 //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
                 //simbolosNaoCodificados.size())
-                    low = simbolosNaoCodificados.indexOf(simbolo);
-                    high = simbolosNaoCodificados.indexOf(simbolo) + 1;
-                    total = simbolosNaoCodificados.size();
-                    aritmetico.encode(low, high, total);
+                int indice = simbolosNaoCodificados.indexOf(simbolo);
+                low = indice;
+                high = indice + 1;
+                total = simbolosNaoCodificados.size();
+                aritmetico.encode(low, high, total);
                     
                 raiz.adicionaFilho(simbolo);
                 simbolosNaoCodificados.remove(simbolo);
