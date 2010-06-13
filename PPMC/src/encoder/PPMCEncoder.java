@@ -1,5 +1,6 @@
 package encoder;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public final class PPMCEncoder {
@@ -49,10 +50,12 @@ public final class PPMCEncoder {
 //
     public void comprimeSimbolo(char simbolo) throws Exception {
         int tabela[];
+        System.out.print(simbolo);
         while (true) {
             tabela = modelo.processaSimbolo(simbolo);
             int estado = tabela[Arvore.ESTADO];
             if ((estado & Arvore.ESTADO_CODIFIQUE) != 0) {
+                //System.out.println("Codificando: "+ Arrays.toString(tabela));
                 aritmetico.encode(tabela[Arvore.LOW], tabela[Arvore.HIGH], tabela[Arvore.TOTAL]);
             }
             if ((estado & Arvore.ESTADO_IGNORANCIA_ABSOLUTA) != 0) {
@@ -60,12 +63,14 @@ public final class PPMCEncoder {
                 int low = indice;
                 int high = indice + 1;
                 int total = simbolosNaoCodificados.size();
+                //System.out.printf("Ignorancia absoluta: '%c' (%d, %d, %d)\n", simbolo, low, high, total);
 
                 modelo.raiz.adicionaFilho(simbolo);
                 simbolosNaoCodificados.remove(simbolo);
                 aritmetico.encode(low, high, total);
             }
             if ((estado & Arvore.ESTADO_PARE) != 0) {
+                //System.out.println("Simbolo codificado.");
                 break;
             }
         }

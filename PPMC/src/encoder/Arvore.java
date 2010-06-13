@@ -38,7 +38,7 @@ public class Arvore {
 
     public Arvore(int sizeContext) {
 
-        raiz = new No(-1, (char)255);
+        raiz = new No(0, (char)255);
         tamanhoContexto = sizeContext;
 
         simbolosExcluidos = new HashSet<Character>();
@@ -50,7 +50,7 @@ public class Arvore {
 
     public int [] processaSimbolo(char simbolo) throws Exception {
 
-        int resultado[] = tabela;
+        tabela[ESTADO] = 0;
 
         if (raiz.temFilhos()) {
             int tamanho = contexto.size();
@@ -71,11 +71,12 @@ public class Arvore {
                         //MANDA PARA O ARITMETICO
                         //(procurado.getFrequenciaAte(simbolo), procurado.getFrequenciaAte(simbolo) + procurado.getContador(),
                         //procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos())
-                        int frequenciaParcial = procurado.getFrequenciaAte(simbolo);
+                        int frequenciaParcial = filho.getFrequenciaAte(simbolo);
                         tabela[LOW] = frequenciaParcial;
                         tabela[HIGH] = frequenciaParcial + procurado.getContador();
-                        tabela[TOTAL] = procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos();
+                        tabela[TOTAL] = filho.getFrequenciaFilhos() + filho.getQuantidadeFilhos();
                         tabela[ESTADO] = ESTADO_CODIFIQUE;
+
                         mandouAritmetico = true;
                     }
 
@@ -106,13 +107,15 @@ public class Arvore {
 
                 contextoAux.poll();
                 ++contadorImortal;
-                return resultado;
+                return tabela;
 
             }
 
             //atualiza k = 0
             No filho = raiz.getFilho(simbolo);
             if (filho != null) {
+
+                tabela[ESTADO] = ESTADO_PARE;
                 //atualizacao de um simbolo que ja apareceu antes (esta presente em k = 0)
                 if (!mandouAritmetico) {
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
@@ -120,10 +123,9 @@ public class Arvore {
                     //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
                     int frequenciaAte = raiz.getFrequenciaAte(simbolo);
                     tabela[LOW] = frequenciaAte;
-                    tabela[HIGH] = frequenciaAte + raiz.getContador();
+                    tabela[HIGH] = frequenciaAte + filho.getContador();
                     tabela[TOTAL] = raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos();
                     tabela[ESTADO] = ESTADO_CODIFIQUE | ESTADO_PARE;
-                    resultado = tabela;
                 }
 
                 filho.incrementaContador();
@@ -139,7 +141,7 @@ public class Arvore {
                 //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
                 //tabela[TOTAL] -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
                 int quantidade = raiz.getQuantidadeFilhos(),
-                    valorAlto = raiz.getFrequenciaFilhos(simbolosExcluidos) + quantidade;
+                    valorAlto = raiz.getFrequenciaFilhos() + quantidade;
                 tabela[LOW] = quantidade;
                 tabela[HIGH] = valorAlto;
                 tabela[TOTAL] = valorAlto;
@@ -162,12 +164,12 @@ public class Arvore {
         if (contexto.size() == tamanhoContexto) {
             contexto.poll();
         }
-
-        contexto.offer(simbolo);
+        if (tamanhoContexto > 0) {
+            contexto.offer(simbolo);
+            contextoAux.addAll(contexto);
+        }
         simbolosExcluidos.clear();
         mandouAritmetico = false;
-        assert contextoAux.size() == 0;
-        contextoAux.addAll(contexto);
         contadorImortal = 0;
 
         return tabela;
