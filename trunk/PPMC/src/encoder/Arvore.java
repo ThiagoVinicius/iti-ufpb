@@ -19,8 +19,12 @@ public class Arvore {
     private LinkedList<Character> simbolosNaoCodificados;
     private ArrayList<Character> simbolosExcluidos;
     private boolean mandouAritmetico = false;
+    private final ArithEncoderStream aritmetico;
 
-    public Arvore(int sizeContext) {
+    public Arvore(int sizeContext, ArithEncoderStream aritmetico) {
+
+        this.aritmetico = aritmetico;
+
         raiz = new No(-1, (char)255);
         tamanhoContexto = sizeContext;
 
@@ -30,7 +34,11 @@ public class Arvore {
         }
     }
 
-    public void processaSimbolo(char simbolo) {
+    public void processaSimbolo(char simbolo) throws Exception {
+
+        int low, high, total;
+        low = high = total = 0;
+
         if (raiz.temFilhos()) {
             int tamanho = contexto.length();
             
@@ -48,6 +56,10 @@ public class Arvore {
                         //MANDA PARA O ARITMETICO
                         //(procurado.getFrequenciaAte(simbolo), procurado.getFrequenciaAte(simbolo) + procurado.getContador(),
                         //procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos())
+                        low = procurado.getFrequenciaAte(simbolo);
+                        high = procurado.getFrequenciaAte(simbolo) + procurado.getContador();
+                        total = procurado.getFrequenciaFilhos() + procurado.getQuantidadeFilhos();
+                        aritmetico.encode(low, high, total);
                         mandouAritmetico = true;
                     }
 
@@ -62,6 +74,10 @@ public class Arvore {
                             //lowcount (filho.getQuantidadeFilhos(),
                             //highcount -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos(),
                             //total -> filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos)
+                            low = filho.getQuantidadeFilhos();
+                            high = filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos();
+                            total = filho.getFrequenciaFilhos(simbolosExcluidos) + filho.getQuantidadeFilhos();
+                            aritmetico.encode(low, high, total);
                             mandouAritmetico = true;
                         }
 
@@ -80,6 +96,10 @@ public class Arvore {
                     //SE NECESSARIO, MANDA PARA O ARITMETICO
                     //(raiz.getFrequenciaAte(simbolo), raiz.getFrequenciaAte(simbolo) + raiz.getContador(),
                     //raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos())
+                    low = raiz.getFrequenciaAte(simbolo);
+                    high = raiz.getFrequenciaAte(simbolo) + raiz.getContador();
+                    total = raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos();
+                    aritmetico.encode(low, high, total);
                     mandouAritmetico = true;
                 }
 
@@ -94,11 +114,19 @@ public class Arvore {
                     //lowcount(raiz.getQuantidadeFilhos(),
                     //highcount-> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos(),
                     //total -> raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos())
+                    low = raiz.getQuantidadeFilhos();
+                    high = raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos();
+                    total = raiz.getFrequenciaFilhos(simbolosExcluidos) + raiz.getQuantidadeFilhos();
+                    aritmetico.encode(low, high, total);
 
                     //envia a letra
 
                     //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1,
                     //simbolosNaoCodificados.size())
+                    low = simbolosNaoCodificados.indexOf(simbolo);
+                    high = simbolosNaoCodificados.indexOf(simbolo) + 1;
+                    total = simbolosNaoCodificados.size();
+                    aritmetico.encode(low, high, total);
                     
                     mandouAritmetico = true;
                 }
@@ -112,6 +140,10 @@ public class Arvore {
             raiz.adicionaFilho(simbolo);
             //MANDA PARA O ARITMETICO
             //(simbolosNaoCodificados.indexOf(simbolo), simbolosNaoCodificados.indexOf(simbolo) + 1, 256)
+            low = simbolosNaoCodificados.indexOf(simbolo);
+            high = simbolosNaoCodificados.indexOf(simbolo);
+            total = 256;
+            aritmetico.encode(low, high, total);
             simbolosNaoCodificados.remove(simbolo);
         }
 
