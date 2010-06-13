@@ -103,7 +103,6 @@ public class Arvore {
                     high = frequenciaAte + raiz.getContador();
                     total = raiz.getFrequenciaFilhos() + raiz.getQuantidadeFilhos();
                     aritmetico.encode(low, high, total);
-                    mandouAritmetico = true;
                 }
 
                 filho.incrementaContador();
