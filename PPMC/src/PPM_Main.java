@@ -25,17 +25,23 @@ public final class PPM_Main {
 
         //String[] nomes = {"Ecg1_dec", "Ecg2_dec", "Ecg3_dec", "Ecg4_dec", "Emg_dec", "Emg2_dec", "Claudid3_dec", "ecg105_dec", "1hz_senoide_dec", "3canais_dec"};
 
-        String[] nomes = { "fichamento", "fichamento-tiny", "Bust-A-Move (U).smc" };
+        String[] nomes = { "sequencia.txt" };
         gravatxt("Arquivo" + ";;" + "Contexto" + ";;" + "RC", "Resultados/Tabela.csv");
 
         System.out.println("\ncomprimindo ... descomprimindo");
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < nomes.length; i++) {
             for (int j = 0; j <= 4; j++) {
+                int l = nomes[i].length() - 1;
+                do {
+                    l--;
+                }
+                while(nomes[i].charAt(l) != '.');
+                String termino = nomes[i].substring(l + 1);
 
-                File original = new File(nomes[i] + ".txt");//arquivo de entrada tem que ter tamanho par
+                File original = new File(nomes[i]);//arquivo de entrada tem que ter tamanho par
                 File comprimido = new File("Resultados/" + nomes[i] + j + "_comprimido.txt");
-                File descomprimido = new File("Resultados/" + nomes[i] + "_descomprimido.txt");
+                File descomprimido = new File("Resultados/" + nomes[i] + "_descomprimido." + termino);
 
 
 
