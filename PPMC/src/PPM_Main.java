@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import outros.LeituraEscrita;
 
 import decoder.ArithDecoderStream;
-import decoder.PPMBinDecoder;
+import decoder.PPMCDecoder;
 
 import encoder.ArithEncoderStream;
 import encoder.PPMCEncoder;
@@ -97,11 +97,10 @@ public final class PPM_Main {
         DataInputStream input = LeituraEscrita.getInput(original);
         DataOutputStream output = LeituraEscrita.getOutput(comprimido);
 
-        //divide por 2 pq sao 2 bytes
-        int tam = (int) original.length() / 2;
+        long tam = original.length();
 
         //salva o tamanho
-        output.writeInt(tam);
+        output.writeLong(tam);
 
         //salva o k
         output.writeByte(k);
@@ -115,7 +114,7 @@ public final class PPM_Main {
 
 
         //comprime o arquivo
-        for (int i = 0; i < tam; i++) {
+        for (long i = 0; i < tam; i++) {
             int simbolo = input.read();
             encoder.comprimeSimbolo((char)simbolo);
 
@@ -133,16 +132,13 @@ public final class PPM_Main {
 
     public static void descomprimir(File comprimido, File descomprimido) throws Exception {
 
-        if (true)
-            return;
-
         //abre os 2 arquivos
         DataInputStream input = LeituraEscrita.getInput(comprimido);
         DataOutputStream output = LeituraEscrita.getOutput(descomprimido);
 
         //le o tamanho
         //se vc salvou 'int' deve ler 'int' tb
-        int tam = input.readInt();
+        long tam = input.readLong();
 
         //le o k
         //se vc salvou 'byte' deve ler 'byte'
@@ -153,10 +149,10 @@ public final class PPM_Main {
 
         //cria os PPMs de cada plano
         //todos os PPMs usam o mesmo aritmetico
-        PPMBinDecoder decoder = new PPMBinDecoder(k, aritmetico);
+        PPMCDecoder decoder = new PPMCDecoder(k, aritmetico);
 
         //descomprime o arquivo
-        for (int i = 0; i < tam; i++) {
+        for (long i = 0; i < tam; i++) {
 
             int resultado = decoder.descomprimeBit();
 

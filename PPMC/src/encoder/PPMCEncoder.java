@@ -50,7 +50,7 @@ public final class PPMCEncoder {
 //
     public void comprimeSimbolo(char simbolo) throws Exception {
         int tabela[];
-        System.out.print(simbolo);
+//        //System.out.print(simbolo);
         while (true) {
             tabela = modelo.processaSimbolo(simbolo);
             int estado = tabela[Arvore.ESTADO];
@@ -64,9 +64,10 @@ public final class PPMCEncoder {
                 int high = indice + 1;
                 int total = simbolosNaoCodificados.size();
                 //System.out.printf("Ignorancia absoluta: '%c' (%d, %d, %d)\n", simbolo, low, high, total);
+                
 
                 modelo.raiz.adicionaFilho(simbolo);
-                simbolosNaoCodificados.remove(simbolo);
+                simbolosNaoCodificados.remove(indice);
                 aritmetico.encode(low, high, total);
             }
             if ((estado & Arvore.ESTADO_PARE) != 0) {

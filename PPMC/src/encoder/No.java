@@ -84,15 +84,35 @@ public class No {
         return retorno;
     }
 
-    public int getFrequenciaAte(char simbolo) {
+    public int getFrequenciaAte(char simbolo, Collection<Character> simbolosExcluidos) {
         int retorno = 0;
         for (No no : filhos) {
             if (no.simbolo == simbolo) {
                 break;
+            } else if (simbolosExcluidos.contains(no.simbolo)) {
+                continue;
             }
+
             retorno += no.contador;
         }
         return retorno;
+    }
+
+    public char getSimbolo (int simboloCodificado, Collection<Character> simbolosExcluidos) {
+        int acumulador = 0;
+        for (No no : filhos) {
+            
+            if (simbolosExcluidos.contains(no.simbolo)){
+                continue;
+            }
+
+            acumulador += no.contador;
+            if (acumulador > simboloCodificado) {
+                return no.simbolo;
+            }
+        }
+        return Arvore.ESCAPE;
+        
     }
 
     public int getQuantidadeFilhos() {
