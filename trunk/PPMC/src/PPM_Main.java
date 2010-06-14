@@ -25,12 +25,12 @@ public final class PPM_Main {
 
         //String[] nomes = {"Ecg1_dec", "Ecg2_dec", "Ecg3_dec", "Ecg4_dec", "Emg_dec", "Emg2_dec", "Claudid3_dec", "ecg105_dec", "1hz_senoide_dec", "3canais_dec"};
 
-        String[] nomes = { "fichamento", "fichamento-tiny" };
+        String[] nomes = { "fichamento", "fichamento-tiny", "Bust-A-Move (U).smc" };
         gravatxt("Arquivo" + ";;" + "Contexto" + ";;" + "RC", "Resultados/Tabela.csv");
 
         System.out.println("\ncomprimindo ... descomprimindo");
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j <= 4; j++) {
 
                 File original = new File(nomes[i] + ".txt");//arquivo de entrada tem que ter tamanho par
@@ -58,8 +58,8 @@ public final class PPM_Main {
                 //RC(razao de compressao)
                 //a RC leva em conta o numero de bits do sinal de entrada!!!
                 //lembre disso na hora de calcular a RC do golomb-rice
-                double bitsOrig = original.length() / 2 * bits;
-                double bitsComp = comprimido.length() * 8;
+                double bitsOrig = original.length();
+                double bitsComp = comprimido.length();
                 double rc = bitsOrig / bitsComp;
                 //System.out.println("RC: " + rc);
 
