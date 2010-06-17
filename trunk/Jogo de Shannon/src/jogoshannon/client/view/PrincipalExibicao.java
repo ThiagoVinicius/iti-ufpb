@@ -30,7 +30,7 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		painel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		painel.setSpacing(10);
 		labelFrase = new Label();
-		labelFrase.setWidth("20em");
+		labelFrase.setWidth("40em");
 		botaoEnviar = new Button("Ok");
 		textResposta = new TextBox();
 		textResposta.setMaxLength(1);
