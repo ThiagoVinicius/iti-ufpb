@@ -25,8 +25,10 @@ public final class PPM_Main {
 
         //String[] nomes = {"Ecg1_dec", "Ecg2_dec", "Ecg3_dec", "Ecg4_dec", "Emg_dec", "Emg2_dec", "Claudid3_dec", "ecg105_dec", "1hz_senoide_dec", "3canais_dec"};
 
-        String[] nomes = { "sequencia.txt" };
-        gravatxt("Arquivo" + ";;" + "Contexto" + ";;" + "RC", "Resultados/Tabela.csv");
+        String[] nomes = { "bib", "book1", "book2", "geo", "news", "obj1", 
+        				"obj2", "paper1", "paper2", "paper3", "paper4", "paper5",
+        				"paper6", "pic", "progc", "progl", "progp", "trans" };
+        gravatxt("Arquivo;;Contexto;;Tamanho original (bytes);;Tamanho comprimido (bytes);;RC;;Tempo de compressao (s);;Tempo de descompressao (s)", "Resultados/Tabela.csv");
 
         System.out.println("\ncomprimindo ... descomprimindo");
 
@@ -36,14 +38,16 @@ public final class PPM_Main {
                 do {
                     l--;
                 }
-                while(nomes[i].charAt(l) != '.');
-                String termino = nomes[i].substring(l + 1);
+                while(l >= 0 && nomes[i].charAt(l) != '.');
+                
+                String termino = "";
+                if (-1 != l) {
+                	termino = nomes[i].substring(l + 1);
+                }
 
                 File original = new File(nomes[i]);//arquivo de entrada tem que ter tamanho par
                 File comprimido = new File("Resultados/" + nomes[i] + j + "_comprimido.txt");
                 File descomprimido = new File("Resultados/" + nomes[i] + "_descomprimido." + termino);
-
-
 
                 //System.out.println("\ncomprimindo " + nomes[i] + " para k = " + j);
                 //bits da amostra
@@ -52,10 +56,17 @@ public final class PPM_Main {
                 //tamanho do contexto
                 int k = j;
                 boolean gray = true;
+                
+                long tStart;
+                
+                tStart = System.currentTimeMillis();
                 comprimir(original, comprimido, k, bits, gray);
+                float tCompressao = (System.currentTimeMillis() - tStart)/1000f;
 
                 //System.out.println("descomprimindo");
+                tStart = System.currentTimeMillis();
                 descomprimir(comprimido, descomprimido);
+                float tDesompressao = (System.currentTimeMillis() - tStart)/1000f;
 
                 if (comparar(original, descomprimido) == false) {
                     System.out.println("Diferente: " + nomes[i] + " k = " + j);
@@ -64,14 +75,16 @@ public final class PPM_Main {
                 //RC(razao de compressao)
                 //a RC leva em conta o numero de bits do sinal de entrada!!!
                 //lembre disso na hora de calcular a RC do golomb-rice
-                double bitsOrig = original.length();
-                double bitsComp = comprimido.length();
-                double rc = bitsOrig / bitsComp;
+                long bitsOrig = original.length();
+                long bitsComp = comprimido.length();
+                double rc = bitsOrig / (double)bitsComp;
                 //System.out.println("RC: " + rc);
 
                 String rc1 = "_" + rc;
-
-                gravatxt(nomes[i] + ";;" + j + ";;" + rc1, "Resultados/Tabela.csv");
+                
+                String texto = String.format("%s;;%d;;%d;;%d;;%.5f;;%.5f;;%.5f", 
+                		nomes[i], j, bitsOrig, bitsComp, rc, tCompressao, tDesompressao);
+                gravatxt(texto, "Resultados/Tabela.csv");
             }
 
             gravatxt("", "Resultados/Tabela.csv");
