@@ -12,12 +12,19 @@ public class Desafio {
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
-	public Key key;
+	private Key key;
 	
 	@Persistent
-	public String frase;
+	private String frase;
+
+	public void setFrase(String frase) {
+		this.frase = frase;
+	}
+
+	public String getFrase() {
+		return frase;
+	}
 	
-	@Persistent
-	public char resposta;
+	
 	
 }
