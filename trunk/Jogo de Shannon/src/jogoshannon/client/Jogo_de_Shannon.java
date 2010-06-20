@@ -24,7 +24,7 @@ public class Jogo_de_Shannon implements EntryPoint {
 		JuizSoletrandoAsync servidor = GWT.create(JuizSoletrando.class);
 	    HandlerManager eventBus = new HandlerManager(null);
 	    Apresentador idSessao = new IdApresentador(servidor);
-	    Apresentador appViewer = new ControladorAplicacao(eventBus);
+	    Apresentador appViewer = new ControladorAplicacao(eventBus, servidor);
 	    appViewer.vai(RootPanel.get("principal"));
 	    idSessao.vai(RootPanel.get("id_container"));
 	}

@@ -4,7 +4,7 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class TentativaEvent extends GwtEvent<TentativaEventHandler> {
 	
-	private static final Type<TentativaEventHandler> TIPO = new Type<TentativaEventHandler>();
+	public static final Type<TentativaEventHandler> TIPO = new Type<TentativaEventHandler>();
 	
 	public TentativaEvent (boolean correta) {
 		this.correta = correta;

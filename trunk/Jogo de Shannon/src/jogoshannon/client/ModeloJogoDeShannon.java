@@ -1,5 +1,8 @@
 package jogoshannon.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.event.shared.HandlerManager;
 
 import jogoshannon.client.event.JogoCompletoEvent;
@@ -7,13 +10,13 @@ import jogoshannon.shared.Frase;
 
 public class ModeloJogoDeShannon {
 
-	private ModeloFrase frases[];
+	private List<ModeloFrase> frases;
 	private int ponteiroFrase;
 	
-	public ModeloJogoDeShannon (Frase frases[]) {
-		this.frases = new ModeloFrase [frases.length]; //frases.getFrases();
-		for (int i = 0; i < frases.length; ++i) {
-			this.frases[i] = new ModeloFrase(frases[i].getFrase());
+	public ModeloJogoDeShannon (Frase frasesIniciais[]) {
+		this.frases = new ArrayList<ModeloFrase>(); //frases.getFrases();
+		for (int i = 0; i < frasesIniciais.length; ++i) {
+			this.frases.add(new ModeloFrase(frasesIniciais[i].getFrase()));
 		}
 		ponteiroFrase = 0;
 	}
@@ -25,10 +28,12 @@ public class ModeloJogoDeShannon {
 			return;
 		}
 		
-		frases[ponteiroFrase].atualiza(tentativa, eventos);
+		ModeloFrase atual = frases.get(ponteiroFrase);
+		
+		atual.atualiza(tentativa, eventos);
 		
 		//frase acabou de acabar
-		if (frases[ponteiroFrase].acabou()) {
+		if (atual.acabou()) {
 			++ponteiroFrase;
 		}
 		
@@ -40,7 +45,23 @@ public class ModeloJogoDeShannon {
 	}
 	
 	public boolean acabou () {
-		return ponteiroFrase >= frases.length;
+		return ponteiroFrase >= frases.size();
+	}
+	
+	public String getFraseParcial () {
+		if (acabou()) {
+			return null;
+		} else {
+			return frases.get(ponteiroFrase).getFraseParcial();
+		}
+	}
+	
+	public void adicionaFrase (Frase novaFrase) {
+		frases.add(new ModeloFrase(novaFrase.getFrase()));
+	}
+	
+	public int[] getTentativas (int fraseId) {
+		return frases.get(fraseId).getTentativas();
 	}
 	
 }

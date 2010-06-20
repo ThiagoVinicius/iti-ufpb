@@ -4,7 +4,7 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class JogoCompletoEvent extends GwtEvent<JogoCompletoEventHandler> {
 
-	private static final Type<JogoCompletoEventHandler> TIPO = 
+	public static final Type<JogoCompletoEventHandler> TIPO = 
 		new Type<JogoCompletoEventHandler>();
 	
 	@Override

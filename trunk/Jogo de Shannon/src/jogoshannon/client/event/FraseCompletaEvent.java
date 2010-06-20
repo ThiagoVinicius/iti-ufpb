@@ -4,7 +4,7 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class FraseCompletaEvent extends GwtEvent<FraseCompletaEventHandler> {
 	
-	private static final Type<FraseCompletaEventHandler> TIPO = new 
+	public static final Type<FraseCompletaEventHandler> TIPO = new 
 		Type<FraseCompletaEventHandler>();
 
 	@Override
