@@ -2,6 +2,7 @@ package jogoshannon.client;
 
 import com.google.gwt.event.shared.HandlerManager;
 
+import jogoshannon.client.event.FraseCompletaEvent;
 import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.shared.Frase;
 
@@ -23,6 +24,7 @@ public class ModeloFrase {
 	public void atualiza (char tentativa, HandlerManager eventos) {
 		
 		if (acabou()) {
+			eventos.fireEvent(new FraseCompletaEvent());
 			return; //nao ha o que fazer.
 		}
 		
@@ -35,7 +37,11 @@ public class ModeloFrase {
 			++ponteiroLetra;
 			eventos.fireEvent(new TentativaEvent(true));
 		} else {
-			eventos.fireEvent(new TentativaEvent(true));
+			eventos.fireEvent(new TentativaEvent(false));
+		}
+		
+		if (acabou()) {
+			eventos.fireEvent(new FraseCompletaEvent());
 		}
 		
 	}
@@ -47,6 +53,10 @@ public class ModeloFrase {
 	
 	public boolean acabou () {
 		return ponteiroLetra >= contagemDesafios;
+	}
+	
+	public int[] getTentativas () {
+		return tentativas;
 	}
 	
 }

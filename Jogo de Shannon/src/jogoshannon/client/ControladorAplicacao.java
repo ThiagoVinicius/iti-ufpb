@@ -14,9 +14,11 @@ public class ControladorAplicacao implements Apresentador, ValueChangeHandler<St
 
 	private HandlerManager eventos;
 	private HasWidgets pagina;
+	private JuizSoletrandoAsync servidor;
 	
-	public ControladorAplicacao (HandlerManager eventos) {
+	public ControladorAplicacao (HandlerManager eventos, JuizSoletrandoAsync servidor) {
 		this.eventos = eventos;
+		this.servidor = servidor;
 		amarra();
 	}
 	
@@ -43,7 +45,7 @@ public class ControladorAplicacao implements Apresentador, ValueChangeHandler<St
 			Apresentador oEscolhido = null;
 			
 			if (token.equals("jogar")) {
-				oEscolhido = new PrincipalApresentador(eventos, new PrincipalExibicao());
+				oEscolhido = new PrincipalApresentador(eventos, new PrincipalExibicao(), servidor);
 			}
 			
 			if (oEscolhido != null) {

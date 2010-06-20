@@ -6,25 +6,46 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable
 public class Desafio {
 	
 	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
+
+	@Persistent
+	private Usuario usuario;
 	
 	@Persistent
-	private String frase;
-
-	public void setFrase(String frase) {
-		this.frase = frase;
-	}
-
-	public String getFrase() {
-		return frase;
+	private FraseStore frase;
+	
+	@Persistent
+	private int tentativas[];
+	
+	public Desafio (int numeroDesafios) {
+		tentativas = new int[numeroDesafios];
 	}
 	
+	public Desafio (int tentativas[]) {
+		this.tentativas = tentativas;
+	}
+
+	public int[] getTentativas() {
+		return tentativas;
+	}
+
+	public void setTentativas(int tentativas[]) {
+		this.tentativas = tentativas;
+	}
 	
+	public void somaTentativas (int somarCom[]) {
+		for (int i = 0; i < somarCom.length; ++i) {
+			tentativas[i] += somarCom[i];
+		}
+		//tocando na variável, dando a dica de que ela precisa ser salva. 
+		setTentativas(tentativas);
+	}
 	
 }
