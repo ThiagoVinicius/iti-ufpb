@@ -1,14 +1,16 @@
 package jogoshannon.client;
 
+import jogoshannon.client.presenter.Apresentador;
+import jogoshannon.client.presenter.PrincipalApresentador;
+import jogoshannon.client.presenter.ResultadosApresentador;
+import jogoshannon.client.view.PrincipalExibicao;
+import jogoshannon.client.view.ResultadosExibicao;
+
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;
-
-import jogoshannon.client.presenter.Apresentador;
-import jogoshannon.client.presenter.PrincipalApresentador;
-import jogoshannon.client.view.PrincipalExibicao;
 
 public class ControladorAplicacao implements Apresentador, ValueChangeHandler<String> {
 
@@ -46,6 +48,10 @@ public class ControladorAplicacao implements Apresentador, ValueChangeHandler<St
 			
 			if (token.equals("jogar")) {
 				oEscolhido = new PrincipalApresentador(eventos, new PrincipalExibicao(), servidor);
+			}
+			
+			else if (token.equals("resultados")) {
+				oEscolhido = new ResultadosApresentador(eventos, new ResultadosExibicao(), servidor);
 			}
 			
 			if (oEscolhido != null) {

@@ -1,8 +1,5 @@
 package jogoshannon.server;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;

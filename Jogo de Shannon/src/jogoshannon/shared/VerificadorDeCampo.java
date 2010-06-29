@@ -9,11 +9,11 @@ public class VerificadorDeCampo {
 	}
 
 	public static char normalizaLetra (char entrada) {
-//		if (entrada == ' ') {
-//			return '_';
-//		} else {
+		if (entrada == ' ') {
+			return '_';
+		} else {
 			return Character.toUpperCase(entrada);
-//		}
+		}
 	}
 	
 }

@@ -8,18 +8,14 @@ import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.jdo.Transaction;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jogoshannon.server.Desafio;
 import jogoshannon.server.FraseStore;
 import jogoshannon.server.GestorPersistencia;
-import jogoshannon.server.JuizSoletrandoImpl;
 import jogoshannon.server.Usuario;
-import jogoshannon.shared.Frase;
 
 public class LimparTabelas extends HttpServlet {
 	

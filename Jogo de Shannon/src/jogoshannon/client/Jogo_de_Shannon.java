@@ -1,7 +1,6 @@
 package jogoshannon.client;
 
 import jogoshannon.client.presenter.Apresentador;
-import jogoshannon.client.presenter.IdApresentador;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -23,9 +22,9 @@ public class Jogo_de_Shannon implements EntryPoint {
 	public void onModuleLoad() {
 		JuizSoletrandoAsync servidor = GWT.create(JuizSoletrando.class);
 	    HandlerManager eventBus = new HandlerManager(null);
-	    Apresentador idSessao = new IdApresentador(servidor);
+//	    Apresentador idSessao = new IdApresentador(servidor);
 	    Apresentador appViewer = new ControladorAplicacao(eventBus, servidor);
 	    appViewer.vai(RootPanel.get("principal"));
-	    idSessao.vai(RootPanel.get("id_container"));
+//	    idSessao.vai(RootPanel.get("id_container"));
 	}
 }

@@ -1,6 +1,5 @@
 package jogoshannon.server;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -11,7 +10,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 @PersistenceCapable
 public class ContadorIds {
 	
-	//Esse id nunca muda - somente há uma instancia desse objeto no banco.
+	//Esse id nunca muda - somente hï¿½ uma instancia desse objeto no banco.
 	@PrimaryKey
 	@Persistent//(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	public Key chaveUnica;
