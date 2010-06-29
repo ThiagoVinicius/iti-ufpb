@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import jogoshannon.client.JuizSoletrando;

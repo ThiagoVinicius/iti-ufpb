@@ -33,6 +33,7 @@ public class PrincipalApresentador implements Apresentador {
 		void setEstadoServidor (EstadosServidor estadoAtual);
 		void exibeFimDeJogo();
 		void setTextoParabens (String texto);
+		void setId (String id);
 		Widget asWidget();
 	}
 	
@@ -117,6 +118,11 @@ public class PrincipalApresentador implements Apresentador {
 	
 	private void doRespostaMudou (KeyPressEvent evento) {
 		
+		//NativeEvent evt2 = evento.;
+		if (evento.isAnyModifierKeyDown() || evento.getCharCode() < 32) {
+			return; //não devo me importar com controles
+		}
+		
 		view.ignoraLetra();
 		char tentativa = evento.getCharCode();
 		
@@ -143,6 +149,7 @@ public class PrincipalApresentador implements Apresentador {
 	
 	private void doFimDeJogo () {
 		if (ponteiroFrasesBaixadas >= totalFrases) {
+			view.setCarregando(true);
 			view.exibeFimDeJogo();
 		} else {
 			view.setCarregando(true);
@@ -154,22 +161,36 @@ public class PrincipalApresentador implements Apresentador {
 		this.eventos = eventos;
 		this.servidor = servidor;
 		this.jogoDeShannon = new ModeloJogoDeShannon(new Frase[] {
-				new Frase("FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE"), 
+//				new Frase("FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
+//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
+//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
+//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
+//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE"), 
 //				new Frase("SEGUNDA_FRASE_DE_TESTE")
 		});
+		
 	}
 	
 	@Override
 	public void vai(HasWidgets pagina) {
 		bind();
+		pegarId();
 		baixarFrases();
 		pagina.clear();
 		pagina.add(view.asWidget());
 	}
+	
+	private void pegarId () {
+		servidor.getId(new AsyncCallback<Long>() {
+			public void onSuccess(Long result) {
+				view.setId(result.toString());
+			}
+			public void onFailure(Throwable caught) {
+				view.setId("???");
+			}
+		});
+	}
+	
 
 	private void baixarFrases() {
 		servidor.getTotalFrases(new AsyncCallback<Integer>() {

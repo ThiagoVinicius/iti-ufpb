@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.jdo.Transaction;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,16 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import jogoshannon.server.Desafio;
 import jogoshannon.server.FraseStore;
 import jogoshannon.server.GestorPersistencia;
-import jogoshannon.server.JuizSoletrandoImpl;
 import jogoshannon.server.Usuario;
 import jogoshannon.shared.Frase;
 
 public class CriaTabelas extends HttpServlet {
 
 	private static final Frase frases[] = {
-		new Frase("ERROR JOGO DE SHANNON"),
-		new Frase("HAVIA UMA PEDRA NO MEIO"),
-		new Frase("PEDRO ME DA MEU CHIPE"),
+		new Frase("VERSAO_BRASILEIRA_DO_POPULAR"),
+		new Frase("PEDRO_ME_DA_MEU_CHIPE"),
+		new Frase("HAVIA_UMA_PEDRA_NO_MEIO"),
 	};
 
 	@Override
