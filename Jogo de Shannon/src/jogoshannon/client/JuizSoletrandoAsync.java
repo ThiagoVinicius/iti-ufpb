@@ -15,4 +15,6 @@ public interface JuizSoletrandoAsync {
 	void atualizaTentativas(int fraseId, int contadores[],
 			AsyncCallback<Void> callback);
 
+	void destruirSessao(AsyncCallback<Void> callback);
+
 }

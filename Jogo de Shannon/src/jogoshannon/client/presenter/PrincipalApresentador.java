@@ -10,12 +10,15 @@ import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.client.event.TentativaEventHandler;
 import jogoshannon.client.view.PrincipalExibicao.EstadosServidor;
 import jogoshannon.shared.Frase;
+import jogoshannon.shared.SessaoInvalidaException;
 import jogoshannon.shared.VerificadorDeCampo;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasKeyPressHandlers;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,7 +34,7 @@ public class PrincipalApresentador implements Apresentador {
 		void setResposta(char r);
 		void setCarregando (boolean estado);
 		void setEstadoServidor (EstadosServidor estadoAtual);
-		void exibeFimDeJogo();
+		void exibeFimDeJogo(String titulo, String texto);
 		void setTextoParabens (String texto);
 		void setId (String id);
 		Widget asWidget();
@@ -42,11 +45,18 @@ public class PrincipalApresentador implements Apresentador {
 	ModeloJogoDeShannon jogoDeShannon;
 	JuizSoletrandoAsync servidor;
 	
+	static final String MENSAGEM_SESSAO_EXPIRADA = 
+		"Muito tempo se passou desde sua última visita - não será possível " +
+		"continuar. Você terá que recomeçar o jogo, recarregando a página." +
+		"Desculpe o incomodo.";
+	
 	int enviosPendentes;
 	int ponteiroFrasesEnviadas;
 	
 	int totalFrases;
 	int ponteiroFrasesBaixadas;
+	
+	int idfail = 0;
 	
 	private void bind () {
 		
@@ -81,18 +91,32 @@ public class PrincipalApresentador implements Apresentador {
 		
 	}
 	
+	private boolean fimDeJogo () {
+		return ponteiroFrasesEnviadas >= totalFrases; 
+	} 
+	
 	private void enviarTentativas (final int id) {
 		
 		servidor.atualizaTentativas(id, jogoDeShannon.getTentativas(id), new AsyncCallback<Void>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				enviarTentativas(id);
+				if (caught instanceof SessaoInvalidaException) {
+					mostrarSessaoExpirada();
+				} else {
+					enviarTentativas(id);
+				}
 			}
 			@Override
 			public void onSuccess(Void result) {
 				--enviosPendentes;
 				if (enviosPendentes == 0) {
-					view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
+					
+					if (fimDeJogo()) {
+						destruirSessao();
+					} else {
+						view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
+					}
+					
 				}
 			}
 		});
@@ -101,8 +125,25 @@ public class PrincipalApresentador implements Apresentador {
 	private void enviarTentativas () {
 		++enviosPendentes;
 		view.setEstadoServidor(EstadosServidor.AGUARDANDO_RESPOSTA);
-		enviarTentativas(ponteiroFrasesEnviadas);
+		int memoria = ponteiroFrasesEnviadas;
 		++ponteiroFrasesEnviadas;
+		enviarTentativas(memoria);
+	}
+	
+	private void destruirSessao () {
+		servidor.destruirSessao(new AsyncCallback<Void>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Cookies.removeCookie("JSESSIONID");
+				view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
+			}
+			@Override
+			public void onSuccess(Void result) {
+				Cookies.removeCookie("JSESSIONID");
+				view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
+			}
+		});
+		
 	}
 	
 	private void enviar () {
@@ -149,8 +190,10 @@ public class PrincipalApresentador implements Apresentador {
 	
 	private void doFimDeJogo () {
 		if (ponteiroFrasesBaixadas >= totalFrases) {
-			view.setCarregando(true);
-			view.exibeFimDeJogo();
+			view.exibeFimDeJogo("Fim de jogo",
+					"Parabéns, você concluiu o jogo!\n" +
+					"Obrigado pela sua participacao.\n" +
+					"(para jogar novamente, recarregue a página)");
 		} else {
 			view.setCarregando(true);
 		}
@@ -175,7 +218,7 @@ public class PrincipalApresentador implements Apresentador {
 	public void vai(HasWidgets pagina) {
 		bind();
 		pegarId();
-		baixarFrases();
+		//baixarFrases();
 		pagina.clear();
 		pagina.add(view.asWidget());
 	}
@@ -184,9 +227,20 @@ public class PrincipalApresentador implements Apresentador {
 		servidor.getId(new AsyncCallback<Long>() {
 			public void onSuccess(Long result) {
 				view.setId(result.toString());
+				baixarFrases();
 			}
 			public void onFailure(Throwable caught) {
-				view.setId("???");
+				++idfail;
+				GWT.log("Falhou uma!");
+				if (idfail > 5) {
+					view.exibeFimDeJogo("Desculpe.", 
+							"Estamos com dificuldades técnicas: não foi " +
+							"possível comunicar-se com o servidor. Tente " +
+							"recarregar a página. Se este erro persistir, " +
+							"Tente novamente mais tarde.");
+				} else {
+					pegarId();
+				}
 			}
 		});
 	}
@@ -202,7 +256,11 @@ public class PrincipalApresentador implements Apresentador {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				baixarFrases();
+				if (caught instanceof SessaoInvalidaException) {
+					mostrarSessaoExpirada();
+				} else {
+					baixarFrases();
+				}
 			}
 		});
 	}
@@ -216,7 +274,11 @@ public class PrincipalApresentador implements Apresentador {
 		servidor.getFrase(ponteiroFrasesBaixadas, new AsyncCallback<Frase>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				baixarFrasesMesmo();
+				if (caught instanceof SessaoInvalidaException) {
+					mostrarSessaoExpirada();
+				} else {
+					baixarFrasesMesmo();
+				}
 			}
 			@Override
 			public void onSuccess(Frase result) {
@@ -228,6 +290,10 @@ public class PrincipalApresentador implements Apresentador {
 			}
 			
 		});
+	}
+	
+	private void mostrarSessaoExpirada () {
+		view.exibeFimDeJogo("Sessão expirou.", MENSAGEM_SESSAO_EXPIRADA);
 	}
 
 }
