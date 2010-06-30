@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import jogoshannon.client.JuizSoletrando;
 import jogoshannon.shared.Frase;
+import jogoshannon.shared.SessaoInvalidaException;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -44,8 +45,71 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 
 	}
 	
+	private int getTotalFrasesImpl () {
+		
+		HttpSession sessao = getThreadLocalRequest().getSession(false);
+		Integer total = (Integer) sessao.getAttribute("total_frases");
+		
+		if (total == null) {
+			
+			PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+			
+			try {
+				Query consulta =  pm.newQuery(FraseStore.class);
+				List<FraseStore> resposta = (List<FraseStore>) consulta.execute();
+				total = resposta.size();
+				sessao.setAttribute("total_frases", total);
+			} catch (Exception e) {
+				return 0;
+			} finally {
+				pm.close();
+			}
+			
+		}
+		
+		return total;
+
+	}
+	
+	private void forcarSessaoValida () throws SessaoInvalidaException {
+		 if (!checarSessaoValida() || !temSessao()) {
+			 throw new SessaoInvalidaException();
+		 }
+	}
+	
+	private boolean checarSessaoValida () {
+		String idSessaoBrowser = getThreadLocalRequest().getParameter("id_sessao");
+		HttpSession sessaoServidor = getThreadLocalRequest().getSession(false);
+		String idSessaoServidor = null;
+		
+		if (sessaoServidor != null) {
+			idSessaoServidor = sessaoServidor.getId();
+		}
+		
+		if (idSessaoBrowser != null) {
+			if (!idSessaoBrowser.equals(idSessaoServidor)) {
+				return false;
+			}
+		} else if (idSessaoServidor != null) {
+			if(!idSessaoServidor.equals(idSessaoBrowser)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	private boolean temSessao () {
+		return getThreadLocalRequest().getSession(false) != null;
+	}
+	
 	@Override
 	public long getId() {
+		
+		boolean valida = checarSessaoValida();
+		if (!valida) {
+			destruirSessao();
+		}
 		
 		PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
 		Usuario usuario = getUsuarioAtual(pm);
@@ -73,7 +137,10 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 //	}
 
 	@Override
-	public Frase getFrase(int id) {
+	public Frase getFrase(int id) throws SessaoInvalidaException {
+		
+		forcarSessaoValida();
+		
 		PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
 		Query consulta =  pm.newQuery(FraseStore.class);
 		
@@ -87,24 +154,18 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 	}
 
 	@Override
-	public int getTotalFrases() {
+	public int getTotalFrases() throws SessaoInvalidaException {
 		
-		PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
-		Query consulta =  pm.newQuery(FraseStore.class);
+		forcarSessaoValida();
 		
-		List<FraseStore> resposta;
-		try {
-			resposta = (List<FraseStore>) consulta.execute();
-			return resposta.size();
-		} catch (Exception e) {
-			return 0;
-		} finally {
-			pm.close();
-		}
+		return getTotalFrasesImpl();
+		
 	}
 	
 	@Override
-	public void atualizaTentativas (int fraseId, int contadores[]) {
+	public void atualizaTentativas (int fraseId, int contadores[]) throws SessaoInvalidaException {
+		
+		forcarSessaoValida();
 		
 		Logger.getLogger(JuizSoletrandoImpl.class.getName()).log(Level.INFO,
 			"Dados recebidos: fraseId = " + fraseId + ", contadores[] = " + 
@@ -129,6 +190,14 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 			if (tx.isActive()) {
 				tx.rollback();
 			}
+		}
+	}
+
+	@Override
+	public void destruirSessao() {
+		HttpSession session = getThreadLocalRequest().getSession(false);
+		if (session != null) {
+			session.invalidate();
 		}
 	}
 	

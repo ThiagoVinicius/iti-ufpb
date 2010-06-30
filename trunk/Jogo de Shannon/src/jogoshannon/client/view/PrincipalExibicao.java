@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -197,13 +198,21 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		}
 	}
 	
-	public void exibeFimDeJogo () {
+	@Override
+	public void exibeFimDeJogo (String titulo, String texto) {
 		//Window.alert("Você terminou o jogo, muito bem.");
 		//fimDeJogo.setVisible(true);
+		
+		textResposta.setEnabled(false);
+		
+		fimDeJogo.setText(titulo);
+		((HasText)fimDeJogo.getWidget()).setText(texto);
+		
 		fimDeJogo.setVisible(true);
 		fimDeJogo.center();
 	}
 	
+	@Override
 	public void setTextoParabens (String texto) {
 		labelCerto.setText(texto);
 		boolean invisivel = texto.isEmpty();
