@@ -149,7 +149,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 			
 			Usuario usuario = getUsuarioAtual(pm);
 			List<Desafio> desafios = usuario.getDesafios();
-			while (contadores.length >= desafios.size()) {
+			while (contadores.length > desafios.size()) {
 				desafios.add(new Desafio(contadores[0].contagens.length));
 			}
 			
