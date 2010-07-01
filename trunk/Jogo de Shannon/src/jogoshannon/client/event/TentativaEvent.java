@@ -6,11 +6,13 @@ public class TentativaEvent extends GwtEvent<TentativaEventHandler> {
 	
 	public static final Type<TentativaEventHandler> TIPO = new Type<TentativaEventHandler>();
 	
-	public TentativaEvent (boolean correta) {
+	public TentativaEvent (boolean correta, char letra) {
 		this.correta = correta;
+		this.letra = letra;
 	}
 	
 	private boolean correta;
+	private char letra;
 	
 	@Override
 	protected void dispatch(TentativaEventHandler handler) {
@@ -24,6 +26,10 @@ public class TentativaEvent extends GwtEvent<TentativaEventHandler> {
 
 	public boolean getCorreta () {
 		return correta;
+	}
+	
+	public char getLetra () {
+		return letra;
 	}
 
 }

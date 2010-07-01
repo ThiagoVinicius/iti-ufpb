@@ -7,6 +7,7 @@ import com.google.gwt.event.shared.HandlerManager;
 
 import jogoshannon.client.event.JogoCompletoEvent;
 import jogoshannon.shared.Frase;
+import jogoshannon.shared.Tentativas;
 
 public class ModeloJogoDeShannon {
 
@@ -60,8 +61,17 @@ public class ModeloJogoDeShannon {
 		frases.add(new ModeloFrase(novaFrase.getFrase()));
 	}
 	
-	public int[] getTentativas (int fraseId) {
+	public Tentativas getTentativas (int fraseId) {
 		return frases.get(fraseId).getTentativas();
+	}
+	
+	public Tentativas[] getTodasTentativas () {
+		Tentativas resultado[] = new Tentativas[frases.size()];
+		for (int i = 0; i < resultado.length; ++i) {
+			resultado[i] = frases.get(i).getTentativas();
+		}
+		
+		return resultado;
 	}
 	
 }

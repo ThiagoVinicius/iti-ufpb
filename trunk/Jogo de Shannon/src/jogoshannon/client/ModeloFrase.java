@@ -5,20 +5,21 @@ import com.google.gwt.event.shared.HandlerManager;
 import jogoshannon.client.event.FraseCompletaEvent;
 import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.shared.Frase;
+import jogoshannon.shared.Tentativas;
 
 public class ModeloFrase {
 	
 	private String frase;
 	private int ponteiroLetra;
 	private int contagemDesafios;
-	private int tentativas[];
+	private Tentativas tentativas;
 	
 	public ModeloFrase(String frase) {
 		super();
 		this.frase = frase;
 		this.ponteiroLetra = 0;
 		this.contagemDesafios = Frase.QUANTIDADE_LETRAS.length;
-		this.tentativas = new int[contagemDesafios];
+		this.tentativas = new Tentativas(contagemDesafios);
 	}
 
 	public void atualiza (char tentativa, HandlerManager eventos) {
@@ -28,16 +29,16 @@ public class ModeloFrase {
 			return; //nao ha o que fazer.
 		}
 		
-		++tentativas[ponteiroLetra];
+		++tentativas.contagens[ponteiroLetra];
 		int indice = Frase.QUANTIDADE_LETRAS[ponteiroLetra];
 		char esperado = frase.charAt(indice);
 		
 		
 		if (esperado == tentativa) {
 			++ponteiroLetra;
-			eventos.fireEvent(new TentativaEvent(true));
+			eventos.fireEvent(new TentativaEvent(true, tentativa));
 		} else {
-			eventos.fireEvent(new TentativaEvent(false));
+			eventos.fireEvent(new TentativaEvent(false, tentativa));
 		}
 		
 		if (acabou()) {
@@ -55,7 +56,7 @@ public class ModeloFrase {
 		return ponteiroLetra >= contagemDesafios;
 	}
 	
-	public int[] getTentativas () {
+	public Tentativas getTentativas () {
 		return tentativas;
 	}
 	

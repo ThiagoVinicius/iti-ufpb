@@ -1,9 +1,6 @@
 package jogoshannon.server;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -13,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import jogoshannon.client.JuizSoletrando;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
+import jogoshannon.shared.Tentativas;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -45,33 +43,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 
 	}
 	
-	private int getTotalFrasesImpl () {
-		
-		HttpSession sessao = getThreadLocalRequest().getSession(false);
-		Integer total = (Integer) sessao.getAttribute("total_frases");
-		
-		if (total == null) {
-			
-			PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
-			
-			try {
-				Query consulta =  pm.newQuery(FraseStore.class);
-				List<FraseStore> resposta = (List<FraseStore>) consulta.execute();
-				total = resposta.size();
-				sessao.setAttribute("total_frases", total);
-			} catch (Exception e) {
-				return 0;
-			} finally {
-				pm.close();
-			}
-			
-		}
-		
-		return total;
-
-	}
-	
-	private void forcarSessaoValida () throws SessaoInvalidaException {
+		private void forcarSessaoValida () throws SessaoInvalidaException {
 		 if (!checarSessaoValida() || !temSessao()) {
 			 throw new SessaoInvalidaException();
 		 }
@@ -106,10 +78,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 	@Override
 	public long getId() {
 		
-		boolean valida = checarSessaoValida();
-		if (!valida) {
-			destruirSessao();
-		}
+		destruirSessao();
 		
 		PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
 		Usuario usuario = getUsuarioAtual(pm);
@@ -137,7 +106,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 //	}
 
 	@Override
-	public Frase getFrase(int id) throws SessaoInvalidaException {
+	public Frase[] getFrases() throws SessaoInvalidaException {
 		
 		forcarSessaoValida();
 		
@@ -147,29 +116,31 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 		List<FraseStore> resposta;
 		try {
 			resposta = (List<FraseStore>) consulta.execute();
-			return resposta.get(id).getConteudo();
+			
+			Frase resultado[] = new Frase[resposta.size()];
+			for (int i = 0; i < resultado.length; ++i) {
+				resultado[i] = resposta.get(i).getConteudo();
+			}
+			return resultado;
 		}  finally {
 			pm.close();
 		}
 	}
 
-	@Override
-	public int getTotalFrases() throws SessaoInvalidaException {
-		
-		forcarSessaoValida();
-		
-		return getTotalFrasesImpl();
-		
-	}
+//	@Override
+//	public int getTotalFrases() throws SessaoInvalidaException {
+//		
+//		forcarSessaoValida();
+//		
+//		return getTotalFrasesImpl();
+//		
+//	}
 	
 	@Override
-	public void atualizaTentativas (int fraseId, int contadores[]) throws SessaoInvalidaException {
+	public void atualizaTentativas (Tentativas contadores[]) throws SessaoInvalidaException {
 		
 		forcarSessaoValida();
-		
-		Logger.getLogger(JuizSoletrandoImpl.class.getName()).log(Level.INFO,
-			"Dados recebidos: fraseId = " + fraseId + ", contadores[] = " + 
-			Arrays.toString(contadores));
+		destruirSessao();
 		
 		PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
 		Transaction tx = pm.currentTransaction();
@@ -178,12 +149,14 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 			
 			Usuario usuario = getUsuarioAtual(pm);
 			List<Desafio> desafios = usuario.getDesafios();
-			while (fraseId >= desafios.size()) {
-				desafios.add(new Desafio(contadores.length));
+			while (contadores.length >= desafios.size()) {
+				desafios.add(new Desafio(contadores[0].contagens.length));
 			}
 			
-			Desafio paraAtualizar = desafios.get(fraseId);
-			paraAtualizar.somaTentativas(contadores);
+			for (int i = 0; i < desafios.size(); ++i) {
+				Desafio atualizando = desafios.get(i);
+				atualizando.somaTentativas(contadores[i].contagens);
+			}
 			
 			tx.commit();
 		} finally {
@@ -193,8 +166,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 		}
 	}
 
-	@Override
-	public void destruirSessao() {
+	private void destruirSessao() {
 		HttpSession session = getThreadLocalRequest().getSession(false);
 		if (session != null) {
 			session.invalidate();

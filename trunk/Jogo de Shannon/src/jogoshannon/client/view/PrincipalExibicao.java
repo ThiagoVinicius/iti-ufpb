@@ -2,8 +2,7 @@ package jogoshannon.client.view;
 
 import jogoshannon.client.presenter.PrincipalApresentador;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.HasKeyPressHandlers;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -27,17 +26,6 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		AGUARDANDO_RESPOSTA,
 		TUDO_CERTO,
 		SEM_ALTERACOES;
-		
-		public String getUrl() {
-			switch (this) {
-			case AGUARDANDO_RESPOSTA:
-				return "bola_vermelha.png";
-			case TUDO_CERTO:
-				return "bola_verde.png";
-			default:
-				return "bola_cinza.png";
-			}
-		}
 	}
 	
 	private Label labelFrase;
@@ -48,6 +36,8 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	private Image carregando;
 	private DialogBox fimDeJogo;
 	private PopupPanel situacaoServidor;
+	
+	private static final int QUEBRA_LINHA_APOS = 50;
 	
 	public PrincipalExibicao () {
 		
@@ -68,7 +58,7 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		HorizontalPanel painel = new HorizontalPanel();
 		painel.setBorderWidth(0);
 		painel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
-		painel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+		painel.setVerticalAlignment(VerticalPanel.ALIGN_BOTTOM);
 		painel.setSpacing(10);
 		labelFrase = new Label();
 		labelFrase.setWordWrap(true);
@@ -78,6 +68,7 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		textResposta.setMaxLength(1);
 		textResposta.setWidth("1em");
 		carregando = new Image("ampulheta.gif");
+		carregando.setSize("32", "32");
 		painel.add(labelFrase);
 		painel.add(textResposta);
 		painel.add(carregando);
@@ -105,8 +96,8 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		painelEntrada.add(painel);
 		
 		subRoot.add(painelEntrada);
-		subRoot.add(labelErro);
 		subRoot.add(labelCerto);
+		subRoot.add(labelErro);
 		
 		jogo_ui.add(subRoot);
 		
@@ -136,13 +127,28 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	
 	@Override
 	public char getResposta() {
-		return textResposta.getText().charAt(0);
+		String texto = textResposta.getText();
+		if (texto.length() > 0) {
+			return textResposta.getText().charAt(0);
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
 	public void setDesafio(String frase) {
+		StringBuilder paraExibir = new StringBuilder(frase);
+		
+		for (int i = QUEBRA_LINHA_APOS; i < paraExibir.length(); i += QUEBRA_LINHA_APOS) {
+			int found = frase.indexOf("_", i);
+			if (found != -1) {
+				paraExibir.setCharAt(found, ' ');
+				i = found;
+			}
+		}
+		
 		textResposta.setFocus(true);
-		labelFrase.setText(frase);
+		labelFrase.setText(paraExibir.toString());
 	}
 
 	@Override
@@ -150,9 +156,6 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		labelErro.setText(erro);
 		boolean invisivel = erro.isEmpty();
 		labelErro.setVisible(!invisivel);
-		if (!invisivel) {
-			labelCerto.setText("");
-		}
 	}
 	
 	public Widget asWidget () {
@@ -160,7 +163,7 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	}
 
 	@Override
-	public HasKeyPressHandlers getCampoResposta() {
+	public TextBox getCampoResposta() {
 		return textResposta;
 	}
 
@@ -170,8 +173,8 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	}
 
 	@Override
-	public void setResposta(char r) {
-		textResposta.setText(Character.toString(r));
+	public void limparResposta() {
+		textResposta.setText("");
 	}
 	
 	public void setCarregando (boolean estado) {
@@ -186,7 +189,6 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 				situacaoServidor.setPopupPositionAndShow(new PositionCallback() {
 					@Override
 					public void setPosition(int offsetWidth, int offsetHeight) {
-						GWT.log(""+offsetWidth);
 						int left = (Window.getClientWidth() - situacaoServidor.getOffsetWidth())/2;
 						situacaoServidor.setPopupPosition(left, 0);
 					}
@@ -200,9 +202,6 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	
 	@Override
 	public void exibeFimDeJogo (String titulo, String texto) {
-		//Window.alert("Você terminou o jogo, muito bem.");
-		//fimDeJogo.setVisible(true);
-		
 		textResposta.setEnabled(false);
 		
 		fimDeJogo.setText(titulo);
@@ -212,13 +211,22 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		fimDeJogo.center();
 	}
 	
+	Timer timerLimparParabens = new Timer() {
+		@Override
+		public void run() {
+			setTextoParabens("");
+		}
+	};
+	
 	@Override
 	public void setTextoParabens (String texto) {
 		labelCerto.setText(texto);
 		boolean invisivel = texto.isEmpty();
 		labelCerto.setVisible(!invisivel);
-		if (!invisivel) {
-			setTextoErro("");
+		
+		if (!texto.isEmpty()) {
+			timerLimparParabens.cancel();
+			timerLimparParabens.schedule(7500);
 		}
 	}
 	

@@ -1,9 +1,3 @@
-
-/** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
-}
-
 .serverResponseLabelError {
   color: red;
 }
