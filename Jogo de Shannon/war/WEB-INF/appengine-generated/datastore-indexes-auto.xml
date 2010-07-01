@@ -1,10 +1,4 @@
-<!-- Indices written at Tue, 29 Jun 2010 00:09:06 GMT-03:00 -->
+<!-- Indices written at Thu, 1 Jul 2010 01:05:22 UTC -->
 
-<datastore-indexes>
+<datastore-indexes/>
 
-    <!-- Used 9 times in query history -->
-    <datastore-index kind="Desafio" ancestor="true" source="auto">
-        <property name="desafios_INTEGER_IDX" direction="asc"/>
-    </datastore-index>
-
-</datastore-indexes>

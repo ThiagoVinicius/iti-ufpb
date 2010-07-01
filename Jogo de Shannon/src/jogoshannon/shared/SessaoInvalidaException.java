@@ -1,6 +1,8 @@
 package jogoshannon.shared;
 
-public class SessaoInvalidaException extends Exception {
+import java.io.Serializable;
+
+public class SessaoInvalidaException extends Exception implements Serializable {
 
 	public SessaoInvalidaException() {
 		super();

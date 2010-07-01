@@ -8,15 +8,14 @@ import jogoshannon.client.event.JogoCompletoEvent;
 import jogoshannon.client.event.JogoCompletoEventHandler;
 import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.client.event.TentativaEventHandler;
+import jogoshannon.client.util.VerificadorDeCampo;
 import jogoshannon.client.view.PrincipalExibicao.EstadosServidor;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
-import jogoshannon.shared.VerificadorDeCampo;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.HasKeyPressHandlers;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.HasKeyUpHandlers;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -26,12 +25,12 @@ import com.google.gwt.user.client.ui.Widget;
 public class PrincipalApresentador implements Apresentador {
 	
 	public interface Exibicao {
-		HasKeyPressHandlers getCampoResposta();
+		HasKeyUpHandlers getCampoResposta();
 		void ignoraLetra();
 		void setDesafio(String frase);
 		void setTextoErro(String erro);
 		char getResposta();
-		void setResposta(char r);
+		void limparResposta();
 		void setCarregando (boolean estado);
 		void setEstadoServidor (EstadosServidor estadoAtual);
 		void exibeFimDeJogo(String titulo, String texto);
@@ -50,20 +49,20 @@ public class PrincipalApresentador implements Apresentador {
 		"continuar. Você terá que recomeçar o jogo, recarregando a página." +
 		"Desculpe o incomodo.";
 	
-	int enviosPendentes;
-	int ponteiroFrasesEnviadas;
-	
-	int totalFrases;
-	int ponteiroFrasesBaixadas;
+	static final String MENSAGEM_ERRO_CONEXAO = 
+		"Estamos com dificuldades técnicas: não foi " +
+		"possível comunicar-se com o servidor. Tente " +
+		"recarregar a página. Se este erro persistir, " +
+		"Tente novamente mais tarde.";
 	
 	int idfail = 0;
+	int frasesfail = 0;
 	
 	private void bind () {
 		
-		view.getCampoResposta().addKeyPressHandler(new KeyPressHandler() {
-			
+		view.getCampoResposta().addKeyUpHandler(new KeyUpHandler() {
 			@Override
-			public void onKeyPress(KeyPressEvent event) {
+			public void onKeyUp(KeyUpEvent event) {
 				doRespostaMudou(event);
 			}
 		});
@@ -78,7 +77,7 @@ public class PrincipalApresentador implements Apresentador {
 		eventos.addHandler(TentativaEvent.TIPO, new TentativaEventHandler() {
 			@Override
 			public void onTentativaEvent(TentativaEvent evento) {
-				doTentativa(evento.getCorreta());
+				doTentativa(evento.getCorreta(), evento.getLetra());
 			}
 		});
 		
@@ -91,81 +90,44 @@ public class PrincipalApresentador implements Apresentador {
 		
 	}
 	
-	private boolean fimDeJogo () {
-		return ponteiroFrasesEnviadas >= totalFrases; 
-	} 
-	
-	private void enviarTentativas (final int id) {
+	private void enviarTentativas () {
 		
-		servidor.atualizaTentativas(id, jogoDeShannon.getTentativas(id), new AsyncCallback<Void>() {
+		servidor.atualizaTentativas(jogoDeShannon.getTodasTentativas(), new AsyncCallback<Void>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				if (caught instanceof SessaoInvalidaException) {
 					mostrarSessaoExpirada();
 				} else {
-					enviarTentativas(id);
+					enviarTentativas();
 				}
 			}
 			@Override
 			public void onSuccess(Void result) {
-				--enviosPendentes;
-				if (enviosPendentes == 0) {
-					
-					if (fimDeJogo()) {
-						destruirSessao();
-					} else {
-						view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
-					}
-					
-				}
+				destruirSessao();
+				view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
 			}
 		});
-	}
-	
-	private void enviarTentativas () {
-		++enviosPendentes;
-		view.setEstadoServidor(EstadosServidor.AGUARDANDO_RESPOSTA);
-		int memoria = ponteiroFrasesEnviadas;
-		++ponteiroFrasesEnviadas;
-		enviarTentativas(memoria);
+
 	}
 	
 	private void destruirSessao () {
-		servidor.destruirSessao(new AsyncCallback<Void>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				Cookies.removeCookie("JSESSIONID");
-				view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
-			}
-			@Override
-			public void onSuccess(Void result) {
-				Cookies.removeCookie("JSESSIONID");
-				view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
-			}
-		});
-		
+		Cookies.removeCookie("JSESSIONID");
 	}
 	
-	private void enviar () {
-		char tentativa = view.getResposta();
+	private void enviar (char tentativa) {
 		jogoDeShannon.atualiza(tentativa, eventos);
 		view.setDesafio(jogoDeShannon.getFraseParcial());
 	}
 	
 	private void doFraseCompleta () {
 		view.setTextoParabens("Muito bem, você acertou! Tente esta nova frase.");
-		enviarTentativas();
 	}
 	
-	private void doRespostaMudou (KeyPressEvent evento) {
+	private void doRespostaMudou (KeyUpEvent evento) {
 		
-		//NativeEvent evt2 = evento.;
-		if (evento.isAnyModifierKeyDown() || evento.getCharCode() < 32) {
-			return; //não devo me importar com controles
-		}
-		
-		view.ignoraLetra();
-		char tentativa = evento.getCharCode();
+		//view.ignoraLetra();
+		char tentativa = view.getResposta();
+		view.limparResposta();
 		
 		if (!VerificadorDeCampo.letraValida(tentativa)) {
 			view.setTextoErro("Digite apenas letras ou espaços.");
@@ -173,44 +135,32 @@ public class PrincipalApresentador implements Apresentador {
 		}
 		
 		tentativa = VerificadorDeCampo.normalizaLetra(tentativa);
-		view.setResposta(tentativa);
 		
-		enviar();
+		enviar(tentativa);
 
 	}
 	
-	private void doTentativa (boolean correta) {
-		view.setTextoParabens("");
+	private void doTentativa (boolean correta, char letra) {
 		if (correta) {
 			view.setTextoErro("");
 		} else {
-			view.setTextoErro("Resposta errada.");
+			view.setTextoErro( letra + " - Resposta errada.");
 		}
 	}
 	
 	private void doFimDeJogo () {
-		if (ponteiroFrasesBaixadas >= totalFrases) {
-			view.exibeFimDeJogo("Fim de jogo",
-					"Parabéns, você concluiu o jogo!\n" +
-					"Obrigado pela sua participacao.\n" +
-					"(para jogar novamente, recarregue a página)");
-		} else {
-			view.setCarregando(true);
-		}
+		enviarTentativas();
+		view.exibeFimDeJogo("Fim de jogo",
+				"Parabéns, você concluiu o jogo!\n" +
+				"Obrigado pela sua participacao.\n" +
+				"(para jogar novamente, recarregue a página)");
 	}
 	
 	public PrincipalApresentador (HandlerManager eventos, Exibicao view, JuizSoletrandoAsync servidor) {
 		this.view = view;
 		this.eventos = eventos;
 		this.servidor = servidor;
-		this.jogoDeShannon = new ModeloJogoDeShannon(new Frase[] {
-//				new Frase("FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE" +
-//						  "FRASE DE TESTEFRASE DE TESTEFRASE DE TESTE"), 
-//				new Frase("SEGUNDA_FRASE_DE_TESTE")
-		});
+		//this.jogoDeShannon = new ModeloJogoDeShannon(new Frase[] {});
 		
 	}
 	
@@ -218,7 +168,6 @@ public class PrincipalApresentador implements Apresentador {
 	public void vai(HasWidgets pagina) {
 		bind();
 		pegarId();
-		//baixarFrases();
 		pagina.clear();
 		pagina.add(view.asWidget());
 	}
@@ -231,69 +180,46 @@ public class PrincipalApresentador implements Apresentador {
 			}
 			public void onFailure(Throwable caught) {
 				++idfail;
-				GWT.log("Falhou uma!");
 				if (idfail > 5) {
-					view.exibeFimDeJogo("Desculpe.", 
-							"Estamos com dificuldades técnicas: não foi " +
-							"possível comunicar-se com o servidor. Tente " +
-							"recarregar a página. Se este erro persistir, " +
-							"Tente novamente mais tarde.");
+					mostrarErroConexao();
 				} else {
 					pegarId();
 				}
 			}
 		});
 	}
-	
 
 	private void baixarFrases() {
-		servidor.getTotalFrases(new AsyncCallback<Integer>() {
+		servidor.getFrases(new AsyncCallback<Frase[]>() {
 			@Override
-			public void onSuccess(Integer result) {
-				totalFrases = result;
-				baixarFrasesMesmo();
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-				if (caught instanceof SessaoInvalidaException) {
-					mostrarSessaoExpirada();
-				} else {
-					baixarFrases();
-				}
-			}
-		});
-	}
-	
-	private void baixarFrasesMesmo () {
-		
-		if (ponteiroFrasesBaixadas >= totalFrases) {
-			return;
-		}
-		
-		servidor.getFrase(ponteiroFrasesBaixadas, new AsyncCallback<Frase>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				if (caught instanceof SessaoInvalidaException) {
-					mostrarSessaoExpirada();
-				} else {
-					baixarFrasesMesmo();
-				}
-			}
-			@Override
-			public void onSuccess(Frase result) {
+			public void onSuccess(Frase[] result) {
+				jogoDeShannon = new ModeloJogoDeShannon(result);
 				view.setCarregando(false);
-				jogoDeShannon.adicionaFrase(result);
 				view.setDesafio(jogoDeShannon.getFraseParcial());
-				++ponteiroFrasesBaixadas;
-				baixarFrasesMesmo();
 			}
 			
+			@Override
+			public void onFailure(Throwable caught) {
+				if (caught instanceof SessaoInvalidaException) {
+					mostrarSessaoExpirada();
+				} else {
+					++idfail;
+					if (idfail > 5) {
+						mostrarErroConexao();
+					} else {
+						baixarFrases();
+					}
+				}
+			}
 		});
 	}
 	
 	private void mostrarSessaoExpirada () {
 		view.exibeFimDeJogo("Sessão expirou.", MENSAGEM_SESSAO_EXPIRADA);
+	}
+	
+	private void mostrarErroConexao () {
+		view.exibeFimDeJogo("Problemas com a conexão", MENSAGEM_ERRO_CONEXAO);
 	}
 
 }

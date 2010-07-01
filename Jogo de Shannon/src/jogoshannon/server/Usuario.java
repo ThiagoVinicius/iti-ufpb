@@ -2,6 +2,8 @@ package jogoshannon.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
@@ -19,7 +21,7 @@ public class Usuario {
 	
 	@Persistent(mappedBy = "usuario")
 	private volatile List<Desafio> desafios;
-
+	
 	public long getIdSessao() {
 		return key.getId();
 	}

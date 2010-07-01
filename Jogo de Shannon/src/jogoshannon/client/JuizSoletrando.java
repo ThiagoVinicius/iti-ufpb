@@ -2,6 +2,7 @@ package jogoshannon.client;
 
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
+import jogoshannon.shared.Tentativas;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -10,9 +11,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface JuizSoletrando extends RemoteService {
 	
 	public long getId();
-	public Frase getFrase(int id) throws SessaoInvalidaException;
-	public int getTotalFrases() throws SessaoInvalidaException;
-	public void atualizaTentativas(int fraseId, int contadores[]) throws SessaoInvalidaException;
-	public void destruirSessao();
+	public Frase[] getFrases() throws SessaoInvalidaException;
+	public void atualizaTentativas(Tentativas contadores[]) throws SessaoInvalidaException;
 
 }
