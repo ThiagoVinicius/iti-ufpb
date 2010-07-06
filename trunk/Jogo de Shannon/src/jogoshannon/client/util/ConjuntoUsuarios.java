@@ -5,6 +5,7 @@ import java.util.HashMap;
 import jogoshannon.client.event.UsuarioRemovidoEvent;
 import jogoshannon.client.view.UsuarioWidget;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;
@@ -21,10 +22,10 @@ public class ConjuntoUsuarios {
 
 	public boolean adiciona(final UsuarioWidget e) {
 		
-		boolean foi = !oProprio.containsKey(e.getId());
+		boolean jaExiste = oProprio.containsKey(e.getId());
 
-		if (!foi) {
-			return foi;
+		if (jaExiste) {
+			return false;
 		}
 		
 		oProprio.put(e.getId(), e);
@@ -36,8 +37,12 @@ public class ConjuntoUsuarios {
 			}
 		});
 		
-		return foi;
+		return true;
 		
+	}
+	
+	public UsuarioWidget get (long id) {
+		return oProprio.get(id);
 	}
 	
 	public UsuarioWidget remover (long id) {

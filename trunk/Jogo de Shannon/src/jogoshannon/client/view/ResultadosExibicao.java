@@ -1,5 +1,6 @@
 package jogoshannon.client.view;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -105,6 +106,14 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 		UsuarioWidget cara = conjUsuarios.remover(id);
 		if (cara != null) {
 			usuarios.remove(cara);
+		}
+	}
+
+	@Override
+	public void setCarregandoId(long id, boolean carregando) {
+		UsuarioWidget cara = conjUsuarios.get(id);
+		if (cara != null) {
+			cara.setCarregando(carregando);
 		}
 	}
 	

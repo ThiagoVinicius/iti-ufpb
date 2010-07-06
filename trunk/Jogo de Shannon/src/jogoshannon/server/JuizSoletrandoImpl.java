@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
@@ -13,8 +14,10 @@ import jogoshannon.client.JuizSoletrando;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
 import jogoshannon.shared.Tentativas;
+import jogoshannon.shared.UsuarioNaoEncontradoException;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 @SuppressWarnings("serial")
@@ -173,6 +176,38 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 			
 			destruirSessao();
 		}
+	}
+	
+	@Override
+	public Tentativas[] getResultados (long id) throws UsuarioNaoEncontradoException {
+		PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+		Key chave = KeyFactory.createKey(Usuario.class.getSimpleName(), id);
+		try {
+			
+			Usuario usuario = pm.getObjectById(Usuario.class, chave);
+			List<Desafio> desafios = usuario.getDesafios();
+			Tentativas resultado[] = new Tentativas[desafios.size()];
+			
+			for (int i = 0; i < resultado.length; ++i) {
+				Desafio des = desafios.get(i);
+				resultado[i] = new Tentativas(des.getTentativas());
+			}
+			
+			return resultado;
+			
+		} catch (JDOObjectNotFoundException e) {
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, 
+					"Objeto nao encontrado para o id " + id);
+			throw new UsuarioNaoEncontradoException();
+		} catch (Exception e) {
+			Logger.getLogger(getClass().getName()).log(Level.SEVERE, 
+					"Excecao inesperada.", e);
+			throw new UsuarioNaoEncontradoException();
+		}
+		finally {
+			pm.close();
+		}
+
 	}
 
 	private void destruirSessao() {

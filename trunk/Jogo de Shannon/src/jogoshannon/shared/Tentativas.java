@@ -10,6 +10,16 @@ public class Tentativas implements Serializable {
 		this(Frase.QUANTIDADE_LETRAS.length);
 	}
 	
+	public Tentativas (int dados[]) {
+		this(dados.length);
+		
+		//equivalente a:
+		//contagens = dados.clone();
+		for (int i = 0; i < contagens.length; ++i) {
+			contagens[i] = dados[i];
+		}
+	}
+	
 	public Tentativas (int contagemDesafios) {
 		contagens = new int[contagemDesafios];
 	}

@@ -3,12 +3,14 @@ package jogoshannon.client.presenter;
 import jogoshannon.client.JuizSoletrandoAsync;
 import jogoshannon.client.event.UsuarioRemovidoEvent;
 import jogoshannon.client.event.UsuarioRemovidoHandler;
-import jogoshannon.client.view.UsuarioWidget;
+import jogoshannon.shared.Tentativas;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -19,6 +21,7 @@ public class ResultadosApresentador implements Apresentador {
 		HasClickHandlers botaoAdicionar();
 		long getIdAdicionar();
 		void adicionarId(long id);
+		void setCarregandoId(long id, boolean carregando);
 		void limparIdAdicionar();
 		void removerId(long id);
 	}
@@ -41,7 +44,7 @@ public class ResultadosApresentador implements Apresentador {
 		view.botaoAdicionar().addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				adicionarId();
+				adicionarIdPeloCampo();
 			}
 		});
 		
@@ -54,9 +57,27 @@ public class ResultadosApresentador implements Apresentador {
 		});
 	}
 	
-	private void adicionarId() {
-		view.adicionarId(view.getIdAdicionar());
+	private void adicionarIdPeloCampo() {
+		final long id = view.getIdAdicionar();
+		adicionarId(id);
 		view.limparIdAdicionar();
+	}
+	
+	private void adicionarId(final long id) {
+		view.adicionarId(id);
+		view.setCarregandoId(id, true);
+		
+		servidor.getResultados(id, new AsyncCallback<Tentativas[]>() {
+			@Override
+			public void onSuccess(Tentativas[] result) {
+				view.setCarregandoId(id, false);
+			}
+			@Override
+			public void onFailure(Throwable caught) {
+				removerId(id);
+			}
+		});
+		
 	}
 	
 	private void removerId (long id) {
