@@ -2,9 +2,9 @@ package jogoshannon.client.event;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class TentativaEvent extends GwtEvent<TentativaEventHandler> {
+public class TentativaEvent extends GwtEvent<TentativaHandler> {
 	
-	public static final Type<TentativaEventHandler> TIPO = new Type<TentativaEventHandler>();
+	public static final Type<TentativaHandler> TIPO = new Type<TentativaHandler>();
 	
 	public TentativaEvent (boolean correta, char letra) {
 		this.correta = correta;
@@ -15,12 +15,12 @@ public class TentativaEvent extends GwtEvent<TentativaEventHandler> {
 	private char letra;
 	
 	@Override
-	protected void dispatch(TentativaEventHandler handler) {
+	protected void dispatch(TentativaHandler handler) {
 		handler.onTentativaEvent(this);
 	}
 
 	@Override
-	public Type<TentativaEventHandler> getAssociatedType() {
+	public Type<TentativaHandler> getAssociatedType() {
 		return TIPO;
 	}
 
