@@ -13,4 +13,6 @@ public interface JuizSoletrandoAsync {
 
 	void atualizaTentativas(Tentativas contadores[], AsyncCallback<Void> callback);
 
+	void getResultados(long id, AsyncCallback<Tentativas[]> callback);
+
 }

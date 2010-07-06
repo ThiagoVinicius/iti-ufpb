@@ -53,6 +53,10 @@ public class UsuarioWidget extends Composite {
 	public long getId () {
 		return id;
 	}
+	
+	public void setCarregando (boolean estado) {
+		carregando.setVisible(estado);
+	}
 
 	@Override
 	public int hashCode() {
