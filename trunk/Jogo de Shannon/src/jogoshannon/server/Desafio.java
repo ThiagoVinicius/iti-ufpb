@@ -1,5 +1,7 @@
 package jogoshannon.server;
 
+import java.util.Arrays;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -45,6 +47,10 @@ public class Desafio {
 		}
 		//tocando na variável, dando a dica de que ela precisa ser salva. 
 		setTentativas(tentativas);
+	}
+	
+	public String toString () {
+		return Arrays.toString(getTentativas());
 	}
 	
 }

@@ -1,6 +1,8 @@
 package jogoshannon.server;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -35,8 +37,14 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 			usuario = pm.makePersistent(usuario);
 			chave = usuario.getKey();
 			sessao.setAttribute("usuario", chave);
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, 
+					"Criando NOVO usuario, id = " + usuario.getKey()+"; "+
+					"Sessao = " + sessao.getId());
 		} else {
 			usuario = (Usuario) pm.getObjectById(Usuario.class, chave);
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, 
+					"RECUPERANDO usuário, id = " + usuario.getKey()+"; "+
+					"Sessao = " + sessao.getId());
 		}
 		
 		return usuario;
@@ -140,7 +148,6 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 	public void atualizaTentativas (Tentativas contadores[]) throws SessaoInvalidaException {
 		
 		forcarSessaoValida();
-		destruirSessao();
 		
 		PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
 		Transaction tx = pm.currentTransaction();
@@ -163,6 +170,8 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements JuizSole
 			if (tx.isActive()) {
 				tx.rollback();
 			}
+			
+			destruirSessao();
 		}
 	}
 

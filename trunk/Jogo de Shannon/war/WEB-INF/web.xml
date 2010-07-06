@@ -33,6 +33,15 @@
     <url-pattern>/cron/limparTabelas</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>resultadoBruto</servlet-name>
+    <servlet-class>jogoshannon.server.Resultado</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>resultadoBruto</servlet-name>
+    <url-pattern>/resultadoBruto</url-pattern>
+  </servlet-mapping>
+  
   	<security-constraint>
         <web-resource-collection>
             <url-pattern>/cron/*</url-pattern>

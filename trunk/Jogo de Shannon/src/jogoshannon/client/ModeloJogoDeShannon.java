@@ -51,7 +51,7 @@ public class ModeloJogoDeShannon {
 	
 	public String getFraseParcial () {
 		if (acabou()) {
-			return null;
+			return "";
 		} else {
 			return frases.get(ponteiroFrase).getFraseParcial();
 		}

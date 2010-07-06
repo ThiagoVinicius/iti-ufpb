@@ -41,4 +41,8 @@ public class Usuario {
 		return desafios;
 	}
 	
+	public String toString () {
+		return "("+getIdSessao()+") " + getDesafios();  
+	}
+	
 }

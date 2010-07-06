@@ -3,11 +3,11 @@ package jogoshannon.client.presenter;
 import jogoshannon.client.JuizSoletrandoAsync;
 import jogoshannon.client.ModeloJogoDeShannon;
 import jogoshannon.client.event.FraseCompletaEvent;
-import jogoshannon.client.event.FraseCompletaEventHandler;
+import jogoshannon.client.event.FraseCompletaHandler;
 import jogoshannon.client.event.JogoCompletoEvent;
-import jogoshannon.client.event.JogoCompletoEventHandler;
+import jogoshannon.client.event.JogoCompletoHandler;
 import jogoshannon.client.event.TentativaEvent;
-import jogoshannon.client.event.TentativaEventHandler;
+import jogoshannon.client.event.TentativaHandler;
 import jogoshannon.client.util.VerificadorDeCampo;
 import jogoshannon.client.view.PrincipalExibicao.EstadosServidor;
 import jogoshannon.shared.Frase;
@@ -67,21 +67,21 @@ public class PrincipalApresentador implements Apresentador {
 			}
 		});
 		
-		eventos.addHandler(FraseCompletaEvent.TIPO, new FraseCompletaEventHandler() {
+		eventos.addHandler(FraseCompletaEvent.TIPO, new FraseCompletaHandler() {
 			@Override
 			public void onFraseCompletaEvent(FraseCompletaEvent event) {
 				doFraseCompleta();
 			}
 		});
 		
-		eventos.addHandler(TentativaEvent.TIPO, new TentativaEventHandler() {
+		eventos.addHandler(TentativaEvent.TIPO, new TentativaHandler() {
 			@Override
 			public void onTentativaEvent(TentativaEvent evento) {
 				doTentativa(evento.getCorreta(), evento.getLetra());
 			}
 		});
 		
-		eventos.addHandler(JogoCompletoEvent.TIPO, new JogoCompletoEventHandler() {
+		eventos.addHandler(JogoCompletoEvent.TIPO, new JogoCompletoHandler() {
 			@Override
 			public void onJogoCompletoEvent(JogoCompletoEvent evento) {
 				doFimDeJogo();
@@ -125,7 +125,6 @@ public class PrincipalApresentador implements Apresentador {
 	
 	private void doRespostaMudou (KeyUpEvent evento) {
 		
-		//view.ignoraLetra();
 		char tentativa = view.getResposta();
 		view.limparResposta();
 		
@@ -149,6 +148,7 @@ public class PrincipalApresentador implements Apresentador {
 	}
 	
 	private void doFimDeJogo () {
+		view.setEstadoServidor(EstadosServidor.AGUARDANDO_RESPOSTA);
 		enviarTentativas();
 		view.exibeFimDeJogo("Fim de jogo",
 				"Parabéns, você concluiu o jogo!\n" +
@@ -160,8 +160,6 @@ public class PrincipalApresentador implements Apresentador {
 		this.view = view;
 		this.eventos = eventos;
 		this.servidor = servidor;
-		//this.jogoDeShannon = new ModeloJogoDeShannon(new Frase[] {});
-		
 	}
 	
 	@Override

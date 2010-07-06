@@ -51,7 +51,7 @@ public class ControladorAplicacao implements Apresentador, ValueChangeHandler<St
 			}
 			
 			else if (token.equals("resultados")) {
-				oEscolhido = new ResultadosApresentador(eventos, new ResultadosExibicao(), servidor);
+				oEscolhido = new ResultadosApresentador(eventos, new ResultadosExibicao(eventos), servidor);
 			}
 			
 			if (oEscolhido != null) {
