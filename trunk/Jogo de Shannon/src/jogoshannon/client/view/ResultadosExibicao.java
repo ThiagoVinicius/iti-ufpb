@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -21,12 +22,22 @@ import jogoshannon.client.util.ConjuntoUsuarios;
 
 public class ResultadosExibicao extends Composite implements Exibicao {
 	
+	private static final int LINHA_TITULO = 0;
+	private static final int OFFSET_LINHA = 1;
+	
+	private static final int LEGENDA_COLUNA = 0;
+	private static final int OFFSET_COLUNA = 1;
+	
+	private static final int ENTROPIA_MIN_END_OFFSET = 1;
+	private static final int ENTROPIA_MAX_END_OFFSET = 2;
+	
 	//private FlexTable;
 	FlowPanel usuarios;
 	FlexTable tabelaTentativas;
 	TextBox entradaId;
 	Button botaoAdicionar;
 	ConjuntoUsuarios conjUsuarios;
+	int maxLinha;
 	
 	public ResultadosExibicao (HandlerManager eventos) {
 		super();
@@ -40,6 +51,7 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 		
 		usuarios = new FlowPanel();
 		tabelaTentativas = new FlexTable();
+		tabelaTentativas.setBorderWidth(1);
 		
 		HorizontalPanel painelEntrada = new HorizontalPanel();
 		entradaId = new TextBox();
@@ -114,6 +126,45 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 		UsuarioWidget cara = conjUsuarios.get(id);
 		if (cara != null) {
 			cara.setCarregando(carregando);
+		}
+	}
+	
+	private String doubleToString(double numero) {
+		
+		return NumberFormat.getFormat("0.000").format(numero);
+	}
+	
+	@Override
+	public void atualizaEntropiaMinima(int linha, double[] dados) {
+		linha += ENTROPIA_MIN_END_OFFSET;
+		tabelaTentativas.setText(OFFSET_LINHA+linha, LEGENDA_COLUNA, "Entropia Mínima");
+		for (int i = 0; i < dados.length; ++i) {
+			tabelaTentativas.setText(OFFSET_LINHA+linha, OFFSET_COLUNA+i, doubleToString(dados[i]));
+		}
+	}
+	
+	@Override
+	public void atualizaEntropiaMaxima(int linha, double[] dados) {
+		linha += ENTROPIA_MAX_END_OFFSET;
+		tabelaTentativas.setText(OFFSET_LINHA+linha, LEGENDA_COLUNA, "Entropia Máxima");
+		for (int i = 0; i < dados.length; ++i) {
+			tabelaTentativas.setText(OFFSET_LINHA+linha, OFFSET_COLUNA+i, doubleToString(dados[i]));
+		}
+	}
+
+	@Override
+	public void atualizarLinha(int linha, int[] dados) {
+		maxLinha = Math.max(maxLinha, linha);
+		tabelaTentativas.setText(OFFSET_LINHA+linha, LEGENDA_COLUNA, ""+(linha+1));
+		for (int i = 0; i < dados.length; ++i) {
+			tabelaTentativas.setText(OFFSET_LINHA+linha, OFFSET_COLUNA+i, ""+dados[i]);
+		}
+	}
+
+	@Override
+	public void setTitulosTabela(String[] titulos) {
+		for (int i = 0; i < titulos.length; ++i) {
+			tabelaTentativas.setText(LINHA_TITULO, OFFSET_COLUNA+i, titulos[i]);
 		}
 	}
 	
