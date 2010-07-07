@@ -9,6 +9,7 @@ public class ModeloResposta {
 	private int tabela[][];
 	private double entropiaMinima[];
 	private double entropiaMaxima[];
+	private int total;
 	
 	public ModeloResposta() {
 		
@@ -18,7 +19,8 @@ public class ModeloResposta {
 	}
 	
 	public void adiciona(Tentativas[] tentativas)
-	{		
+	{	
+		total += tentativas.length;
 		int[] contages;
 		int valor;
 		
@@ -60,18 +62,37 @@ public class ModeloResposta {
 	{
 		double entropiaMax;
 		double entropiaMin;
+		final double denominador = this.total;
 		
 		for(int n = 0; n < entropiaMaxima.length; n++)
 		{
 			entropiaMax = entropiaMin = 0;
 			
-			for(int i = 0; i < tabela.length-1; i++)
+			int atualInt;
+			double atual;
+			double proximo;
+			int i;
+			for(i = 0; i < tabela.length-1; i++)
 			{
-				entropiaMax += (i+1)*(tabela[n][i] - tabela[n][i+1])*Math.log(i+1);
-				entropiaMin += tabela[n][i]*Math.log(tabela[n][i]);
+				atualInt = tabela[i][n];
+				atual = tabela[i][n] / denominador;
+				proximo = tabela[i+1][n] / denominador;
+				
+				entropiaMin += (i+1)*(atual - proximo)*Math.log(i+1);
+				if (atualInt != 0) {
+					entropiaMax += atual*Math.log(atual);
+				}
 			}
 			
-			entropiaMaxima[n] = entropiaMax;
+			atualInt = tabela[i][n];
+			atual = tabela[i][n] / denominador;
+			
+			entropiaMin += (i+1)*(atual)*Math.log(i+1);
+			if (atualInt != 0) {
+				entropiaMax += atual*Math.log(atual);
+			}
+			
+			entropiaMaxima[n] = -entropiaMax;
 			entropiaMinima[n] = entropiaMin;
 		}
 	}

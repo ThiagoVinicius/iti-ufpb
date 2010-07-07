@@ -38,3 +38,19 @@
   border-color: #d0e4f6;
   font-weight: bold;
 }
+
+html, body, #conteudo { height: 100%; }
+body > #conteudo { height: auto; min-height: 100%; }
+
+#poweredby {
+  clear: both;
+  position: relative;
+  z-index: 10;
+  height: 40px;
+  margin-top: -40px;
+  float: right;
+}
+
+#principal { 
+  padding-bottom: 40px; 
+}
