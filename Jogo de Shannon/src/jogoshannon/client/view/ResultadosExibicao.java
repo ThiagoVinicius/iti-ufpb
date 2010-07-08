@@ -51,7 +51,9 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 		
 		usuarios = new FlowPanel();
 		tabelaTentativas = new FlexTable();
-		tabelaTentativas.setBorderWidth(1);
+		tabelaTentativas.getRowFormatter().addStyleName(0, "tituloTabela");
+	    tabelaTentativas.addStyleName("corpoTabela");
+		//tabelaTentativas.setBorderWidth(1);
 		
 		HorizontalPanel painelEntrada = new HorizontalPanel();
 		entradaId = new TextBox();
@@ -139,7 +141,9 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 		linha += ENTROPIA_MIN_END_OFFSET;
 		tabelaTentativas.setText(OFFSET_LINHA+linha, LEGENDA_COLUNA, "Entropia Mínima");
 		for (int i = 0; i < dados.length; ++i) {
-			tabelaTentativas.setText(OFFSET_LINHA+linha, OFFSET_COLUNA+i, doubleToString(dados[i]));
+			Label texto = new Label(doubleToString(dados[i]));
+			texto.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+			tabelaTentativas.setWidget(OFFSET_LINHA+linha, OFFSET_COLUNA+i, texto);
 		}
 	}
 	
@@ -148,7 +152,9 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 		linha += ENTROPIA_MAX_END_OFFSET;
 		tabelaTentativas.setText(OFFSET_LINHA+linha, LEGENDA_COLUNA, "Entropia Máxima");
 		for (int i = 0; i < dados.length; ++i) {
-			tabelaTentativas.setText(OFFSET_LINHA+linha, OFFSET_COLUNA+i, doubleToString(dados[i]));
+			Label texto = new Label(doubleToString(dados[i]));
+			texto.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+			tabelaTentativas.setWidget(OFFSET_LINHA+linha, OFFSET_COLUNA+i, texto);
 		}
 	}
 
@@ -157,7 +163,9 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 		maxLinha = Math.max(maxLinha, linha);
 		tabelaTentativas.setText(OFFSET_LINHA+linha, LEGENDA_COLUNA, ""+(linha+1));
 		for (int i = 0; i < dados.length; ++i) {
-			tabelaTentativas.setText(OFFSET_LINHA+linha, OFFSET_COLUNA+i, ""+dados[i]);
+			Label texto = new Label(dados[i] == 0 ? "" : ""+dados[i]);
+			texto.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+			tabelaTentativas.setWidget(OFFSET_LINHA+linha, OFFSET_COLUNA+i, texto);
 		}
 	}
 
