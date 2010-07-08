@@ -78,23 +78,29 @@ public class ModeloResposta {
 				atual = tabela[i][n] / denominador;
 				proximo = tabela[i+1][n] / denominador;
 				
-				entropiaMin += (i+1)*(atual - proximo)*Math.log(i+1);
+				entropiaMin += (i+1)*(atual - proximo)*log2(i+1);
 				if (atualInt != 0) {
-					entropiaMax += atual*Math.log(atual);
+					entropiaMax += atual*log2(atual);
 				}
 			}
 			
 			atualInt = tabela[i][n];
 			atual = tabela[i][n] / denominador;
 			
-			entropiaMin += (i+1)*(atual)*Math.log(i+1);
+			entropiaMin += (i+1)*(atual)*log2(i+1);
 			if (atualInt != 0) {
-				entropiaMax += atual*Math.log(atual);
+				entropiaMax += atual*log2(atual);
 			}
 			
 			entropiaMaxima[n] = -entropiaMax;
 			entropiaMinima[n] = entropiaMin;
 		}
+	}
+	
+	private static final double LOG_2 = Math.log(2);
+	
+	private double log2 (double x) {
+		return Math.log(x) / LOG_2;
 	}
 	
 }
