@@ -75,8 +75,8 @@
     <welcome-file>Jogo_de_Shannon.html</welcome-file>
   </welcome-file-list>
   
-   <session-config>
-      <session-timeout>120</session-timeout> 
-    </session-config>
-
+  <session-config>
+    <session-timeout>120</session-timeout> 
+  </session-config>
+  
 </web-app>
