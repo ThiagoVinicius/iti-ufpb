@@ -2,10 +2,12 @@ package jogoshannon.shared;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class Tentativas implements Serializable {
 
     public int contagens[];
 
+    @SuppressWarnings("unused")
     private Tentativas() {
         this(Frase.QUANTIDADE_LETRAS.length);
     }

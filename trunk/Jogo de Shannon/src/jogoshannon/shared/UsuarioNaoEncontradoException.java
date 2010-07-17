@@ -2,6 +2,7 @@ package jogoshannon.shared;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class UsuarioNaoEncontradoException extends Exception implements
         Serializable {
 
