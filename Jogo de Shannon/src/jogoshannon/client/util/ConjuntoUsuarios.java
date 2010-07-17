@@ -5,7 +5,6 @@ import java.util.HashMap;
 import jogoshannon.client.event.UsuarioRemovidoEvent;
 import jogoshannon.client.view.UsuarioWidget;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;

@@ -1,5 +1,7 @@
 package jogoshannon.client.util;
 
+import com.google.gwt.dom.client.NativeEvent;
+
 
 public class VerificadorDeCampo {
 	
@@ -17,28 +19,13 @@ public class VerificadorDeCampo {
 		}
 	}
 	
-//	public static boolean devoProcessar (KeyPressEvent e) {
-//		NativeEvent ne = e.getNativeEvent();
-//		int keycode = ne.getKeyCode();
-//		
-//		if (e.isAltKeyDown() || e.isControlKeyDown() || e.isMetaKeyDown()) {
-//			return false;
-//		}
-//		
-//		return 65 <= keycode && keycode <= 90; 
-//		
-//		if (e.getCharCode() < 32) {
-//			return false;
-//		} 
-//		
-//		//teclas de funcao no firefox
-//		if (e.getCharCode() >= 112 && e.getCharCode() <= 123) {
-//			return false;
-//		}
-//		
-//		GWT.log(""+ne.getKeyCode());
-//		
-//		return true;
-//	}
+	public static boolean teclaModificadora (NativeEvent ne) {
+		
+		if (ne.getAltKey() || ne.getCtrlKey() || ne.getMetaKey()) {
+			return true;
+		}
+		
+		return false;
+	}
 	
 }

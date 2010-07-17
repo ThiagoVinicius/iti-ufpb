@@ -1,5 +1,7 @@
 package jogoshannon.client.view;
 
+import jogoshannon.client.Jogo_de_Shannon;
+
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -7,7 +9,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class UsuarioWidget extends Composite {
 
@@ -30,7 +31,7 @@ public class UsuarioWidget extends Composite {
 		remover = new Button("Remover");
 		remover.setEnabled(false);
 		
-		carregando = new Image("ampulheta.gif");
+		carregando = new Image(Jogo_de_Shannon.IMAGENS.ampulheta());
 		
 		HorizontalPanel painelPrincipal = new HorizontalPanel();
 		painelPrincipal.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);

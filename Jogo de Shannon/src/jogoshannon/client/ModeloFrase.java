@@ -22,11 +22,13 @@ public class ModeloFrase {
 		this.tentativas = new Tentativas(contagemDesafios);
 	}
 
-	public void atualiza (char tentativa, HandlerManager eventos) {
+	public boolean atualiza (char tentativa, HandlerManager eventos) {
+		
+		boolean result = false;
 		
 		if (acabou()) {
 			eventos.fireEvent(new FraseCompletaEvent());
-			return; //nao ha o que fazer.
+			return false; //nao ha o que fazer.
 		}
 		
 		++tentativas.contagens[ponteiroLetra];
@@ -37,6 +39,7 @@ public class ModeloFrase {
 		if (esperado == tentativa) {
 			++ponteiroLetra;
 			eventos.fireEvent(new TentativaEvent(true, tentativa));
+			result = true;
 		} else {
 			eventos.fireEvent(new TentativaEvent(false, tentativa));
 		}
@@ -44,6 +47,8 @@ public class ModeloFrase {
 		if (acabou()) {
 			eventos.fireEvent(new FraseCompletaEvent());
 		}
+		
+		return result;
 		
 	}
 	

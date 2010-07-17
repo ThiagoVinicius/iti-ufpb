@@ -1,6 +1,8 @@
 package jogoshannon.client.view;
 
-import com.google.gwt.core.client.GWT;
+import jogoshannon.client.presenter.ResultadosApresentador.Exibicao;
+import jogoshannon.client.util.ConjuntoUsuarios;
+
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -16,9 +18,6 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import jogoshannon.client.presenter.ResultadosApresentador.Exibicao;
-import jogoshannon.client.util.ConjuntoUsuarios;
 
 public class ResultadosExibicao extends Composite implements Exibicao {
 	
