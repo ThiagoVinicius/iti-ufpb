@@ -1,5 +1,6 @@
 package jogoshannon.server;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,12 +24,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         JuizSoletrando {
-
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-        super.destroy();
-    }
 
     private Usuario getUsuarioAtual(PersistenceManager pm) {
 
@@ -138,16 +133,14 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         try {
             tx.begin();
 
+            List<Desafio> tmp = new LinkedList<Desafio>();
+            for (int i = 0; i < contadores.length; ++i) {
+                tmp.add(new Desafio(contadores[i].contagens));
+            }
+                
             Usuario usuario = getUsuarioAtual(pm);
-            List<Desafio> desafios = usuario.getDesafios();
-            while (contadores.length > desafios.size()) {
-                desafios.add(new Desafio(contadores[0].contagens.length));
-            }
-
-            for (int i = 0; i < desafios.size(); ++i) {
-                Desafio atualizando = desafios.get(i);
-                atualizando.somaTentativas(contadores[i].contagens);
-            }
+            assert usuario.getDesafios().isEmpty() : "Este usuario ja possuia dados.";
+            usuario.getDesafios().addAll(tmp);
 
             tx.commit();
         } finally {
