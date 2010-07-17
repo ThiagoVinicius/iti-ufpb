@@ -1,5 +1,18 @@
-.serverResponseLabelError {
+.respostaErrada {
   color: red;
+  display: block;
+}
+
+.respostaCorreta {
+  color: blue;
+  display: block;
+}
+
+.centralizado {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
 }
 
 .jogo-titulo {
@@ -13,10 +26,7 @@
 }
 
 .jogo-ui {
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
+  height: 10.5em;
 }
 
 .jogo-id {
@@ -53,4 +63,17 @@ body > #conteudo { height: auto; min-height: 100%; }
 
 #principal { 
   padding-bottom: 40px; 
+}
+
+.tituloTabela {
+  background-color: #2062B8;
+  text-align: center;
+  color: white;
+  font-style: italic;
+}
+
+.corpoTabela {
+  border: 1px solid silver;
+  padding: 2px;
+  margin-bottom:6px;
 }
