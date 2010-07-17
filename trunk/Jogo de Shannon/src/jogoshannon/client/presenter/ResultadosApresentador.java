@@ -7,7 +7,6 @@ import jogoshannon.client.event.UsuarioRemovidoHandler;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.Tentativas;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;

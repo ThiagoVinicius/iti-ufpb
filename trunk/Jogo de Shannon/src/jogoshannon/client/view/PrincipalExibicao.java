@@ -1,9 +1,15 @@
 package jogoshannon.client.view;
 
+import jogoshannon.client.Jogo_de_Shannon;
 import jogoshannon.client.presenter.PrincipalApresentador;
+import jogoshannon.client.util.VerificadorDeCampo;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -15,7 +21,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
@@ -29,13 +34,13 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	}
 	
 	private Label labelFrase;
-	private TextBox textResposta;
 	private Label labelErro;
 	private Label labelCerto;
 	private Label labelId;
 	private Image carregando;
 	private DialogBox fimDeJogo;
 	private PopupPanel situacaoServidor;
+	private TecladoVirtual teclado;
 	
 	private static final int QUEBRA_LINHA_APOS = 50;
 	
@@ -48,6 +53,7 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		
 		SimplePanel jogo_ui = new SimplePanel();
 		jogo_ui.addStyleName("jogo-ui");
+		jogo_ui.addStyleName("centralizado");
 		
 		DecoratorPanel painelEntrada = new DecoratorPanel();
 		
@@ -64,13 +70,8 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		labelFrase.setWordWrap(true);
 		labelFrase.setWidth("40em");
 		labelFrase.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-		textResposta = new TextBox();
-		textResposta.setMaxLength(1);
-		textResposta.setWidth("1em");
-		carregando = new Image("ampulheta.gif");
-		carregando.setSize("32", "32");
+		carregando = new Image (Jogo_de_Shannon.IMAGENS.ampulheta());
 		painel.add(labelFrase);
-		painel.add(textResposta);
 		painel.add(carregando);
 		
 		fimDeJogo = new DialogBox(false, true);
@@ -88,10 +89,15 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		situacaoServidor.add(new Label("Comunicando com o servidor"));
 		situacaoServidor.setStylePrimaryName("servidor-popup");
 		
-		labelErro = new Label();
-		labelErro.setStyleName("serverResponseLabelError");
+		labelErro = new Label(" ");
+		labelErro.setStyleName("respostaErrada");
 		
-		labelCerto = new Label();
+		labelCerto = new Label(" ");
+		labelCerto.setStyleName("respostaCorreta");
+		
+		teclado = new TecladoVirtual();
+		teclado.addStyleName("teclado");
+		teclado.addStyleName("centralizado");
 
 		painelEntrada.add(painel);
 		
@@ -119,22 +125,33 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 		titulo_id_jogo.add(painelId);
 		titulo_id_jogo.add(painelTitulo);
 		titulo_id_jogo.add(jogo_ui);
+		titulo_id_jogo.add(teclado);
+		
+		amarrarEventos();
 		
 		root.add(titulo_id_jogo);
 		
 		//RootPanel.get().add(fimDeJogo);
 	}
 	
-	@Override
-	public char getResposta() {
-		String texto = textResposta.getText();
-		if (texto.length() > 0) {
-			return textResposta.getText().charAt(0);
-		} else {
-			return 0;
-		}
+	private void amarrarEventos () {
+		
+		Event.addNativePreviewHandler(new NativePreviewHandler() {
+			@Override
+			public void onPreviewNativeEvent(NativePreviewEvent event) {
+				if(event.getTypeInt() == Event.ONKEYPRESS) {
+					NativeEvent ne = event.getNativeEvent();
+					boolean aceito = !VerificadorDeCampo.teclaModificadora(ne);
+					if (aceito) {
+						char tecla = (char) (ne.getKeyCode() & 0xffff);
+						teclado.pressionaTecla(tecla);
+					}
+				}
+			}
+		});
+		
 	}
-
+	
 	@Override
 	public void setDesafio(String frase) {
 		StringBuilder paraExibir = new StringBuilder(frase);
@@ -147,15 +164,12 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 			}
 		}
 		
-		textResposta.setFocus(true);
 		labelFrase.setText(paraExibir.toString());
 	}
 
 	@Override
 	public void setTextoErro(String erro) {
 		labelErro.setText(erro);
-		boolean invisivel = erro.isEmpty();
-		labelErro.setVisible(!invisivel);
 	}
 	
 	public Widget asWidget () {
@@ -163,27 +177,20 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	}
 
 	@Override
-	public TextBox getCampoResposta() {
-		return textResposta;
-	}
+	public TecladoVirtual getTeclado() {
+		return teclado;
+	};
 
-	@Override
-	public void ignoraLetra() {
-		textResposta.cancelKey();
-	}
-
-	@Override
-	public void limparResposta() {
-		textResposta.setText("");
-	}
-	
 	public void setCarregando (boolean estado) {
-		textResposta.setEnabled(!estado);
+		if (estado) {
+			teclado.desativaTodasTeclas();
+		} else {
+			teclado.ativaTodasTeclas();
+		}
 		carregando.setVisible(estado);
 	}
 	
 	public void setEstadoServidor (EstadosServidor estadoAtual) {
-		//situacaoServidor.setUrl(estadoAtual.getUrl());
 		switch (estadoAtual) {
 			case AGUARDANDO_RESPOSTA:
 				situacaoServidor.setPopupPositionAndShow(new PositionCallback() {
@@ -202,7 +209,7 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	
 	@Override
 	public void exibeFimDeJogo (String titulo, String texto) {
-		textResposta.setEnabled(false);
+		teclado.desativaTodasTeclas();
 		
 		fimDeJogo.setText(titulo);
 		((HasText)fimDeJogo.getWidget()).setText(texto);
@@ -220,19 +227,34 @@ public class PrincipalExibicao extends Composite implements PrincipalApresentado
 	
 	@Override
 	public void setTextoParabens (String texto) {
-		labelCerto.setText(texto);
-		boolean invisivel = texto.isEmpty();
-		labelCerto.setVisible(!invisivel);
-		
 		if (!texto.isEmpty()) {
 			timerLimparParabens.cancel();
 			timerLimparParabens.schedule(7500);
 		}
+		
+		labelCerto.setText(texto);
+		
 	}
 	
 	public void setId (String id) {
 		labelId.setText(id);
+		Window.setTitle(Jogo_de_Shannon.TITULO_PADRAO+" - jogando com id = "+id);
+	}
+
+	@Override
+	public void ativaTodasTeclas() {
+		teclado.ativaTodasTeclas();
+	}
+
+	@Override
+	public void desativaTecla(char tecla) {
+		teclado.desativaTecla(tecla);
 	}
 	
+	@Override
+	protected void onDetach() {
+		fimDeJogo.hide();
+		super.onDetach();
+	}
 
 }

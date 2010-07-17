@@ -13,9 +13,9 @@ import jogoshannon.client.view.PrincipalExibicao.EstadosServidor;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
 
-import com.google.gwt.event.dom.client.HasKeyUpHandlers;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -25,17 +25,17 @@ import com.google.gwt.user.client.ui.Widget;
 public class PrincipalApresentador implements Apresentador {
 	
 	public interface Exibicao {
-		HasKeyUpHandlers getCampoResposta();
-		void ignoraLetra();
+		//HasKeyUpHandlers getCampoResposta();
+		HasValueChangeHandlers<Character> getTeclado();
 		void setDesafio(String frase);
 		void setTextoErro(String erro);
-		char getResposta();
-		void limparResposta();
 		void setCarregando (boolean estado);
 		void setEstadoServidor (EstadosServidor estadoAtual);
 		void exibeFimDeJogo(String titulo, String texto);
 		void setTextoParabens (String texto);
 		void setId (String id);
+		void desativaTecla(char tecla);
+		void ativaTodasTeclas();
 		Widget asWidget();
 	}
 	
@@ -60,10 +60,24 @@ public class PrincipalApresentador implements Apresentador {
 	
 	private void bind () {
 		
-		view.getCampoResposta().addKeyUpHandler(new KeyUpHandler() {
+//		view.getCampoResposta().addKeyUpHandler(new KeyUpHandler() {
+//			@Override
+//			public void onKeyUp(KeyUpEvent event) {
+//				doRespostaMudou(event);
+//			}
+//		});
+		
+//		view.getTeclado().addKeyPressHandler(new KeyPressHandler() {
+//			@Override
+//			public void onKeyPress(KeyPressEvent event) {
+//				doRespostaMudou(event);
+//			}
+//		});
+		
+		view.getTeclado().addValueChangeHandler(new ValueChangeHandler<Character>() {
 			@Override
-			public void onKeyUp(KeyUpEvent event) {
-				doRespostaMudou(event);
+			public void onValueChange(ValueChangeEvent<Character> event) {
+				doRespostaMudou(event.getValue());
 			}
 		});
 		
@@ -123,16 +137,17 @@ public class PrincipalApresentador implements Apresentador {
 		view.setTextoParabens("Muito bem, você acertou! Tente esta nova frase.");
 	}
 	
-	private void doRespostaMudou (KeyUpEvent evento) {
+	private void doRespostaMudou (char tentativa) {
 		
-		char tentativa = view.getResposta();
-		view.limparResposta();
+		//char tentativa = view.getResposta();
+		//view.limparResposta();
 		
 		if (!VerificadorDeCampo.letraValida(tentativa)) {
 			view.setTextoErro("Digite apenas letras ou espaços.");
 			return;
 		}
 		
+		view.desativaTecla(tentativa);
 		tentativa = VerificadorDeCampo.normalizaLetra(tentativa);
 		
 		enviar(tentativa);
@@ -142,6 +157,7 @@ public class PrincipalApresentador implements Apresentador {
 	private void doTentativa (boolean correta, char letra) {
 		if (correta) {
 			view.setTextoErro("");
+			view.ativaTodasTeclas();
 		} else {
 			view.setTextoErro( letra + " - Resposta errada.");
 		}

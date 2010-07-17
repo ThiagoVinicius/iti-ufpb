@@ -1,18 +1,21 @@
 package jogoshannon.client;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import com.google.gwt.event.shared.HandlerManager;
+import java.util.Set;
 
 import jogoshannon.client.event.JogoCompletoEvent;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.Tentativas;
 
+import com.google.gwt.event.shared.HandlerManager;
+
 public class ModeloJogoDeShannon {
 
 	private List<ModeloFrase> frases;
 	private int ponteiroFrase;
+	private Set<Character> letrasUsadas;
 	
 	public ModeloJogoDeShannon (Frase frasesIniciais[]) {
 		this.frases = new ArrayList<ModeloFrase>(); //frases.getFrases();
@@ -20,6 +23,7 @@ public class ModeloJogoDeShannon {
 			this.frases.add(new ModeloFrase(frasesIniciais[i].getFrase()));
 		}
 		ponteiroFrase = 0;
+		letrasUsadas = new HashSet<Character>();
 	}
 	
 	public void atualiza (char tentativa, HandlerManager eventos) {
@@ -28,10 +32,18 @@ public class ModeloJogoDeShannon {
 			eventos.fireEvent(new JogoCompletoEvent());
 			return;
 		}
+
+		// Letra ja havia sido tentada. Nada a fazer 
+		if (!letrasUsadas.add(tentativa)) {
+			return;
+		} 
 		
 		ModeloFrase atual = frases.get(ponteiroFrase);
+		boolean acertou = atual.atualiza(tentativa, eventos);
 		
-		atual.atualiza(tentativa, eventos);
+		if (acertou) {
+			letrasUsadas.clear();
+		}
 		
 		//frase acabou de acabar
 		if (atual.acabou()) {
@@ -73,5 +85,5 @@ public class ModeloJogoDeShannon {
 		
 		return resultado;
 	}
-	
+
 }
