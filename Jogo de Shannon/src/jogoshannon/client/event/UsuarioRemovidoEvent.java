@@ -6,26 +6,26 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class UsuarioRemovidoEvent extends GwtEvent<UsuarioRemovidoHandler> {
 
-	public static final Type<UsuarioRemovidoHandler> TIPO = new Type<UsuarioRemovidoHandler>();
-	
-	private UsuarioWidget origem;
-	
-	public UsuarioRemovidoEvent (UsuarioWidget origem) {
-		this.origem = origem;
-	}
+    public static final Type<UsuarioRemovidoHandler> TIPO = new Type<UsuarioRemovidoHandler>();
 
-	@Override
-	protected void dispatch(UsuarioRemovidoHandler handler) {
-		handler.onUsuarioRemovido(this);
-	}
+    private UsuarioWidget origem;
 
-	@Override
-	public Type<UsuarioRemovidoHandler> getAssociatedType() {
-		return TIPO;
-	}
-	
-	public UsuarioWidget getOrigem () {
-		return origem;
-	}
+    public UsuarioRemovidoEvent(UsuarioWidget origem) {
+        this.origem = origem;
+    }
+
+    @Override
+    protected void dispatch(UsuarioRemovidoHandler handler) {
+        handler.onUsuarioRemovido(this);
+    }
+
+    @Override
+    public Type<UsuarioRemovidoHandler> getAssociatedType() {
+        return TIPO;
+    }
+
+    public UsuarioWidget getOrigem() {
+        return origem;
+    }
 
 }

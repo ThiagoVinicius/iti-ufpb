@@ -8,61 +8,60 @@ import jogoshannon.shared.Frase;
 import jogoshannon.shared.Tentativas;
 
 public class ModeloFrase {
-	
-	private String frase;
-	private int ponteiroLetra;
-	private int contagemDesafios;
-	private Tentativas tentativas;
-	
-	public ModeloFrase(String frase) {
-		super();
-		this.frase = frase;
-		this.ponteiroLetra = 0;
-		this.contagemDesafios = Frase.QUANTIDADE_LETRAS.length;
-		this.tentativas = new Tentativas(contagemDesafios);
-	}
 
-	public boolean atualiza (char tentativa, HandlerManager eventos) {
-		
-		boolean result = false;
-		
-		if (acabou()) {
-			eventos.fireEvent(new FraseCompletaEvent());
-			return false; //nao ha o que fazer.
-		}
-		
-		++tentativas.contagens[ponteiroLetra];
-		int indice = Frase.QUANTIDADE_LETRAS[ponteiroLetra];
-		char esperado = frase.charAt(indice);
-		
-		
-		if (esperado == tentativa) {
-			++ponteiroLetra;
-			eventos.fireEvent(new TentativaEvent(true, tentativa));
-			result = true;
-		} else {
-			eventos.fireEvent(new TentativaEvent(false, tentativa));
-		}
-		
-		if (acabou()) {
-			eventos.fireEvent(new FraseCompletaEvent());
-		}
-		
-		return result;
-		
-	}
-	
-	public String getFraseParcial () {
-		int indice = Frase.QUANTIDADE_LETRAS[ponteiroLetra];
-		return frase.substring(0, indice);
-	}
-	
-	public boolean acabou () {
-		return ponteiroLetra >= contagemDesafios;
-	}
-	
-	public Tentativas getTentativas () {
-		return tentativas;
-	}
-	
+    private String frase;
+    private int ponteiroLetra;
+    private int contagemDesafios;
+    private Tentativas tentativas;
+
+    public ModeloFrase(String frase) {
+        super();
+        this.frase = frase;
+        this.ponteiroLetra = 0;
+        this.contagemDesafios = Frase.QUANTIDADE_LETRAS.length;
+        this.tentativas = new Tentativas(contagemDesafios);
+    }
+
+    public boolean atualiza(char tentativa, HandlerManager eventos) {
+
+        boolean result = false;
+
+        if (acabou()) {
+            eventos.fireEvent(new FraseCompletaEvent());
+            return false; // nao ha o que fazer.
+        }
+
+        ++tentativas.contagens[ponteiroLetra];
+        int indice = Frase.QUANTIDADE_LETRAS[ponteiroLetra];
+        char esperado = frase.charAt(indice);
+
+        if (esperado == tentativa) {
+            ++ponteiroLetra;
+            eventos.fireEvent(new TentativaEvent(true, tentativa));
+            result = true;
+        } else {
+            eventos.fireEvent(new TentativaEvent(false, tentativa));
+        }
+
+        if (acabou()) {
+            eventos.fireEvent(new FraseCompletaEvent());
+        }
+
+        return result;
+
+    }
+
+    public String getFraseParcial() {
+        int indice = Frase.QUANTIDADE_LETRAS[ponteiroLetra];
+        return frase.substring(0, indice);
+    }
+
+    public boolean acabou() {
+        return ponteiroLetra >= contagemDesafios;
+    }
+
+    public Tentativas getTentativas() {
+        return tentativas;
+    }
+
 }
