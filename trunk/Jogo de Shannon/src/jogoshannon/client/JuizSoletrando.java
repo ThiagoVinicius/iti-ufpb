@@ -10,10 +10,15 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("juizSoletrando")
 public interface JuizSoletrando extends RemoteService {
-	
-	public long getId ();
-	public Frase[] getFrases () throws SessaoInvalidaException;
-	public void atualizaTentativas (Tentativas contadores[]) throws SessaoInvalidaException;
-	public Tentativas[] getResultados (long id) throws UsuarioNaoEncontradoException;
+
+    public long getId();
+
+    public Frase[] getFrases() throws SessaoInvalidaException;
+
+    public void atualizaTentativas(Tentativas contadores[])
+            throws SessaoInvalidaException;
+
+    public Tentativas[] getResultados(long id)
+            throws UsuarioNaoEncontradoException;
 
 }
