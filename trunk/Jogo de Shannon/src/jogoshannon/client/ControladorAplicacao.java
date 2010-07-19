@@ -15,13 +15,10 @@ import com.google.gwt.user.client.ui.HasWidgets;
 public class ControladorAplicacao implements Apresentador,
         ValueChangeHandler<String> {
 
-    private HandlerManager eventos;
     private HasWidgets pagina;
     private JuizSoletrandoAsync servidor;
 
-    public ControladorAplicacao(HandlerManager eventos,
-            JuizSoletrandoAsync servidor) {
-        this.eventos = eventos;
+    public ControladorAplicacao(JuizSoletrandoAsync servidor) {
         this.servidor = servidor;
         amarra();
     }
@@ -47,6 +44,7 @@ public class ControladorAplicacao implements Apresentador,
 
         if (token != null) {
             Apresentador oEscolhido = null;
+            HandlerManager eventos = new HandlerManager(null);
 
             if (token.equals("jogar")) {
                 oEscolhido = new PrincipalApresentador(eventos,
