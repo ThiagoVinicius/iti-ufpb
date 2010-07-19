@@ -5,6 +5,7 @@ import jogoshannon.client.presenter.PrincipalApresentador;
 import jogoshannon.client.util.VerificadorDeCampo;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -42,6 +43,8 @@ public class PrincipalExibicao extends Composite implements
     private DialogBox fimDeJogo;
     private PopupPanel situacaoServidor;
     private TecladoVirtual teclado;
+    private HandlerRegistration handlerTeclado;
+    
 
     private static final int QUEBRA_LINHA_APOS = 50;
 
@@ -137,7 +140,7 @@ public class PrincipalExibicao extends Composite implements
 
     private void amarrarEventos() {
 
-        Event.addNativePreviewHandler(new NativePreviewHandler() {
+        handlerTeclado =  Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event) {
                 if (event.getTypeInt() == Event.ONKEYPRESS) {
@@ -257,6 +260,7 @@ public class PrincipalExibicao extends Composite implements
     @Override
     protected void onDetach() {
         fimDeJogo.hide();
+        handlerTeclado.removeHandler();
         super.onDetach();
     }
 
