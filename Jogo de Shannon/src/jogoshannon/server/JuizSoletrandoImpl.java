@@ -1,15 +1,17 @@
 package jogoshannon.server;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
 import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jogoshannon.client.JuizSoletrando;
 import jogoshannon.shared.Frase;
@@ -24,6 +26,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         JuizSoletrando {
+    
+    private static final Logger logger = 
+        LoggerFactory.getLogger(JuizSoletrandoImpl.class);
 
     private Usuario getUsuarioAtual(PersistenceManager pm) {
 
@@ -36,16 +41,12 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             usuario = pm.makePersistent(usuario);
             chave = usuario.getKey();
             sessao.setAttribute("usuario", chave);
-            Logger.getLogger(getClass().getName()).log(
-                    Level.WARNING,
-                    "Criando NOVO usuario, id = " + usuario.getKey() + "; "
-                            + "Sessao = " + sessao.getId());
+            logger.info("Criando NOVO usuario, id = {}; Sessao = {}", 
+                    usuario.getKey(), sessao.getId());
         } else {
             usuario = pm.getObjectById(Usuario.class, chave);
-            Logger.getLogger(getClass().getName()).log(
-                    Level.WARNING,
-                    "RECUPERANDO usuário, id = " + usuario.getKey() + "; "
-                            + "Sessao = " + sessao.getId());
+            logger.info("RECUPERANDO usuario, id = {}; Sessao = {}", 
+                    usuario.getKey(), sessao.getId());
         }
 
         return usuario;
@@ -54,11 +55,16 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
     private void forcarSessaoValida() throws SessaoInvalidaException {
         if (!checarSessaoValida() || !temSessao()) {
+            logger.info("A sessao era inválida, mas isso não era permitido " +
+            		"neste contexto.");
             throw new SessaoInvalidaException();
         }
     }
 
     private boolean checarSessaoValida() {
+        
+        logger.info("Checando validade da sessão.");
+        
         String idSessaoBrowser = getThreadLocalRequest().getParameter(
                 "id_sessao");
         HttpSession sessaoServidor = getThreadLocalRequest().getSession(false);
@@ -87,20 +93,33 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
     @Override
     public long getId() {
-
+        
+        logger.info("Executando: getId()");
+        
+        boolean sessaoValida = checarSessaoValida();
+        
+        if (sessaoValida) {
+            logger.debug("Solicitação de ID já estava associada a uma sessão " +
+            		"valida. Ignorando sessão antiga e criando uma nova.");
+        }
+        
         destruirSessao();
 
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
         Usuario usuario = getUsuarioAtual(pm);
         pm.close();
-
+        
+        logger.info("Retornando id = {}", usuario.getIdSessao());
+        
         return usuario.getIdSessao();
     }
 
     @Override
     public Frase[] getFrases() throws SessaoInvalidaException {
 
+        logger.info("Executando: getFrases()");
+        
         forcarSessaoValida();
 
         PersistenceManager pm = GestorPersistencia.get()
@@ -115,6 +134,9 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             for (int i = 0; i < resultado.length; ++i) {
                 resultado[i] = resposta.get(i).getConteudo();
             }
+            
+            logger.info("Retornando {} frases.", resultado.length);
+            
             return resultado;
         } finally {
             pm.close();
@@ -125,6 +147,8 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
     public void atualizaTentativas(Tentativas contadores[])
             throws SessaoInvalidaException {
 
+        logger.info("Executando: atualizaTentativas(Tentativas[])");
+        
         forcarSessaoValida();
 
         PersistenceManager pm = GestorPersistencia.get()
@@ -139,7 +163,14 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             }
                 
             Usuario usuario = getUsuarioAtual(pm);
-            assert usuario.getDesafios().isEmpty() : "Este usuario ja possuia dados.";
+            
+            if (!usuario.getDesafios().isEmpty()) {
+                logger.error("As tentativas deste usuario já haviam sido " +
+                		"cadastradas. Esta sessão já deveria ter expirado.");
+                throw new SessaoInvalidaException("Este usuário já possuia " +
+                		"tentativas cadastradas.");
+            }
+            
             usuario.getDesafios().addAll(tmp);
 
             tx.commit();
@@ -157,6 +188,9 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             throws UsuarioNaoEncontradoException {
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
+        
+        logger.info("Executando: getResultados(long)");
+        
         Key chave = KeyFactory.createKey(Usuario.class.getSimpleName(), id);
         try {
 
@@ -168,16 +202,17 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
                 Desafio des = desafios.get(i);
                 resultado[i] = new Tentativas(des.getTentativas());
             }
-
+            
+            logger.info("Retornando {} tentativas para o usuário {}", 
+                    resultado.length, id); 
+            
             return resultado;
 
         } catch (JDOObjectNotFoundException e) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING,
-                    "Objeto nao encontrado para o id " + id);
+            logger.info("Usuário de id '{}' não foi encontrado.", id);
             throw new UsuarioNaoEncontradoException();
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-                    "Excecao inesperada.", e);
+            logger.error("Excecao inesperada.", e);
             throw new UsuarioNaoEncontradoException();
         } finally {
             pm.close();
@@ -188,6 +223,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
     private void destruirSessao() {
         HttpSession session = getThreadLocalRequest().getSession(false);
         if (session != null) {
+            logger.info("Destruindo sessão: {}", session.getId());
             session.invalidate();
         }
     }
