@@ -3,6 +3,20 @@
   display: block;
 }
 
+.botao-teclado-ativado {
+  font-weight: bold;
+  font-size: 1.2em;
+  min-width: 3em;
+  min-height: 1.85em;
+}
+
+.botao-teclado-desativado {
+  font-style: italic;
+  font-size: 1.2em;
+  min-width: 3em;
+  min-height: 1.85em;
+}
+
 .respostaCorreta {
   color: blue;
   display: block;
@@ -55,7 +69,7 @@ body > #conteudo { height: auto; min-height: 100%; }
 #poweredby {
   clear: both;
   position: relative;
-  z-index: 10;
+  /*z-index: 10;*/
   height: 40px;
   margin-top: -40px;
   float: right;

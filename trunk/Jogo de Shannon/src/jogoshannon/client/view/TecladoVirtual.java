@@ -28,14 +28,16 @@ public class TecladoVirtual extends Composite implements
     private static final String NOMES_TECLAS[][] = {
             { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", },
             { "A", "S", "D", "F", "G", "H", "J", "K", "L", "Ç", },
-            { "Z", "X", "C", "V", "B", "N", "M", }, { "Espaço" }
+            { "Z", "X", "C", "V", "B", "N", "M", }, 
+            { "Espaço" }
 
     };
 
     private static final char BOTOES_TECLAS[][] = {
             { 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', },
             { 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ç', },
-            { 'Z', 'X', 'C', 'V', 'B', 'N', 'M', }, { '\u0020' }
+            { 'Z', 'X', 'C', 'V', 'B', 'N', 'M', }, 
+            { '\u0020' }
 
     };
 
