@@ -21,8 +21,7 @@ public class Jogo_de_Shannon implements EntryPoint {
         JuizSoletrandoAsync servidor = GWT.create(JuizSoletrando.class);
         ((ServiceDefTarget) servidor)
                 .setRpcRequestBuilder(new DuplicadorCookie());
-        HandlerManager eventBus = new HandlerManager(null);
-        Apresentador appViewer = new ControladorAplicacao(eventBus, servidor);
+        Apresentador appViewer = new ControladorAplicacao(servidor);
         appViewer.vai(RootPanel.get("principal"));
     }
 }
