@@ -68,20 +68,6 @@ public class PrincipalApresentador implements Apresentador {
 
     private void bind() {
 
-        // view.getCampoResposta().addKeyUpHandler(new KeyUpHandler() {
-        // @Override
-        // public void onKeyUp(KeyUpEvent event) {
-        // doRespostaMudou(event);
-        // }
-        // });
-
-        // view.getTeclado().addKeyPressHandler(new KeyPressHandler() {
-        // @Override
-        // public void onKeyPress(KeyPressEvent event) {
-        // doRespostaMudou(event);
-        // }
-        // });
-
         view.getTeclado().addValueChangeHandler(
                 new ValueChangeHandler<Character>() {
                     @Override
@@ -145,8 +131,7 @@ public class PrincipalApresentador implements Apresentador {
     }
 
     private void doFraseCompleta() {
-        view
-                .setTextoParabens("Muito bem, você acertou! Tente esta nova frase.");
+        view.setTextoParabens("Muito bem, você acertou! Tente esta nova frase.");
     }
 
     private void doRespostaMudou(char tentativa) {
