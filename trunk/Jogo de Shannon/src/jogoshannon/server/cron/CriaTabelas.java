@@ -3,8 +3,6 @@ package jogoshannon.server.cron;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -13,14 +11,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jogoshannon.server.Desafio;
 import jogoshannon.server.FraseStore;
 import jogoshannon.server.GestorPersistencia;
-import jogoshannon.server.Usuario;
 import jogoshannon.shared.Frase;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class CriaTabelas extends HttpServlet {
+    
+    private static final Logger logger = LoggerFactory.getLogger(CriaTabelas.class);
 
     private static final Frase frases[] = {
 
@@ -44,8 +45,7 @@ public class CriaTabelas extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Logger.getLogger(CriaTabelas.class.getName()).log(Level.WARNING,
-                "Executando script de criacao de tabelas");
+        logger.info("Executando script de criacao de tabelas");
 
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
@@ -53,42 +53,23 @@ public class CriaTabelas extends HttpServlet {
         Query consulta = pm.newQuery(FraseStore.class);
 
         List<FraseStore> fraseStore;
-        List<Usuario> usuario;
         try {
 
             fraseStore = (List<FraseStore>) consulta.execute();
             if (fraseStore.size() == 0) {
-                Logger.getLogger(CriaTabelas.class.getName()).log(
-                        Level.WARNING, "Banco (Frases) estava vazio.");
+                logger.info("Banco (Frases) estava vazio.");
                 for (Frase f : frases) {
                     FraseStore frase = new FraseStore(f);
                     pm.makePersistent(frase);
                 }
             } else {
-                Logger.getLogger(CriaTabelas.class.getName()).log(
-                        Level.WARNING, "Banco (Frases) possuia dados.");
+                logger.info("Banco (Frases) possuia dados.");
             }
 
-            usuario = (List<Usuario>) pm.newQuery(Usuario.class).execute();
-            if (usuario.size() == 0) {
-                Logger.getLogger(CriaTabelas.class.getName()).log(
-                        Level.WARNING, "Banco (Usuarios) estava vazio.");
-
-                Usuario novo = new Usuario();
-                novo.getDesafios().add(new Desafio(0));
-                pm.makePersistent(novo);
-
-            } else {
-                Logger.getLogger(CriaTabelas.class.getName()).log(
-                        Level.WARNING, "Banco (Usuarios) possuia dados.");
-            }
-
-            Logger.getLogger(CriaTabelas.class.getName()).log(Level.WARNING,
-                    "Executado com sucesso");
+            logger.info("Executado com sucesso");
 
         } catch (Exception e) {
-            Logger.getLogger(CriaTabelas.class.getName()).log(Level.WARNING,
-                    "Execução falhou", e);
+            logger.error("Execução falhou", e);
         } finally {
             pm.close();
         }

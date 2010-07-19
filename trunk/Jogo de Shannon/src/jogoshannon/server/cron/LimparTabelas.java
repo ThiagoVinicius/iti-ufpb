@@ -3,8 +3,6 @@ package jogoshannon.server.cron;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -13,6 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jogoshannon.server.FraseStore;
 import jogoshannon.server.GestorPersistencia;
 import jogoshannon.server.Usuario;
@@ -20,12 +21,13 @@ import jogoshannon.server.Usuario;
 @SuppressWarnings("serial")
 public class LimparTabelas extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(LimparTabelas.class);
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Logger.getLogger(LimparTabelas.class.getName()).log(Level.WARNING,
-                "Executando script limpeza de banco de dados");
+        logger.info("Executando script limpeza de banco de dados");
 
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
@@ -50,12 +52,10 @@ public class LimparTabelas extends HttpServlet {
                 usuario = (List<Usuario>) pm.newQuery(Usuario.class).execute();
             }
 
-            Logger.getLogger(LimparTabelas.class.getName()).log(Level.WARNING,
-                    "Executado com sucesso");
+            logger.info("Executado com sucesso");
 
         } catch (Exception e) {
-            Logger.getLogger(LimparTabelas.class.getName()).log(Level.WARNING,
-                    "Execucao falhou", e);
+            logger.error("Execucao falhou", e);
         } finally {
             pm.close();
         }
