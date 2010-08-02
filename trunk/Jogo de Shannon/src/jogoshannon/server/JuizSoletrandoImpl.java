@@ -1,6 +1,5 @@
 package jogoshannon.server;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,14 +9,14 @@ import javax.jdo.Query;
 import javax.jdo.Transaction;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jogoshannon.client.JuizSoletrando;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
 import jogoshannon.shared.Tentativas;
 import jogoshannon.shared.UsuarioNaoEncontradoException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -115,6 +114,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         return usuario.getIdSessao();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Frase[] getFrases() throws SessaoInvalidaException {
 
