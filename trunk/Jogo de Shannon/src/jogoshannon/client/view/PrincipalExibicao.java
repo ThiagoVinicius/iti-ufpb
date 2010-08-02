@@ -143,7 +143,7 @@ public class PrincipalExibicao extends Composite implements
         handlerTeclado =  Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event) {
-                if (event.getTypeInt() == Event.ONKEYPRESS) {
+                if (event.getTypeInt() == Event.ONKEYDOWN) {
                     NativeEvent ne = event.getNativeEvent();
                     boolean aceito = !VerificadorDeCampo.teclaModificadora(ne);
                     if (aceito) {
