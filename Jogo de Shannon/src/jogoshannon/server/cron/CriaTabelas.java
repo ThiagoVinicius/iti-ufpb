@@ -41,6 +41,7 @@ public class CriaTabelas extends HttpServlet {
 
     };
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
