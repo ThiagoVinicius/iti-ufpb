@@ -33,6 +33,11 @@ public class TecladoVirtual extends Composite implements
 
     };
 
+    
+    /**
+     * Estes sao os codigos de teclas correspondentes aos nomes acima.
+     * Devem estar em upper case, sempre que possível.
+    */
     private static final char BOTOES_TECLAS[][] = {
             { 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', },
             { 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ç', },
@@ -54,7 +59,7 @@ public class TecladoVirtual extends Composite implements
         }
 
         public void pressionarTecla(char tecla) {
-            BotaoTeclado aPropria = teclas.get(Character.toUpperCase(tecla));
+            BotaoTeclado aPropria = teclas.get(tecla);
             if (aPropria != null) {
                 ValueChangeEvent.fire(self, tecla);
             }
@@ -62,7 +67,7 @@ public class TecladoVirtual extends Composite implements
 
         @SuppressWarnings("unused")
         private boolean estaAtivado(char tecla) {
-            BotaoTeclado checar = teclas.get(Character.toUpperCase(tecla));
+            BotaoTeclado checar = teclas.get(tecla);
             if (checar != null) {
                 return checar.isEnabled();
             }
@@ -79,7 +84,7 @@ public class TecladoVirtual extends Composite implements
         }
 
         public void desabilitaTecla(char tecla) {
-            BotaoTeclado desabilitar = teclas.get(Character.toUpperCase(tecla));
+            BotaoTeclado desabilitar = teclas.get(tecla);
             if (desabilitar != null) {
                 setAtivado(desabilitar, false);
             }
@@ -95,7 +100,7 @@ public class TecladoVirtual extends Composite implements
 
         @SuppressWarnings("unused")
         public void habilitarTecla(char tecla) {
-            BotaoTeclado habilitar = teclas.get(Character.toUpperCase(tecla));
+            BotaoTeclado habilitar = teclas.get(tecla);
             if (habilitar != null) {
                 setAtivado(habilitar, true);
             }
