@@ -75,6 +75,7 @@ public class TecladoVirtual extends Composite implements
                 botao.setStylePrimaryName("botao-teclado-ativado");
             } else {
                 botao.setStylePrimaryName("botao-teclado-desativado");
+                botao.setFocus(false);
             }
         }
 
