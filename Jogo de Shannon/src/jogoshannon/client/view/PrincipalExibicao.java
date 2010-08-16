@@ -1,5 +1,8 @@
 package jogoshannon.client.view;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import jogoshannon.client.Jogo_de_Shannon;
 import jogoshannon.client.presenter.PrincipalApresentador;
 import jogoshannon.client.util.VerificadorDeCampo;
@@ -43,7 +46,8 @@ public class PrincipalExibicao extends Composite implements
     private DialogBox fimDeJogo;
     private PopupPanel situacaoServidor;
     private TecladoVirtual teclado;
-    private HandlerRegistration handlerTeclado;
+    private List<HandlerRegistration> desregistrar = new LinkedList<HandlerRegistration>();
+    //private TextBox dummyTextbox;
     
 
     private static final int QUEBRA_LINHA_APOS = 50;
@@ -140,20 +144,22 @@ public class PrincipalExibicao extends Composite implements
 
     private void amarrarEventos() {
 
-        handlerTeclado =  Event.addNativePreviewHandler(new NativePreviewHandler() {
-            @Override
-            public void onPreviewNativeEvent(NativePreviewEvent event) {
-                if (event.getTypeInt() == Event.ONKEYPRESS) {
-                    NativeEvent ne = event.getNativeEvent();
-                    boolean aceito = !VerificadorDeCampo.teclaModificadora(ne);
-                    if (aceito) {
-                        char tecla = (char) (ne.getKeyCode() & 0xffff);
-                        teclado.pressionaTecla(tecla);
+        desregistrar.add(Event
+                .addNativePreviewHandler(new NativePreviewHandler() {
+                    @Override
+                    public void onPreviewNativeEvent(NativePreviewEvent event) {
+                        if (event.getTypeInt() == Event.ONKEYPRESS) {
+                            NativeEvent ne = event.getNativeEvent();
+                            boolean aceito = !VerificadorDeCampo
+                                    .teclaModificadora(ne);
+                            if (aceito) {
+                                char tecla = (char) (ne.getKeyCode() & 0xffff);
+                                teclado.pressionaTecla(tecla);
+                            }
+                        }
                     }
-                }
-            }
-        });
-
+                }));
+        
     }
 
     @Override
@@ -260,7 +266,9 @@ public class PrincipalExibicao extends Composite implements
     @Override
     protected void onDetach() {
         fimDeJogo.hide();
-        handlerTeclado.removeHandler();
+        for (HandlerRegistration r : desregistrar) {
+            r.removeHandler();
+        }
         super.onDetach();
     }
 
