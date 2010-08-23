@@ -1,60 +1,3 @@
-.respostaErrada {
-  color: red;
-  display: block;
-}
-
-.botao-teclado-ativado {
-  font-weight: bold;
-  font-size: 1.2em;
-  min-width: 3em;
-  min-height: 1.85em;
-}
-
-.botao-teclado-desativado {
-  font-style: italic;
-  font-size: 1.2em;
-  min-width: 3em;
-  min-height: 1.85em;
-}
-
-.respostaCorreta {
-  color: blue;
-  display: block;
-}
-
-.centralizado {
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-}
-
-.jogo-titulo {
-  position: relative;
-  text-align: center;
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin-top: 4em;
-  margin-bottom: 1em;
-}
-
-.jogo-ui {
-  height: 10.5em;
-}
-
-.jogo-id {
-  display: table;
-  border: 0.5em none;
-  margin-left: auto;
-  margin-right: 2.5%;
-  position: relative;
-  top: 0px;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #888888;
-}
-
 .servidor-popup {
   background-color: #d0e4f6;
   border-style: solid;
@@ -77,17 +20,4 @@ body > #conteudo { height: auto; min-height: 100%; }
 
 #principal { 
   padding-bottom: 40px; 
-}
-
-.tituloTabela {
-  background-color: #2062B8;
-  text-align: center;
-  color: white;
-  font-style: italic;
-}
-
-.corpoTabela {
-  border: 1px solid silver;
-  padding: 2px;
-  margin-bottom:6px;
 }

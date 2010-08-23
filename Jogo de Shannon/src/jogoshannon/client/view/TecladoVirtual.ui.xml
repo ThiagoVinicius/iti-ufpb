@@ -1,0 +1,28 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="jogoshannon.client.view.TecladoVirtual.Css">
+		.botaoHabilitado {
+			font-weight: bold;
+			font-size: 1.2em;
+			min-width: 3em;
+			min-height: 1.85em;
+		}
+		
+		.botaoDesabilitado {
+			font-style: italic;
+			font-size: 1.2em;
+			min-width: 3em;
+			min-height: 1.85em;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+
+		<g:SimplePanel ui:field="container">
+			<g:VerticalPanel ui:field="vPanel"
+				horizontalAlignment="ALIGN_CENTER">
+			</g:VerticalPanel>
+		</g:SimplePanel>
+
+	</g:HTMLPanel>
+</ui:UiBinder> 

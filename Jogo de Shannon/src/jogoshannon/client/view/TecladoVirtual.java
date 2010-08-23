@@ -2,24 +2,46 @@ package jogoshannon.client.view;
 
 import java.util.HashMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class TecladoVirtual extends Composite implements
-        HasValueChangeHandlers<Character>, ValueChangeHandler<Character> {
+HasValueChangeHandlers<Character>, ValueChangeHandler<Character> {
 
-    private Panel tecladoContainer;
+    private static TecladoVirtualUiBinder uiBinder = GWT
+            .create(TecladoVirtualUiBinder.class);
+
+    interface TecladoVirtualUiBinder extends UiBinder<Widget, TecladoVirtual> {
+    }
+    
+    protected interface Css extends CssResource {
+        String botaoHabilitado();
+        String botaoDesabilitado();
+    }
+
+    @UiField
+    protected Css style;
+    
+    @UiField
+    protected VerticalPanel vPanel;
+    
+    @UiField
+    protected SimplePanel container;
+    
     private Teclado tecladoModel;
 
     // sinonimo de 'this', nas classes internas
@@ -72,9 +94,9 @@ public class TecladoVirtual extends Composite implements
         private void setAtivado(BotaoTeclado botao, boolean estado) {
             botao.setEnabled(estado);
             if (estado) {
-                botao.setStylePrimaryName("botao-teclado-ativado");
+                botao.setStylePrimaryName(style.botaoHabilitado());
             } else {
-                botao.setStylePrimaryName("botao-teclado-desativado");
+                botao.setStylePrimaryName(style.botaoDesabilitado());
                 botao.setFocus(false);
             }
         }
@@ -138,22 +160,14 @@ public class TecladoVirtual extends Composite implements
 
     public TecladoVirtual() {
 
-        SimplePanel root = new SimplePanel();
-        initWidget(root);
+        initWidget(uiBinder.createAndBindUi(this));
 
         tecladoModel = new Teclado();
-        tecladoContainer = montarTeclado(tecladoModel);
-
-        root.setWidget(tecladoContainer);
+        montarTeclado(tecladoModel);
 
     }
 
-    private Panel montarTeclado(Teclado teclado) {
-
-        SimplePanel outer = new SimplePanel();
-
-        VerticalPanel vPanel = new VerticalPanel();
-        vPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+    private void montarTeclado(Teclado teclado) {
 
         for (int i = 0; i < BOTOES_TECLAS.length; ++i) {
             HorizontalPanel hPanel = new HorizontalPanel();
@@ -165,8 +179,6 @@ public class TecladoVirtual extends Composite implements
             }
         }
 
-        outer.setWidget(vPanel);
-        return outer;
     }
 
     public void pressionaTecla(char tecla) {
@@ -197,3 +209,4 @@ public class TecladoVirtual extends Composite implements
     }
 
 }
+

@@ -9,7 +9,6 @@ import jogoshannon.client.event.JogoCompletoHandler;
 import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.client.event.TentativaHandler;
 import jogoshannon.client.util.VerificadorDeCampo;
-import jogoshannon.client.view.PrincipalExibicao.EstadosServidor;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
 
@@ -34,7 +33,7 @@ public class PrincipalApresentador implements Apresentador {
 
         void setCarregando(boolean estado);
 
-        void setEstadoServidor(EstadosServidor estadoAtual);
+        void setEstadoServidor(PrincipalApresentador.EstadosServidor estadoAtual);
 
         void exibeFimDeJogo(String titulo, String texto);
 
@@ -47,6 +46,10 @@ public class PrincipalApresentador implements Apresentador {
         void ativaTodasTeclas();
 
         Widget asWidget();
+    }
+
+    public static enum EstadosServidor {
+        AGUARDANDO_RESPOSTA, TUDO_CERTO, SEM_ALTERACOES;
     }
 
     Exibicao view;
@@ -115,7 +118,7 @@ public class PrincipalApresentador implements Apresentador {
                     @Override
                     public void onSuccess(Void result) {
                         destruirSessao();
-                        view.setEstadoServidor(EstadosServidor.TUDO_CERTO);
+                        view.setEstadoServidor(PrincipalApresentador.EstadosServidor.TUDO_CERTO);
                     }
                 });
 
@@ -161,7 +164,7 @@ public class PrincipalApresentador implements Apresentador {
     }
 
     private void doFimDeJogo() {
-        view.setEstadoServidor(EstadosServidor.AGUARDANDO_RESPOSTA);
+        view.setEstadoServidor(PrincipalApresentador.EstadosServidor.AGUARDANDO_RESPOSTA);
         enviarTentativas();
         view.exibeFimDeJogo("Fim de jogo", "Parabéns, você concluiu o jogo!\n"
                 + "Obrigado pela sua participacao.\n"

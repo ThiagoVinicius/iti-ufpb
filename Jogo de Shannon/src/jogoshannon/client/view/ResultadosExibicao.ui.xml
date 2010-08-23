@@ -1,0 +1,46 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="jogoshannon.client.view.ResultadosExibicao.TabelaCss">
+		.tituloTabela {
+			background-color: #2062B8;
+			text-align: center;
+			color: white;
+			font-style: italic;
+		}
+		
+		.corpoTabela {
+			border: 1px solid silver;
+			padding: 2px;
+			margin-bottom: 6px;
+		}
+		
+		.primeiraColuna {
+			background-color: #9900FF;
+			text-align: center;
+			color: white;
+			font-style: italic;
+			padding: 0px 4px 0px 4px;
+		}
+		
+		.zeroZero {
+			background-color: #FFFFFF;
+		}
+		
+	</ui:style>
+	<g:HTMLPanel>
+		<g:FlowPanel ui:field="usuarios"></g:FlowPanel>
+		<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
+			<g:cell>
+				<g:Label>Adicionar ID:&nbsp;</g:Label>
+			</g:cell>
+			<g:cell>
+				<g:TextBox ui:field="entradaId"></g:TextBox>
+			</g:cell>
+			<g:cell>
+				<g:Button ui:field="botaoAdicionar">Adicionar</g:Button>
+			</g:cell>
+		</g:HorizontalPanel>
+		<g:FlexTable ui:field="tabelaTentativas"></g:FlexTable>
+	</g:HTMLPanel>
+</ui:UiBinder> 

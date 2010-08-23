@@ -1,0 +1,95 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:v="urn:import:jogoshannon.client.view">
+
+	<ui:with type="jogoshannon.client.resources.Imagens" field="img" />
+
+	<ui:style>
+		/* Add CSS here. See the GWT docs on UI Binder for more details */
+		.jogo-titulo {
+			position: relative;
+			text-align: center;
+			font-size: 2em;
+			font-weight: bold;
+			color: #777777;
+			margin-top: 4em;
+			margin-bottom: 1em;
+		}
+		
+		.jogo-id {
+			display: table;
+			border: 0.5em none;
+			margin-left: auto;
+			margin-right: 2.5%;
+			position: relative;
+			top: 0px;
+			font-size: 1.2em;
+			font-weight: bold;
+			color: #888888;
+		}
+		
+		.centralizado {
+			display: table;
+			margin-left: auto;
+			margin-right: auto;
+			position: relative;
+		}
+		
+		.respostaCorreta {
+			color: blue;
+			display: block;
+		}
+		
+		.respostaErrada {
+			color: red;
+			display: block;
+		}
+		
+		.jogo-ui {
+			height: 10.5em;
+		}
+	</ui:style>
+
+	<g:HTMLPanel>
+		<!--
+			Add GWT widgets here. Enter < and hit Ctrl-Space to auto-complete
+			widget names. The ui:field attribute binds an element to a field in
+			the owner class. See the GWT docs on UI Binder for more details.
+		-->
+
+
+		<g:HorizontalPanel styleName="{style.jogo-id}" spacing="10">
+			<g:cell>
+				<g:Label>ID #&nbsp;</g:Label>
+			</g:cell>
+			<g:cell>
+				<g:Label ui:field="labelId"></g:Label>
+			</g:cell>
+		</g:HorizontalPanel>
+
+		<g:Label styleName="{style.jogo-titulo}">Jogo de Shannon</g:Label>
+
+		<g:SimplePanel addStyleNames="{style.jogo-ui} {style.centralizado}">
+			<g:VerticalPanel borderWidth="0">
+				<g:DecoratorPanel>
+					<g:HorizontalPanel borderWidth="0" spacing="10">
+						<g:cell>
+							<g:Label ui:field="labelFrase" width="40em" wordWrap="true"
+								horizontalAlignment="ALIGN_RIGHT"></g:Label>
+						</g:cell>
+						<g:cell>
+							<g:Image ui:field="carregando" resource="{img.ampulheta}" />
+						</g:cell>
+					</g:HorizontalPanel>
+				</g:DecoratorPanel>
+				<g:Label ui:field="labelErro" styleName="{style.respostaErrada}"
+					horizontalAlignment="ALIGN_CENTER"></g:Label>
+				<g:Label ui:field="labelCerto" styleName="{style.respostaCorreta}"
+					horizontalAlignment="ALIGN_CENTER"></g:Label>
+			</g:VerticalPanel>
+		</g:SimplePanel>
+
+		<v:TecladoVirtual ui:field="teclado" styleName="{style.centralizado}"></v:TecladoVirtual>
+
+	</g:HTMLPanel>
+</ui:UiBinder> 
