@@ -1,26 +1,42 @@
 package jogoshannon.client.view;
 
-import jogoshannon.client.presenter.ResultadosApresentador.Exibicao;
+import jogoshannon.client.presenter.ResultadosApresentador;
 import jogoshannon.client.util.ConjuntoUsuarios;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ResultadosExibicao extends Composite implements Exibicao {
+public class ResultadosExibicao extends Composite 
+implements ResultadosApresentador.Exibicao {
+
+    private static ResultadosExibicaoUiBinder uiBinder = GWT
+            .create(ResultadosExibicaoUiBinder.class);
+
+    interface ResultadosExibicaoUiBinder extends
+            UiBinder<Widget, ResultadosExibicao> {
+    }
+    
+    interface TabelaCss extends CssResource {
+        String tituloTabela();
+        String corpoTabela();
+        String primeiraColuna();
+        String zeroZero();
+    }
 
     private static final int LINHA_TITULO = 0;
     private static final int OFFSET_LINHA = 1;
@@ -30,51 +46,54 @@ public class ResultadosExibicao extends Composite implements Exibicao {
 
     private static final int ENTROPIA_MIN_END_OFFSET = 1;
     private static final int ENTROPIA_MAX_END_OFFSET = 2;
-
-    // private FlexTable;
-    FlowPanel usuarios;
-    FlexTable tabelaTentativas;
-    TextBox entradaId;
-    Button botaoAdicionar;
-    ConjuntoUsuarios conjUsuarios;
-    int maxLinha;
-
-    public ResultadosExibicao(HandlerManager eventos) {
-        super();
-
+    
+    @UiField 
+    TabelaCss style; 
+    
+    @UiField
+    protected FlowPanel usuarios;
+    
+    @UiField
+    protected TextBox entradaId;
+    
+    @UiField
+    protected Button botaoAdicionar;
+    
+    @UiField
+    protected FlexTable tabelaTentativas;
+    
+    private ConjuntoUsuarios conjUsuarios;
+    private int maxLinha;
+    private String ultimaEntradaValida = "";
+    
+    public ResultadosExibicao (HandlerManager eventos) {
+        initWidget(uiBinder.createAndBindUi(this));
         conjUsuarios = new ConjuntoUsuarios(eventos);
-
-        SimplePanel root = new SimplePanel();
-        initWidget(root);
-
-        VerticalPanel painelPrincipal = new VerticalPanel();
-
-        usuarios = new FlowPanel();
-        tabelaTentativas = new FlexTable();
-        tabelaTentativas.getRowFormatter().addStyleName(0, "tituloTabela");
-        tabelaTentativas.addStyleName("corpoTabela");
-        // tabelaTentativas.setBorderWidth(1);
-
-        HorizontalPanel painelEntrada = new HorizontalPanel();
-        entradaId = new TextBox();
-        entradaId.addKeyPressHandler(new KeyPressHandler() {
-            public void onKeyPress(KeyPressEvent event) {
-                if (!Character.isDigit(event.getCharCode())) {
-                    ((TextBox) event.getSource()).cancelKey();
-                }
+        
+        tabelaTentativas.getRowFormatter().addStyleName(0, style.tituloTabela());
+        tabelaTentativas.addStyleName(style.corpoTabela());
+        tabelaTentativas.getCellFormatter().setStyleName(0, 0, style.zeroZero());
+        
+    }
+    
+    @UiHandler({"entradaId"})
+    protected void onKeyUp(KeyUpEvent event) {
+        checaCorrigeEntradaId();
+        if (event.getNativeKeyCode() == 13) { //enter
+            botaoAdicionar.click();
+        }
+    }
+    
+    private void checaCorrigeEntradaId () {
+        String text = entradaId.getValue();
+        if (text.isEmpty() == false) {
+            try {
+                Long.parseLong(text);
+                ultimaEntradaValida = text;
+            } catch (NumberFormatException e) {
+                entradaId.setText(ultimaEntradaValida);
             }
-        });
-        botaoAdicionar = new Button("Adicionar");
-        painelEntrada.add(new Label("Adicionar ID: "));
-        painelEntrada.add(entradaId);
-        painelEntrada.add(botaoAdicionar);
-
-        painelPrincipal.add(usuarios);
-        painelPrincipal.add(painelEntrada);
-        painelPrincipal.add(tabelaTentativas);
-
-        root.setWidget(painelPrincipal);
-
+        }
     }
 
     @Override
@@ -132,15 +151,21 @@ public class ResultadosExibicao extends Composite implements Exibicao {
     }
 
     private String doubleToString(double numero) {
-
         return NumberFormat.getFormat("0.000").format(numero);
+    }
+    
+    private void legendar (int linha, String texto) {
+        Label legenda = new Label(texto);
+        legenda.setStylePrimaryName(style.primeiraColuna());
+        legenda.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        tabelaTentativas.setWidget(OFFSET_LINHA + linha, LEGENDA_COLUNA,
+                legenda);
     }
 
     @Override
     public void atualizaEntropiaMinima(int linha, double[] dados) {
         linha += ENTROPIA_MIN_END_OFFSET;
-        tabelaTentativas.setText(OFFSET_LINHA + linha, LEGENDA_COLUNA,
-                "Entropia Mínima");
+        legendar(linha, "Entropia Mínima");
         for (int i = 0; i < dados.length; ++i) {
             Label texto = new Label(doubleToString(dados[i]));
             texto.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -152,8 +177,7 @@ public class ResultadosExibicao extends Composite implements Exibicao {
     @Override
     public void atualizaEntropiaMaxima(int linha, double[] dados) {
         linha += ENTROPIA_MAX_END_OFFSET;
-        tabelaTentativas.setText(OFFSET_LINHA + linha, LEGENDA_COLUNA,
-                "Entropia Máxima");
+        legendar(linha, "Entropia Máxima");
         for (int i = 0; i < dados.length; ++i) {
             Label texto = new Label(doubleToString(dados[i]));
             texto.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -165,8 +189,8 @@ public class ResultadosExibicao extends Composite implements Exibicao {
     @Override
     public void atualizarLinha(int linha, int[] dados) {
         maxLinha = Math.max(maxLinha, linha);
-        tabelaTentativas.setText(OFFSET_LINHA + linha, LEGENDA_COLUNA, ""
-                + (linha + 1));
+        legendar(linha, ""+(linha+1));
+        
         for (int i = 0; i < dados.length; ++i) {
             Label texto = new Label(dados[i] == 0 ? "" : "" + dados[i]);
             texto.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -181,6 +205,12 @@ public class ResultadosExibicao extends Composite implements Exibicao {
             tabelaTentativas.setText(LINHA_TITULO, OFFSET_COLUNA + i,
                     titulos[i]);
         }
+    }
+    
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        entradaId.setFocus(true);
     }
 
 }
