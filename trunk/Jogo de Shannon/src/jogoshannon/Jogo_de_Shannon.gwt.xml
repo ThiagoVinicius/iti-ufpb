@@ -2,8 +2,18 @@
 <module rename-to='jogo_de_shannon'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
+  
+  <!-- Todas as Línguas disponíveis. -->
   <extend-property name="locale" values="pt_BR"/>
-  <set-property-fallback name="locale" value="pt_BR"/>
+  
+  <!-- Compilar apenas a lingua abaixo: -->
+  <set-property name="locale" value="pt_BR"/>
+  
+  <!-- Compilar para os seguintes browsers -->
+  <!-- <set-property name="user.agent" value="ie6,ie8,gecko,gecko1_8,safari,opera"/> -->
+  
+
+  <set-configuration-property name="CssResource.obfuscationPrefix" value="empty" />
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
