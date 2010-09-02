@@ -205,7 +205,7 @@ public class PrincipalApresentador implements Apresentador {
     }
 
     private void baixarFrases() {
-        servidor.getFrases(new AsyncCallback<Frase[]>() {
+        servidor.getFrases(null, new AsyncCallback<Frase[]>() {
             @Override
             public void onSuccess(Frase[] result) {
                 jogoDeShannon = new ModeloJogoDeShannon(result);

@@ -1,4 +1,4 @@
-package jogoshannon.server;
+package jogoshannon.server.persistent;
 
 import java.util.Arrays;
 
@@ -56,5 +56,10 @@ public class Desafio {
     public String toString() {
         return Arrays.toString(getTentativas());
     }
-
+    
+    public Rodada toRodada () {
+        return new Rodada(tentativas);
+    }
+    
+    
 }

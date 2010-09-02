@@ -1,4 +1,4 @@
-package jogoshannon.server;
+package jogoshannon.server.persistent;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;

@@ -2,6 +2,7 @@ package jogoshannon.server;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
@@ -10,6 +11,14 @@ import javax.jdo.Transaction;
 import javax.servlet.http.HttpSession;
 
 import jogoshannon.client.JuizSoletrando;
+import jogoshannon.server.persistent.Cobaia;
+import jogoshannon.server.persistent.ConjuntoFrases;
+import jogoshannon.server.persistent.Desafio;
+import jogoshannon.server.persistent.Experimento;
+import jogoshannon.server.persistent.ExperimentoDefault;
+import jogoshannon.server.persistent.FraseStore;
+import jogoshannon.server.persistent.Rodada;
+import jogoshannon.server.persistent.Usuario;
 import jogoshannon.shared.Frase;
 import jogoshannon.shared.SessaoInvalidaException;
 import jogoshannon.shared.Tentativas;
@@ -29,21 +38,21 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
     private static final Logger logger = 
         LoggerFactory.getLogger(JuizSoletrandoImpl.class);
 
-    private Usuario getUsuarioAtual(PersistenceManager pm) {
+    private Cobaia getUsuarioAtual(PersistenceManager pm) {
 
         HttpSession sessao = getThreadLocalRequest().getSession();
         Key chave = (Key) sessao.getAttribute("usuario");
-        Usuario usuario = null;
+        Cobaia usuario = null;
 
         if (chave == null) {
-            usuario = new Usuario();
+            usuario = new Cobaia();
             usuario = pm.makePersistent(usuario);
             chave = usuario.getKey();
             sessao.setAttribute("usuario", chave);
             logger.info("Criando NOVO usuario, id = {}; Sessao = {}", 
                     usuario.getKey(), sessao.getId());
         } else {
-            usuario = pm.getObjectById(Usuario.class, chave);
+            usuario = pm.getObjectById(Cobaia.class, chave);
             logger.info("RECUPERANDO usuario, id = {}; Sessao = {}", 
                     usuario.getKey(), sessao.getId());
         }
@@ -106,7 +115,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
-        Usuario usuario = getUsuarioAtual(pm);
+        Cobaia usuario = getUsuarioAtual(pm);
         pm.close();
         
         logger.info("Retornando id = {}", usuario.getIdSessao());
@@ -114,9 +123,8 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         return usuario.getIdSessao();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Frase[] getFrases() throws SessaoInvalidaException {
+    public Frase[] getFrases(Long idExperimento) throws SessaoInvalidaException {
 
         logger.info("Executando: getFrases()");
         
@@ -124,15 +132,17 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
-        Query consulta = pm.newQuery(FraseStore.class);
 
-        List<FraseStore> resposta;
+        Experimento exp;
+        List<String> frases;
         try {
-            resposta = (List<FraseStore>) consulta.execute();
+            //resposta = (List<FraseStore>) consulta.execute();
+            exp = ExperimentoDefault.getDefault(pm);
+            frases = exp.getFrases().getFrases();
 
-            Frase resultado[] = new Frase[resposta.size()];
+            Frase resultado[] = new Frase[frases.size()];
             for (int i = 0; i < resultado.length; ++i) {
-                resultado[i] = resposta.get(i).getConteudo();
+                resultado[i] = new Frase(frases.get(i));
             }
             
             logger.info("Retornando {} frases.", resultado.length);
@@ -157,12 +167,12 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         try {
             tx.begin();
 
-            List<Desafio> tmp = new LinkedList<Desafio>();
+            List<Rodada> tmp = new LinkedList<Rodada>();
             for (int i = 0; i < contadores.length; ++i) {
-                tmp.add(new Desafio(contadores[i].contagens));
+                tmp.add(new Rodada(contadores[i].contagens));
             }
                 
-            Usuario usuario = getUsuarioAtual(pm);
+            Cobaia usuario = getUsuarioAtual(pm);
             
             if (!usuario.getDesafios().isEmpty()) {
                 logger.error("As tentativas deste usuario já haviam sido " +
@@ -191,15 +201,15 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         
         logger.info("Executando: getResultados(long)");
         
-        Key chave = KeyFactory.createKey(Usuario.class.getSimpleName(), id);
+        Key chave = KeyFactory.createKey(Cobaia.class.getSimpleName(), id);
         try {
 
-            Usuario usuario = pm.getObjectById(Usuario.class, chave);
-            List<Desafio> desafios = usuario.getDesafios();
+            Cobaia usuario = pm.getObjectById(Cobaia.class, chave);
+            List<Rodada> desafios = usuario.getDesafios();
             Tentativas resultado[] = new Tentativas[desafios.size()];
 
             for (int i = 0; i < resultado.length; ++i) {
-                Desafio des = desafios.get(i);
+                Rodada des = desafios.get(i);
                 resultado[i] = new Tentativas(des.getTentativas());
             }
             

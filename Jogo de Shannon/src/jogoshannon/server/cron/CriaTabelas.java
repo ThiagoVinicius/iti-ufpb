@@ -11,8 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jogoshannon.server.FraseStore;
 import jogoshannon.server.GestorPersistencia;
+import jogoshannon.server.persistent.ConjuntoFrases;
+import jogoshannon.server.persistent.Experimento;
+import jogoshannon.server.persistent.ExperimentoDefault;
+import jogoshannon.server.persistent.FraseStore;
 import jogoshannon.shared.Frase;
 
 import org.slf4j.Logger;
@@ -66,6 +69,24 @@ public class CriaTabelas extends HttpServlet {
             } else {
                 logger.info("Banco (Frases) possuia dados.");
             }
+            
+            Experimento def = ExperimentoDefault.getDefault(pm);
+            
+            if (def == null) {
+                logger.info("Sem experimento defaul. Criando experimento default.");
+                def = new Experimento();
+                ConjuntoFrases conj = new ConjuntoFrases();
+                for (FraseStore f : fraseStore) {
+                    conj.putFrase(f.getConteudo().getFrase());
+                }
+                pm.makePersistent(conj);
+                def.setFrases(conj);
+                def.setDescricao("Experimento com as frases que ja existiam.");
+                pm.makePersistent(def);
+                
+                ExperimentoDefault.setKey(def.getKey());
+                
+            }
 
             logger.info("Executado com sucesso");
 
@@ -74,6 +95,8 @@ public class CriaTabelas extends HttpServlet {
         } finally {
             pm.close();
         }
+        
+        
 
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
