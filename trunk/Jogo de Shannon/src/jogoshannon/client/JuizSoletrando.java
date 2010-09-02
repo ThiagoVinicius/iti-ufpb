@@ -13,7 +13,7 @@ public interface JuizSoletrando extends RemoteService {
 
     public long getId();
 
-    public Frase[] getFrases() throws SessaoInvalidaException;
+    public Frase[] getFrases(Long idExperimento) throws SessaoInvalidaException;
 
     public void atualizaTentativas(Tentativas contadores[])
             throws SessaoInvalidaException;

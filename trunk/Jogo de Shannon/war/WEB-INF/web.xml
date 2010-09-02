@@ -16,6 +16,15 @@
   </servlet-mapping>
   
   <servlet>
+    <servlet-name>producao</servlet-name>
+    <servlet-class>jogoshannon.server.ProducaoProgramaImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>producao</servlet-name>
+    <url-pattern>/jogo_de_shannon/producao</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
     <servlet-name>criarTabelas</servlet-name>
     <servlet-class>jogoshannon.server.cron.CriaTabelas</servlet-class>
   </servlet>
@@ -31,6 +40,15 @@
   <servlet-mapping>
     <servlet-name>limparTabelas</servlet-name>
     <url-pattern>/cron/limparTabelas</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>atualizarTabelas</servlet-name>
+    <servlet-class>jogoshannon.server.cron.AtualizaEsquema</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>atualizarTabelas</servlet-name>
+    <url-pattern>/cron/atualizarTabelas</url-pattern>
   </servlet-mapping>
   
   <servlet>

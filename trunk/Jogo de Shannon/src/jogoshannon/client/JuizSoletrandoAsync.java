@@ -9,7 +9,7 @@ public interface JuizSoletrandoAsync {
 
     void getId(AsyncCallback<Long> callback);
 
-    void getFrases(AsyncCallback<Frase[]> callback);
+    void getFrases(Long idExperimento, AsyncCallback<Frase[]> callback);
 
     void atualizaTentativas(Tentativas contadores[],
             AsyncCallback<Void> callback);
