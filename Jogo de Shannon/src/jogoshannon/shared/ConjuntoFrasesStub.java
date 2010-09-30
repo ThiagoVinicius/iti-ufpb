@@ -1,6 +1,8 @@
 package jogoshannon.shared;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConjuntoFrasesStub implements Serializable {
     
@@ -9,11 +11,17 @@ public class ConjuntoFrasesStub implements Serializable {
     public long id;
     
     public String descricao;
+    
+    public List<String> frases;
 
-    public ConjuntoFrasesStub(long id, String descricao) {
+    private ConjuntoFrasesStub () {
+    }
+    
+    public ConjuntoFrasesStub(long id, String descricao, List<String> frases) {
         super();
         this.id = id;
         this.descricao = descricao;
+        this.frases = new ArrayList<String>(frases);
     }
 
 }

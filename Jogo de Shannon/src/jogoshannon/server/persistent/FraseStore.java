@@ -5,10 +5,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import jogoshannon.shared.Frase;
 
 import com.google.appengine.api.datastore.Key;
 
+@Deprecated
 @PersistenceCapable
 public class FraseStore {
 

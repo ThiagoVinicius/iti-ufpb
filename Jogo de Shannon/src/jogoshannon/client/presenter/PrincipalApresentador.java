@@ -9,7 +9,7 @@ import jogoshannon.client.event.JogoCompletoHandler;
 import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.client.event.TentativaHandler;
 import jogoshannon.client.util.VerificadorDeCampo;
-import jogoshannon.shared.Frase;
+import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.SessaoInvalidaException;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -187,33 +187,15 @@ public class PrincipalApresentador implements Apresentador {
     }
 
     private void pegarId() {
-        servidor.getId(new AsyncCallback<Long>() {
-            public void onSuccess(Long result) {
-                view.setId(result.toString());
-                baixarFrases();
-            }
-
-            public void onFailure(Throwable caught) {
-                ++idfail;
-                if (idfail > 5) {
-                    mostrarErroConexao();
-                } else {
-                    pegarId();
-                }
-            }
-        });
-    }
-
-    private void baixarFrases() {
-        servidor.getFrases(null, new AsyncCallback<Frase[]>() {
-            @Override
-            public void onSuccess(Frase[] result) {
+        servidor.getFrases(0L, new AsyncCallback<DadosJogo>() {
+            public void onSuccess(DadosJogo result) {
+                view.setId(""+result.idUsuario);
                 jogoDeShannon = new ModeloJogoDeShannon(result);
                 view.setCarregando(false);
                 view.setDesafio(jogoDeShannon.getFraseParcial());
+                //baixarFrases();
             }
 
-            @Override
             public void onFailure(Throwable caught) {
                 if (caught instanceof SessaoInvalidaException) {
                     mostrarSessaoExpirada();
@@ -222,12 +204,37 @@ public class PrincipalApresentador implements Apresentador {
                     if (idfail > 5) {
                         mostrarErroConexao();
                     } else {
-                        baixarFrases();
+                        pegarId();
                     }
                 }
             }
         });
     }
+
+//    private void baixarFrases() {
+//        servidor.getFrases(null, new AsyncCallback<Frase[]>() {
+//            @Override
+//            public void onSuccess(Frase[] result) {
+//                jogoDeShannon = new ModeloJogoDeShannon(result);
+//                view.setCarregando(false);
+//                view.setDesafio(jogoDeShannon.getFraseParcial());
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable caught) {
+//                if (caught instanceof SessaoInvalidaException) {
+//                    mostrarSessaoExpirada();
+//                } else {
+//                    ++idfail;
+//                    if (idfail > 5) {
+//                        mostrarErroConexao();
+//                    } else {
+//                        baixarFrases();
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void mostrarSessaoExpirada() {
         view.exibeFimDeJogo("Sessão expirou.", MENSAGEM_SESSAO_EXPIRADA);

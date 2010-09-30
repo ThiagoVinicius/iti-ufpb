@@ -1,5 +1,7 @@
 package jogoshannon.server.persistent;
 
+import java.io.IOException;
+
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.NotPersistent;
@@ -57,12 +59,14 @@ public class ExperimentoDefault {
         setKey(newKey);
     }
     
-    public static Experimento getDefault (PersistenceManager pm) {
+    public static Experimento getDefault (PersistenceManager pm) throws IOException {
         Key key = getInstance(pm).getValue();
         Experimento result = null;
         
         if (key != null) {
             result = pm.getObjectById(Experimento.class, key);
+        } else {
+            //throw new ObjectN;
         }
         
         return result;

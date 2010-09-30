@@ -7,5 +7,8 @@ public interface Imagens extends ClientBundle {
 
     @Source("ampulheta.gif")
     public ImageResource ampulheta();
+    
+    @Source("bola_vermelha.png")
+    public ImageResource bolaVermelha();
 
 }

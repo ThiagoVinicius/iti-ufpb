@@ -1,0 +1,30 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.campo-descricao {
+			min-width: 20em;
+			width: 20em;
+			height: 15em;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<g:HorizontalPanel>
+			<g:cell>
+				<g:Label>Título:</g:Label>
+			</g:cell>
+			<g:cell>
+				<g:Label ui:field="titulo"></g:Label>
+			</g:cell>
+		</g:HorizontalPanel>
+		<g:HorizontalPanel>
+			<g:cell>
+				<g:Label>Descrição:</g:Label>
+			</g:cell>
+			<g:cell>
+				<g:Label ui:field="descricao" styleName="campo-descricao"></g:Label>
+			</g:cell>
+		</g:HorizontalPanel>
+		
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -9,6 +9,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import jogoshannon.shared.ConjuntoFrasesStub;
+
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
@@ -24,6 +26,14 @@ public class ConjuntoFrases {
     
     @Persistent
     private Text descricao;
+    
+    public ConjuntoFrases () {
+    }
+    
+    public ConjuntoFrases (ConjuntoFrasesStub stub) {
+        setDescricao(stub.descricao);
+        lazyGetFrases().addAll(stub.frases);
+    }
     
     public Key getKey () {
         return key;
@@ -58,6 +68,15 @@ public class ConjuntoFrases {
     
     public void setDescricao (String desc) {
         descricao = new Text(desc);
+    }
+    
+    public ConjuntoFrasesStub toStub () {
+        ConjuntoFrasesStub result = 
+            new ConjuntoFrasesStub(
+                    getKey().getId(), 
+                    getDescricao(), 
+                    getFrases());
+        return result;
     }
     
 }

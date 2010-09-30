@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.appengine.api.datastore.Key;
 
+@Deprecated
 @PersistenceCapable
 public class Usuario {
 

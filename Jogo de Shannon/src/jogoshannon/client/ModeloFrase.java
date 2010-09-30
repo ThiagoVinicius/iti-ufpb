@@ -1,11 +1,13 @@
 package jogoshannon.client;
 
-import com.google.gwt.event.shared.HandlerManager;
+import java.util.List;
 
 import jogoshannon.client.event.FraseCompletaEvent;
 import jogoshannon.client.event.TentativaEvent;
-import jogoshannon.shared.Frase;
+import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.Tentativas;
+
+import com.google.gwt.event.shared.HandlerManager;
 
 public class ModeloFrase {
 
@@ -13,12 +15,14 @@ public class ModeloFrase {
     private int ponteiroLetra;
     private int contagemDesafios;
     private Tentativas tentativas;
+    private List<Integer> mostrarLetras;
 
-    public ModeloFrase(String frase) {
+    public ModeloFrase(String frase, DadosJogo jogo) {
         super();
         this.frase = frase;
         this.ponteiroLetra = 0;
-        this.contagemDesafios = Frase.QUANTIDADE_LETRAS.length;
+        this.mostrarLetras = jogo.exibirLetras;
+        this.contagemDesafios = this.mostrarLetras.size();
         this.tentativas = new Tentativas(contagemDesafios);
     }
 
@@ -32,7 +36,7 @@ public class ModeloFrase {
         }
 
         ++tentativas.contagens[ponteiroLetra];
-        int indice = Frase.QUANTIDADE_LETRAS[ponteiroLetra];
+        int indice = mostrarLetras.get(ponteiroLetra);
         char esperado = frase.charAt(indice);
 
         if (esperado == tentativa) {
@@ -52,7 +56,7 @@ public class ModeloFrase {
     }
 
     public String getFraseParcial() {
-        int indice = Frase.QUANTIDADE_LETRAS[ponteiroLetra];
+        int indice = mostrarLetras.get(ponteiroLetra);
         return frase.substring(0, indice);
     }
 

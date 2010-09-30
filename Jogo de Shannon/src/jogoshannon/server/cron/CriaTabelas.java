@@ -15,8 +15,8 @@ import jogoshannon.server.GestorPersistencia;
 import jogoshannon.server.persistent.ConjuntoFrases;
 import jogoshannon.server.persistent.Experimento;
 import jogoshannon.server.persistent.ExperimentoDefault;
+import jogoshannon.server.persistent.Frase;
 import jogoshannon.server.persistent.FraseStore;
-import jogoshannon.shared.Frase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

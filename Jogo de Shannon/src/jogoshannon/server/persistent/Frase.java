@@ -1,7 +1,8 @@
-package jogoshannon.shared;
+package jogoshannon.server.persistent;
 
 import java.io.Serializable;
 
+@Deprecated
 public class Frase implements Serializable {
 
     private static final long serialVersionUID = -7515671084652941703L;

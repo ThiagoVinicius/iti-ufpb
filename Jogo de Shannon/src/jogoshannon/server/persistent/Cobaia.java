@@ -1,15 +1,17 @@
 package jogoshannon.server.persistent;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.listener.StoreCallback;
+
+import jogoshannon.server.GestorPersistencia;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,15 +29,18 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
-    @Persistent
-    private volatile List<Rodada> desafios;
+    @Persistent(serialized = "true")
+    private RegistroRodadas desafios;
     
     @Persistent
     private Date lastModified;
     
-//    @Persistent (mappedBy="cobaias")
-//    private Experimento experimento;
-
+    @Persistent
+    private Key experimento;
+    
+    @Persistent
+    private Key conjuntoFrases;
+    
     public long getIdSessao() {
         return key.getId();
     }
@@ -50,11 +55,11 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     
     public synchronized List<Rodada> getDesafios() {
         if (desafios == null) {
-            desafios = new ArrayList<Rodada>();
+            desafios = new RegistroRodadas();
         }
-        return desafios;
+        return desafios.getRodadas();
     }
-
+    
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
     }
@@ -62,6 +67,34 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     public Date getLastModified() {
         return lastModified;
     }
+    
+    public void setExperimento (Experimento exp) {
+        experimento = exp.getKey();
+    }
+    
+    public void setConjuntoFrases (ConjuntoFrases frases) {
+        conjuntoFrases = frases.getKey();
+    }
+    
+    public Key getConjuntoFrasesKey () {
+        return conjuntoFrases;
+    }
+    
+    public ConjuntoFrases getFrases() {
+        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+        ConjuntoFrases result = null;
+        try {
+            result = pm.getObjectById(ConjuntoFrases.class, conjuntoFrases);
+        } finally {
+            pm.close();
+        }
+        return result;
+    }
+    
+    public ConjuntoFrases getFrases(PersistenceManager pm) {
+        return pm.getObjectById(ConjuntoFrases.class, conjuntoFrases);
+    }
+
 
     @Override
     public String toString() {
@@ -71,6 +104,10 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     @Override
     public void jdoPreStore() {
         logger.info("Usuario [{}] sendo armazenado. Atualizando timestamp.", key);
+        if (desafios != null) {
+            //Substituindo objeto antigo, para que o JDO perceba que foi alterado.
+            desafios = desafios.copiaRasa();
+        }
         setLastModified(new Date());
     }
 
