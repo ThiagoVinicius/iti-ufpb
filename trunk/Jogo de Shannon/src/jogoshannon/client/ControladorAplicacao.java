@@ -1,8 +1,10 @@
 package jogoshannon.client;
 
 import jogoshannon.client.presenter.Apresentador;
+import jogoshannon.client.presenter.EnviarObraApresentador;
 import jogoshannon.client.presenter.PrincipalApresentador;
 import jogoshannon.client.presenter.ResultadosApresentador;
+import jogoshannon.client.view.EnviarObraView;
 import jogoshannon.client.view.PrincipalExibicao;
 import jogoshannon.client.view.ResultadosExibicao;
 
@@ -16,10 +18,8 @@ public class ControladorAplicacao implements Apresentador,
         ValueChangeHandler<String> {
 
     private HasWidgets pagina;
-    private JuizSoletrandoAsync servidor;
 
-    public ControladorAplicacao(JuizSoletrandoAsync servidor) {
-        this.servidor = servidor;
+    public ControladorAplicacao() {
         amarra();
     }
 
@@ -47,13 +47,23 @@ public class ControladorAplicacao implements Apresentador,
             HandlerManager eventos = new HandlerManager(null);
 
             if (token.equals("jogar")) {
-                oEscolhido = new PrincipalApresentador(eventos,
-                        new PrincipalExibicao(), servidor);
+                oEscolhido = new PrincipalApresentador(
+                        eventos,
+                        new PrincipalExibicao(), 
+                        Jogo_de_Shannon.getJuizSoletrando());
             }
 
             else if (token.equals("resultados")) {
-                oEscolhido = new ResultadosApresentador(eventos,
-                        new ResultadosExibicao(eventos), servidor);
+                oEscolhido = new ResultadosApresentador(
+                        eventos,
+                        new ResultadosExibicao(eventos), 
+                        Jogo_de_Shannon.getJuizSoletrando());
+            }
+            
+            else if (token.equals("enviar")) {
+                oEscolhido = new EnviarObraApresentador(
+                        new EnviarObraView(),
+                        Jogo_de_Shannon.getProducaoPrograma());
             }
 
             if (oEscolhido != null) {

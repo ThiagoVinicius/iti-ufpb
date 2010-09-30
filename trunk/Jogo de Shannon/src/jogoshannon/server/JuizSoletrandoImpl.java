@@ -1,25 +1,22 @@
 package jogoshannon.server;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.jdo.Transaction;
 import javax.servlet.http.HttpSession;
 
 import jogoshannon.client.JuizSoletrando;
 import jogoshannon.server.persistent.Cobaia;
 import jogoshannon.server.persistent.ConjuntoFrases;
-import jogoshannon.server.persistent.Desafio;
 import jogoshannon.server.persistent.Experimento;
 import jogoshannon.server.persistent.ExperimentoDefault;
-import jogoshannon.server.persistent.FraseStore;
 import jogoshannon.server.persistent.Rodada;
-import jogoshannon.server.persistent.Usuario;
-import jogoshannon.shared.Frase;
+import jogoshannon.shared.DadosJogo;
+import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.SessaoInvalidaException;
 import jogoshannon.shared.Tentativas;
 import jogoshannon.shared.UsuarioNaoEncontradoException;
@@ -38,15 +35,14 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
     private static final Logger logger = 
         LoggerFactory.getLogger(JuizSoletrandoImpl.class);
 
-    private Cobaia getUsuarioAtual(PersistenceManager pm) {
+    private Cobaia getUsuarioAtual(Experimento exp, PersistenceManager pm) throws IOException {
 
         HttpSession sessao = getThreadLocalRequest().getSession();
         Key chave = (Key) sessao.getAttribute("usuario");
         Cobaia usuario = null;
 
         if (chave == null) {
-            usuario = new Cobaia();
-            usuario = pm.makePersistent(usuario);
+            usuario = GestorExperimentos.novaCobaia(exp, pm);
             chave = usuario.getKey();
             sessao.setAttribute("usuario", chave);
             logger.info("Criando NOVO usuario, id = {}; Sessao = {}", 
@@ -59,6 +55,21 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
         return usuario;
 
+    }
+    
+    private void setExperimentoAtual (Experimento exp) {
+        HttpSession sessao = getThreadLocalRequest().getSession();
+        sessao.setAttribute("experimento", exp.getKey());
+    }
+    
+    private Experimento getExperimentoAtual (PersistenceManager pm) {
+        HttpSession sessao = getThreadLocalRequest().getSession();
+        Key chave = (Key) sessao.getAttribute("experimento");
+        if (chave == null) {
+            return null;
+        } else {
+            return pm.getObjectById(Experimento.class, chave);
+        }
     }
 
     private void forcarSessaoValida() throws SessaoInvalidaException {
@@ -99,57 +110,46 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         return getThreadLocalRequest().getSession(false) != null;
     }
 
-    @Override
-    public long getId() {
-        
-        logger.info("Executando: getId()");
+    public DadosJogo getFrases(Long idExperimento) throws SessaoInvalidaException {
+
+        logger.info("Executando: getFrases()");
         
         boolean sessaoValida = checarSessaoValida();
         
         if (sessaoValida) {
             logger.debug("Solicitação de ID já estava associada a uma sessão " +
-            		"valida. Ignorando sessão antiga e criando uma nova.");
+                    "valida. Ignorando sessão antiga e criando uma nova.");
         }
         
         destruirSessao();
 
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
-        Cobaia usuario = getUsuarioAtual(pm);
-        pm.close();
-        
-        logger.info("Retornando id = {}", usuario.getIdSessao());
-        
-        return usuario.getIdSessao();
-    }
-
-    @Override
-    public Frase[] getFrases(Long idExperimento) throws SessaoInvalidaException {
-
-        logger.info("Executando: getFrases()");
-        
-        forcarSessaoValida();
-
-        PersistenceManager pm = GestorPersistencia.get()
-                .getPersistenceManager();
 
         Experimento exp;
-        List<String> frases;
+        Cobaia usuario;
         try {
             //resposta = (List<FraseStore>) consulta.execute();
             exp = ExperimentoDefault.getDefault(pm);
-            frases = exp.getFrases().getFrases();
-
-            Frase resultado[] = new Frase[frases.size()];
-            for (int i = 0; i < resultado.length; ++i) {
-                resultado[i] = new Frase(frases.get(i));
-            }
+            usuario = getUsuarioAtual(exp, pm);
+            exp.addCobaia(usuario);
+            setExperimentoAtual(exp);
             
-            logger.info("Retornando {} frases.", resultado.length);
+            List<Integer> exibirLetras = exp.getMostrarLetras();
+            ConjuntoFrases frases = usuario.getFrases(pm);
             
-            return resultado;
-        } finally {
             pm.close();
+            logger.info("Retornando {} frases.", frases.getFrases().size());
+            
+            return new DadosJogo(exibirLetras, frases.toStub(), usuario.getIdSessao());
+        } catch (IOException e) {
+            logger.warn("", e);
+            //FIXME
+            throw new RuntimeException(e);
+        } finally {
+            if (pm.isClosed() == false) {
+                pm.close();
+            }
         }
     }
 
@@ -163,6 +163,8 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
+        
+        //FIXME Colocar para funcionar novamente a transacao
         Transaction tx = pm.currentTransaction();
         try {
             tx.begin();
@@ -171,8 +173,8 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             for (int i = 0; i < contadores.length; ++i) {
                 tmp.add(new Rodada(contadores[i].contagens));
             }
-                
-            Cobaia usuario = getUsuarioAtual(pm);
+            
+            Cobaia usuario = getUsuarioAtual(null, pm);
             
             if (!usuario.getDesafios().isEmpty()) {
                 logger.error("As tentativas deste usuario já haviam sido " +
@@ -184,10 +186,15 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             usuario.getDesafios().addAll(tmp);
 
             tx.commit();
+        } catch (IOException e) {
+            logger.error("Esta exceção não deveria acontecer após êxito " +
+            		"na invocação de forcarSessaoValiada()", e);
+            throw new SessaoInvalidaException(e);
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
             }
+            pm.close();
 
             destruirSessao();
         }
@@ -236,6 +243,21 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             logger.info("Destruindo sessão: {}", session.getId());
             session.invalidate();
         }
+    }
+
+    @Override
+    public ExperimentoStub getExperimento(Long id) {
+        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+        if (id == 0L) {
+            try {
+                return ExperimentoDefault.getDefault(pm).toStub();
+            } catch (IOException e) {
+                logger.warn("Erro ao carregar experimento padrão: ", e);
+                throw new RuntimeException(e);
+            }
+        }
+        
+        throw new UnsupportedOperationException();
     }
 
 }

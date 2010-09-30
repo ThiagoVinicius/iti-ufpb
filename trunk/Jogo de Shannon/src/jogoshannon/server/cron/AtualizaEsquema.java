@@ -2,10 +2,9 @@ package jogoshannon.server.cron;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.Arrays;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +15,15 @@ import jogoshannon.server.persistent.ConjuntoFrases;
 import jogoshannon.server.persistent.Experimento;
 import jogoshannon.server.persistent.ExperimentoDefault;
 import jogoshannon.server.persistent.FraseStore;
-import jogoshannon.server.persistent.Usuario;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.labs.taskqueue.TaskOptions.Method;
 
 public class AtualizaEsquema extends HttpServlet {
     
@@ -35,53 +39,56 @@ public class AtualizaEsquema extends HttpServlet {
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
 
-        Query consulta = pm.newQuery(FraseStore.class);
-
-        List<FraseStore> fraseStore;
-        List<Usuario> usuario;
         ConjuntoFrases novo = null;
         Experimento novoExp = null;
         try {
 
             logger.info("Localizando todas as frases");
-            fraseStore = (List<FraseStore>) consulta.execute();
-            while (fraseStore.size() > 0) {
-                novo = new ConjuntoFrases();
-                novo.setDescricao("Conjunto de frases que já existiam.");
-                
-                for (FraseStore i : fraseStore) {
-                    novo.putFrase(i.getConteudo().getFrase());
-                }
-                pm.makePersistent(novo);
-                
-                novoExp = new Experimento();
-                novoExp.setDescricao("Experimento que já existia.");
-                novoExp.setFrases(novo);
-                pm.makePersistent(novoExp);
-                
-                ExperimentoDefault.setKey(novoExp.getKey());
-                
-                pm.deletePersistentAll(fraseStore);
-                pm.flush();
-                fraseStore = (List<FraseStore>) consulta.execute();
+            novo = new ConjuntoFrases();
+            novo.setDescricao("Conjunto de frases que já existiam.");
+
+            for (FraseStore i : pm.getExtent(FraseStore.class)) {
+                novo.putFrase(i.getConteudo().getFrase());
             }
+            pm.makePersistent(novo);
             
-            novoExp = ExperimentoDefault.getDefault(pm);
+            logger.info("{} Frases antigas copiadas para um novo conjunto de frases", novo.getFrases().size());
+            logger.info("Criando experimento para o novo conjunto de frases");
             
-            usuario = (List<Usuario>) pm.newQuery(Usuario.class).execute();
-            while (usuario.size() > 0) {
-                
-                //pm.detachCopyAll(usuario);
-                for (Usuario u : usuario) {
-                    novoExp.addCobaia(u.toCobaia());
-                }
-                pm.deletePersistentAll(usuario);
-                pm.flush();
-                usuario = (List<Usuario>) pm.newQuery(Usuario.class).execute();
-            }
+
+            novoExp = new Experimento();
+            novoExp.setDescricao("Experimento que já existia.");
+            novoExp.setFrases(novo);
+            novoExp.getMostrarLetras().addAll(Arrays.asList(new Integer [] 
+               { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 50, 100, 150, 200 }));
+            pm.makePersistent(novoExp);
+            
+            logger.info("Novo experimento criado.");
+
+            pm.flush();
+            
+            logger.info("Excluindo frases antigas.");
+            //while (pm.newQuery(FraseStore.class).deletePersistentAll() > 0);
+            logger.info("Feito.");
+            
+            Queue queue = QueueFactory.getDefaultQueue();
+            logger.info("Disparando tarefa para copiar Usuarios antigos.");
+            queue.add(TaskOptions.Builder.
+                          param("expkey", KeyFactory.keyToString(novoExp.getKey())).
+                          method(Method.GET).
+                          url("/tasks/usuarios-para-cobaias"));
+            
+            logger.info("Criando experimento aletório.");
+            Experimento expAleatorio = new Experimento();
+            expAleatorio.setDescricao("Experimento aleatório");
+            expAleatorio.getMostrarLetras().addAll(Arrays.asList(new Integer [] {5, 10, 15, 20, 25, 50, 100, 200}));
+            expAleatorio.setFrases(null);
+            expAleatorio.setContagemFrases(2);
+            pm.makePersistent(expAleatorio);
+            ExperimentoDefault.setKey(expAleatorio.getKey());
+            logger.info("Criado. Marcando experimento aleatório como experimento padrão.");
 
             logger.info("Executado com sucesso");
-
 
         } catch (Exception e) {
             logger.error("Execucao falhou", e);

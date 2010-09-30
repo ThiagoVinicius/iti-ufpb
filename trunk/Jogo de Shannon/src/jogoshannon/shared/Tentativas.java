@@ -9,7 +9,7 @@ public class Tentativas implements Serializable {
 
     @SuppressWarnings("unused")
     private Tentativas() {
-        this(Frase.QUANTIDADE_LETRAS.length);
+        this(0);
     }
 
     public Tentativas(int dados[]) {

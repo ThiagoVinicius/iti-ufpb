@@ -2,10 +2,7 @@ package jogoshannon.server.cron;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
-
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,25 +30,11 @@ public class LimparTabelas extends HttpServlet {
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
 
-        Query consulta = pm.newQuery(FraseStore.class);
-
-        List<FraseStore> fraseStore;
-        List<Usuario> usuario;
         try {
 
-            fraseStore = (List<FraseStore>) consulta.execute();
-            while (fraseStore.size() > 0) {
-                pm.deletePersistentAll(fraseStore);
-                pm.flush();
-                fraseStore = (List<FraseStore>) consulta.execute();
-            }
-
-            usuario = (List<Usuario>) pm.newQuery(Usuario.class).execute();
-            while (usuario.size() > 0) {
-                pm.deletePersistentAll(usuario);
-                pm.flush();
-                usuario = (List<Usuario>) pm.newQuery(Usuario.class).execute();
-            }
+            //fraseStore = (List<FraseStore>) consulta.execute();
+            while (pm.newQuery(FraseStore.class).deletePersistentAll() > 0);
+            while (pm.newQuery(Usuario.class).deletePersistentAll() > 0);
 
             logger.info("Executado com sucesso");
 

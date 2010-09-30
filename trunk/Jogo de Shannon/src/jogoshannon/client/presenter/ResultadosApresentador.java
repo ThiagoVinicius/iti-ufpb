@@ -4,13 +4,14 @@ import jogoshannon.client.JuizSoletrandoAsync;
 import jogoshannon.client.ModeloResposta;
 import jogoshannon.client.event.UsuarioRemovidoEvent;
 import jogoshannon.client.event.UsuarioRemovidoHandler;
-import jogoshannon.shared.Frase;
+import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.Tentativas;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -51,16 +52,37 @@ public class ResultadosApresentador implements Apresentador {
         this.eventos = eventos;
         this.view = view;
         this.servidor = servidor;
-        this.entropia = new ModeloResposta();
+        //this.entropia = new ModeloResposta();
 
+        //preparaTitulos();
+        //amarrar();
+    }
+    
+    private void asyncInit() {
+        servidor.getExperimento(0L, new AsyncCallback<ExperimentoStub>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                Window.alert("Falha ao comunicar com o servidor");
+            }
+
+            @Override
+            public void onSuccess(ExperimentoStub result) {
+                entropia = new ModeloResposta(result);
+                postInit();
+            }
+            
+        });
+    }
+    
+    private void postInit() {
         preparaTitulos();
         amarrar();
     }
 
     private void preparaTitulos() {
-        String titulos[] = new String[Frase.QUANTIDADE_LETRAS.length];
+        String titulos[] = new String[entropia.getEntropiaMaxima().length];
         for (int i = 0; i < titulos.length; ++i) {
-            titulos[i] = Integer.toString(Frase.QUANTIDADE_LETRAS[i]);
+            titulos[i] = Integer.toString(entropia.getEntropiaMaxima().length);
         }
         this.view.setTitulosTabela(titulos);
     }

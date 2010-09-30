@@ -1,18 +1,20 @@
 package jogoshannon.server;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jogoshannon.client.ProducaoPrograma;
 import jogoshannon.server.persistent.ConjuntoFrases;
-import jogoshannon.server.persistent.FraseStore;
+import jogoshannon.server.persistent.Experimento;
+import jogoshannon.server.persistent.Obra;
 import jogoshannon.shared.ConjuntoFrasesStub;
-import jogoshannon.shared.Frase;
+import jogoshannon.shared.ExperimentoStub;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -34,8 +36,7 @@ public class ProducaoProgramaImpl extends RemoteServiceServlet implements Produc
             ConjuntoFrasesStub resultado[] = new ConjuntoFrasesStub[resposta.size()];
             for (int i = 0; i < resultado.length; ++i) {
                 ConjuntoFrases cur = resposta.get(i);
-                resultado[i] = new ConjuntoFrasesStub(
-                        cur.getKey().getId(), cur.getDescricao());
+                resultado[i] = cur.toStub();
             }
             
             logger.info("Retornando {} conjuntos de frases.", resultado.length);
@@ -45,6 +46,63 @@ public class ProducaoProgramaImpl extends RemoteServiceServlet implements Produc
             pm.close();
         }
         
+    }
+
+    @Override
+    public ExperimentoStub[] getExperimentos() {
+        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+        
+        Query consulta = pm.newQuery(Experimento.class);
+
+        List<Experimento> resposta;
+        try {
+            resposta = (List<Experimento>) consulta.execute();
+
+            ExperimentoStub resultado[] = new ExperimentoStub[resposta.size()];
+            for (int i = 0; i < resultado.length; ++i) {
+                Experimento cur = resposta.get(i);
+                resultado[i] = cur.toStub();
+            }
+            
+            logger.info("Retornando {} experimentos.", resultado.length);
+            
+            return resultado;
+        } finally {
+            pm.close();
+        }
+
+    }
+
+    @Override
+    public long putExperimento(ExperimentoStub exp) {
+        
+        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+        try {
+            Experimento gravar = new Experimento(exp);
+            pm.makePersistent(gravar);
+            return gravar.getId();
+        } finally {
+            pm.close();
+        }
+        
+    }
+
+    @Override
+    public String getUploadUrl(String titulo, String autor, String descricao) {
+        logger.info("Executando getUploadUrl()");
+        UUID uuid = UUID.randomUUID();
+        String result = "/upload/obra/"+uuid.toString();
+        Obra obra = new Obra(titulo, autor, descricao, result);
+        obra.setCharLen(-1L);
+        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+        try {
+            logger.info("Armazenando informacoes do upload: {}", obra);
+            pm.makePersistent(obra);
+            logger.info("Retornando url: {}", result);
+            return result;
+        } finally {
+            pm.close();
+        }
     }
     
 }

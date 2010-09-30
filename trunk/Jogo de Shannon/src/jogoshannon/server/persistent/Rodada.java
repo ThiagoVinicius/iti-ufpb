@@ -1,27 +1,20 @@
 package jogoshannon.server.persistent;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Arrays;
 
-import javax.jdo.annotations.EmbeddedOnly;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+public class Rodada implements Externalizable {
 
-import com.google.appengine.api.datastore.Key;
-
-@PersistenceCapable
-@EmbeddedOnly
-public class Rodada {
-
-    @SuppressWarnings("unused")
-    @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Key key;
-
-    @Persistent
+    private static final long serialVersionUID = 1L;
+    
     private int tentativas[];
-
+    
+    public Rodada() {
+    }
+    
     public Rodada(int numeroDesafios) {
         tentativas = new int[numeroDesafios];
     }
@@ -49,6 +42,24 @@ public class Rodada {
     @Override
     public String toString() {
         return Arrays.toString(getTentativas());
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException {
+
+        long ver = in.readLong();
+        if (ver == 1L) {
+            tentativas = (int[]) in.readObject();
+        } else {
+            throw new IOException("Numero de versao("+ver+") desconhecido!");
+        }
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeLong(serialVersionUID);
+        out.writeObject(tentativas);
     }
     
 }

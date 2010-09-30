@@ -1,6 +1,8 @@
 package jogoshannon.client;
 
-import jogoshannon.shared.Frase;
+import java.util.List;
+
+import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.Tentativas;
 
 public class ModeloResposta {
@@ -10,11 +12,11 @@ public class ModeloResposta {
     private double entropiaMaxima[];
     private int total;
 
-    public ModeloResposta() {
-
-        tabela = new int[28][Frase.QUANTIDADE_LETRAS.length];
-        entropiaMaxima = new double[Frase.QUANTIDADE_LETRAS.length];
-        entropiaMinima = new double[Frase.QUANTIDADE_LETRAS.length];
+    public ModeloResposta(ExperimentoStub exp) {
+        List<Integer> letras = exp.getMostrarLetras();
+        tabela = new int[28][letras.size()];
+        entropiaMaxima = new double[letras.size()];
+        entropiaMinima = new double[letras.size()];
     }
 
     public void adiciona(Tentativas[] tentativas) {

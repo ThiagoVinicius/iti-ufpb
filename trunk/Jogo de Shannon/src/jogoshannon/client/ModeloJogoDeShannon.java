@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import jogoshannon.client.event.JogoCompletoEvent;
-import jogoshannon.shared.Frase;
+import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.Tentativas;
 
 import com.google.gwt.event.shared.HandlerManager;
@@ -16,11 +16,13 @@ public class ModeloJogoDeShannon {
     private List<ModeloFrase> frases;
     private int ponteiroFrase;
     private Set<Character> letrasUsadas;
+    private DadosJogo jogo;
 
-    public ModeloJogoDeShannon(Frase frasesIniciais[]) {
+    public ModeloJogoDeShannon(DadosJogo jogo) {
         this.frases = new ArrayList<ModeloFrase>(); // frases.getFrases();
-        for (int i = 0; i < frasesIniciais.length; ++i) {
-            this.frases.add(new ModeloFrase(frasesIniciais[i].getFrase()));
+        this.jogo = jogo;
+        for (String i : jogo.getFrases()) {
+            this.frases.add(new ModeloFrase(i, jogo));
         }
         ponteiroFrase = 0;
         letrasUsadas = new HashSet<Character>();
@@ -69,8 +71,8 @@ public class ModeloJogoDeShannon {
         }
     }
 
-    public void adicionaFrase(Frase novaFrase) {
-        frases.add(new ModeloFrase(novaFrase.getFrase()));
+    public void adicionaFrase(String novaFrase) {
+        frases.add(new ModeloFrase(novaFrase, jogo));
     }
 
     public Tentativas getTentativas(int fraseId) {
