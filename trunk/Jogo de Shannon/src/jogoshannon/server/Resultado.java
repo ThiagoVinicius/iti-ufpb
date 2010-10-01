@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jogoshannon.server.persistent.Usuario;
+import jogoshannon.server.persistent.Cobaia;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -30,11 +30,11 @@ public class Resultado extends HttpServlet {
         PersistenceManager pm = null;
 
         try {
-            Key id = KeyFactory.createKey(Usuario.class.getSimpleName(),
+            Key id = KeyFactory.createKey(Cobaia.class.getSimpleName(),
                     new Long(req.getParameter("id")));
 
             pm = GestorPersistencia.get().getPersistenceManager();
-            Usuario fulano = pm.getObjectById(Usuario.class, id);
+            Cobaia fulano = pm.getObjectById(Cobaia.class, id);
 
             out.println("Dados do usuário: " + fulano.toString());
 

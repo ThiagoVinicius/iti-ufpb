@@ -25,48 +25,12 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>criarTabelas</servlet-name>
-		<servlet-class>jogoshannon.server.cron.CriaTabelas</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>criarTabelas</servlet-name>
-		<url-pattern>/cron/criarTabelas</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>limparTabelas</servlet-name>
-		<servlet-class>jogoshannon.server.cron.LimparTabelas</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>limparTabelas</servlet-name>
-		<url-pattern>/cron/limparTabelas</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>atualizarTabelas</servlet-name>
-		<servlet-class>jogoshannon.server.cron.AtualizaEsquema</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>atualizarTabelas</servlet-name>
-		<url-pattern>/cron/atualizarTabelas</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>resultadoBruto</servlet-name>
 		<servlet-class>jogoshannon.server.Resultado</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>resultadoBruto</servlet-name>
 		<url-pattern>/resultadoBruto</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>usuarioCobaias</servlet-name>
-		<servlet-class>jogoshannon.server.tasks.UsuariosParaCobaias</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>usuarioCobaias</servlet-name>
-		<url-pattern>/tasks/usuarios-para-cobaias</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -77,7 +41,7 @@
 		<servlet-name>RemoteApiServlet</servlet-name>
 		<url-pattern>/remote_api</url-pattern>
 	</servlet-mapping>
-
+	
 	<servlet>
 		<servlet-name>uploadObra</servlet-name>
 		<servlet-class>jogoshannon.server.UploadObra</servlet-class>
@@ -86,6 +50,15 @@
 		<servlet-name>uploadObra</servlet-name>
 		<url-pattern>/admin/upload/obra/*</url-pattern>
 	</servlet-mapping>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
 	
 	<security-constraint>
 		<web-resource-collection>
