@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 @SuppressWarnings("serial")
@@ -258,6 +260,13 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         }
         
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public boolean souAdmin() {
+        UserService userService = UserServiceFactory.getUserService();
+        boolean result = userService.isUserLoggedIn() && userService.isUserAdmin();
+        return result;
     }
 
 }

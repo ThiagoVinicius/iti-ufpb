@@ -91,7 +91,7 @@ public class ProducaoProgramaImpl extends RemoteServiceServlet implements Produc
     public String getUploadUrl(String titulo, String autor, String descricao) {
         logger.info("Executando getUploadUrl()");
         UUID uuid = UUID.randomUUID();
-        String result = "/upload/obra/"+uuid.toString();
+        String result = "/admin/upload/obra/"+uuid.toString();
         Obra obra = new Obra(titulo, autor, descricao, result);
         obra.setCharLen(-1L);
         PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
@@ -103,6 +103,14 @@ public class ProducaoProgramaImpl extends RemoteServiceServlet implements Produc
         } finally {
             pm.close();
         }
+    }
+    
+    /**
+     * A checagem é feita à nível de url. Se o usuário não for admin, a 
+     * invocação deste método será abortada com um erro 403.
+     */
+    @Override
+    public void checkAdmin() {
     }
     
 }
