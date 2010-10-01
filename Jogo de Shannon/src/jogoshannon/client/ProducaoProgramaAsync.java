@@ -16,4 +16,6 @@ public interface ProducaoProgramaAsync {
     void getUploadUrl(String titulo, String autor, String descricao,
             AsyncCallback<String> callback);
 
+    void checkAdmin(AsyncCallback<Void> callback);
+
 }

@@ -21,7 +21,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>producao</servlet-name>
-		<url-pattern>/jogo_de_shannon/producao</url-pattern>
+		<url-pattern>/jogo_de_shannon/admin/producao</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -84,7 +84,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>uploadObra</servlet-name>
-		<url-pattern>/upload/obra/*</url-pattern>
+		<url-pattern>/admin/upload/obra/*</url-pattern>
 	</servlet-mapping>
 	
 	<security-constraint>
@@ -118,6 +118,15 @@
 	<security-constraint>
 		<web-resource-collection>
 			<url-pattern>/tasks/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/jogo_de_shannon/admin/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>admin</role-name>

@@ -21,5 +21,7 @@ public interface JuizSoletrando extends RemoteService {
             throws UsuarioNaoEncontradoException;
     
     public ExperimentoStub getExperimento (Long id);
+    
+    public boolean souAdmin ();
 
 }

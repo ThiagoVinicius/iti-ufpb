@@ -17,4 +17,6 @@ public interface JuizSoletrandoAsync {
 
     void getExperimento(Long id, AsyncCallback<ExperimentoStub> callback);
 
+    void souAdmin(AsyncCallback<Boolean> callback);
+
 }

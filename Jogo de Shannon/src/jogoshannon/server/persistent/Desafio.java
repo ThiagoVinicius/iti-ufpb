@@ -36,7 +36,11 @@ public class Desafio {
     public Desafio(int tentativas[]) {
         this.tentativas = tentativas;
     }
-
+    
+    public Key getKey () {
+        return key;
+    }
+    
     public int[] getTentativas() {
         return tentativas;
     }
