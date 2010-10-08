@@ -132,7 +132,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         Cobaia usuario;
         try {
             //resposta = (List<FraseStore>) consulta.execute();
-            exp = ExperimentoDefault.getDefault(pm);
+            exp = getExperimento(idExperimento);
             usuario = getUsuarioAtual(exp, pm);
             exp.addCobaia(usuario);
             setExperimentoAtual(exp);
@@ -143,7 +143,8 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             pm.close();
             logger.info("Retornando {} frases.", frases.getFrases().size());
             
-            return new DadosJogo(exibirLetras, frases.toStub(), usuario.getIdSessao());
+            return new DadosJogo(exibirLetras, frases.toStub(), 
+                    usuario.getIdSessao(), exp.getId());
         } catch (IOException e) {
             logger.warn("", e);
             //FIXME
@@ -247,19 +248,31 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         }
     }
 
-    @Override
-    public ExperimentoStub getExperimento(Long id) {
+    private Experimento getExperimento (Long id) {
         PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
         if (id == 0L) {
             try {
-                return ExperimentoDefault.getDefault(pm).toStub();
+                return ExperimentoDefault.getDefault(pm);
             } catch (IOException e) {
                 logger.warn("Erro ao carregar experimento padrão: ", e);
                 throw new RuntimeException(e);
+            } finally {
+                pm.close();
+            }
+        } else {
+            try {
+                Experimento exp = pm.getObjectById(Experimento.class, id);
+                return exp;
+            } finally {
+                pm.close();
             }
         }
         
-        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public ExperimentoStub getExperimentoStub(Long id) {
+        return getExperimento(id).toStub();
     }
     
     @Override

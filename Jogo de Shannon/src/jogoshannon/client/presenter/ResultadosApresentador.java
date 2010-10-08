@@ -59,7 +59,7 @@ public class ResultadosApresentador implements Apresentador {
     }
     
     private void asyncInit() {
-        servidor.getExperimento(0L, new AsyncCallback<ExperimentoStub>() {
+        servidor.getExperimentoStub(0L, new AsyncCallback<ExperimentoStub>() {
             @Override
             public void onFailure(Throwable caught) {
                 Window.alert("Falha ao comunicar com o servidor");

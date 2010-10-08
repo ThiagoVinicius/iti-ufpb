@@ -17,6 +17,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -56,6 +57,7 @@ public class PrincipalApresentador implements Apresentador {
     HandlerManager eventos;
     ModeloJogoDeShannon jogoDeShannon;
     JuizSoletrandoAsync servidor;
+    Long idExperimento;
 
     static final String MENSAGEM_SESSAO_EXPIRADA = "Muito tempo se passou desde sua última visita - não será possível "
             + "continuar. Você terá que recomeçar o jogo, recarregando a página."
@@ -172,10 +174,11 @@ public class PrincipalApresentador implements Apresentador {
     }
 
     public PrincipalApresentador(HandlerManager eventos, Exibicao view,
-            JuizSoletrandoAsync servidor) {
+            JuizSoletrandoAsync servidor, Long expId) {
         this.view = view;
         this.eventos = eventos;
         this.servidor = servidor;
+        this.idExperimento = expId;
     }
 
     @Override
@@ -187,8 +190,9 @@ public class PrincipalApresentador implements Apresentador {
     }
 
     private void pegarId() {
-        servidor.getFrases(0L, new AsyncCallback<DadosJogo>() {
+        servidor.getFrases(idExperimento, new AsyncCallback<DadosJogo>() {
             public void onSuccess(DadosJogo result) {
+                History.newItem("jogar/"+result.idExperimento, false);
                 view.setId(""+result.idUsuario);
                 jogoDeShannon = new ModeloJogoDeShannon(result);
                 view.setCarregando(false);
