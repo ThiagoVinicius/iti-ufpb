@@ -50,7 +50,15 @@ public class ControladorAplicacao implements Apresentador,
                 oEscolhido = new PrincipalApresentador(
                         eventos,
                         new PrincipalExibicao(), 
-                        Jogo_de_Shannon.getJuizSoletrando());
+                        Jogo_de_Shannon.getJuizSoletrando(),
+                        0L);
+            } else if (token.startsWith("jogar/")) {
+                Long exp = new Long(token.substring(6).trim());
+                oEscolhido = new PrincipalApresentador(
+                        eventos,
+                        new PrincipalExibicao(), 
+                        Jogo_de_Shannon.getJuizSoletrando(),
+                        exp);
             }
 
             else if (token.equals("resultados")) {

@@ -15,8 +15,8 @@ public interface JuizSoletrandoAsync {
 
     void getResultados(long id, AsyncCallback<Tentativas[]> callback);
 
-    void getExperimento(Long id, AsyncCallback<ExperimentoStub> callback);
-
     void souAdmin(AsyncCallback<Boolean> callback);
+
+    void getExperimentoStub(Long id, AsyncCallback<ExperimentoStub> callback);
 
 }

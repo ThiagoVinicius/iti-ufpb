@@ -26,6 +26,10 @@ public class Obra implements StoreCallback {
     @Persistent(valueStrategy=IdGeneratorStrategy.IDENTITY)
     private Key key;
     
+    public Key getKey() {
+        return key;
+    }
+
     @Persistent
     private Date lastModified;
     

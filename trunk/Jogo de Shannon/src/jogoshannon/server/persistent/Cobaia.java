@@ -76,6 +76,10 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
         conjuntoFrases = frases.getKey();
     }
     
+    public void setConjuntoFrasesKey (Key frases) {
+        conjuntoFrases = frases;
+    }
+    
     public Key getConjuntoFrasesKey () {
         return conjuntoFrases;
     }

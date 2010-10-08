@@ -20,7 +20,7 @@ public interface JuizSoletrando extends RemoteService {
     public Tentativas[] getResultados(long id)
             throws UsuarioNaoEncontradoException;
     
-    public ExperimentoStub getExperimento (Long id);
+    public ExperimentoStub getExperimentoStub (Long id);
     
     public boolean souAdmin ();
 

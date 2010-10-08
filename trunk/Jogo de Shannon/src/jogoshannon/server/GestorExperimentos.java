@@ -3,6 +3,7 @@ package jogoshannon.server;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import com.google.appengine.api.datastore.Key;
 
 import jogoshannon.server.persistent.Cobaia;
 import jogoshannon.server.persistent.ConjuntoFrases;
@@ -41,6 +44,8 @@ public class GestorExperimentos {
         if (exp.getFrasesKey() == null) {
             ConjuntoFrases conj = criarAleatorio(pm, exp);
             novo.setConjuntoFrases(conj);
+        } else {
+            novo.setConjuntoFrasesKey(exp.getFrasesKey());
         }
         pm.makePersistent(novo);
         exp.addCobaia(novo);
@@ -49,9 +54,9 @@ public class GestorExperimentos {
     
     public static ConjuntoFrases criarAleatorio (PersistenceManager pmo, Experimento exp) throws IOException {
         PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
-        Query query = pm.newQuery(Obra.class);
+        Query query = pm.newQuery("select key from "+Obra.class.getName());
         query.setFilter("uploadUrl == null");
-        List<Obra> result = (List<Obra>) query.execute();
+        List<Key> result = (List<Key>) query.execute();
         try {
             return criarAleatorio(result, exp.getContagemFrases(), exp.getMostrarLetras(), pmo);
         } finally {
@@ -59,7 +64,7 @@ public class GestorExperimentos {
         }
     }
     
-    public static ConjuntoFrases criarAleatorio (List<Obra> origem, int nFrases, 
+    public static ConjuntoFrases criarAleatorio (List<Key> origemKeys, int nFrases, 
             List<Integer> letras, PersistenceManager pm) throws IOException {
 
         Random rand = new Random();
@@ -72,10 +77,19 @@ public class GestorExperimentos {
         descricao.append("Frases originais:");
         descricao.append("\n\n");
         
+        List<Obra> origem = new ArrayList<Obra>(origemKeys.size());
+        for (int i = 0; i < origemKeys.size(); ++i) {
+            origem.add(null);
+        }
         
         for (int i = 0; i < nFrases; ++i) {
             
             int escolhido = rand.nextInt(origem.size());
+            if (origem.get(escolhido) == null) {
+                Obra tmp = pm.getObjectById(Obra.class, origemKeys.get(escolhido));
+                origem.set(escolhido, tmp);
+            }
+            
             Selecao res = separa(origem.get(escolhido), top);
             String lido = res.result;
             lido = StringUtils.desacentua(lido);
