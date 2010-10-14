@@ -87,5 +87,21 @@ public class ModeloJogoDeShannon {
 
         return resultado;
     }
+    
+    public String strWriteTentativas () {
+        StringBuilder sb = new StringBuilder();
+        sb.append(frases.size());
+        sb.append(" ");
+        for (int i = 0; i < frases.size(); ++i) {
+            Tentativas tenta = frases.get(i).getTentativas();
+            sb.append(tenta.contagens.length);
+            sb.append(" ");
+            for (int j : tenta.contagens) {
+                sb.append(j);
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
 
 }

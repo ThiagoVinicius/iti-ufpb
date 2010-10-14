@@ -18,6 +18,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,6 +36,8 @@ public class PrincipalApresentador implements Apresentador {
         void setCarregando(boolean estado);
 
         void setEstadoServidor(PrincipalApresentador.EstadosServidor estadoAtual);
+        
+        void setEstadoServidor(PrincipalApresentador.EstadosServidor estadoAtual, String info);
 
         void exibeFimDeJogo(String titulo, String texto);
 
@@ -67,9 +70,13 @@ public class PrincipalApresentador implements Apresentador {
             + "possível comunicar-se com o servidor. Tente "
             + "recarregar a página. Se este erro persistir, "
             + "Tente novamente mais tarde.";
+    
+    static final int MAX_ENVIO_DELAY = 30000;
 
     int idfail = 0;
     int frasesfail = 0;
+    int enviofail = 0;
+    int envioDelay = 1;
 
     private void bind() {
 
@@ -104,15 +111,42 @@ public class PrincipalApresentador implements Apresentador {
 
     }
 
-    private void enviarTentativas() {
+    Timer enviaTimer = new Timer() {
+        @Override
+        public void run() {
+            enviarTentativasTimed();
+        }
+    };
+    
+    private void enviarTentativas () {
+        enviaTimer.cancel();
+        enviaTimer.schedule(envioDelay);
+        view.setEstadoServidor(EstadosServidor.AGUARDANDO_RESPOSTA, 
+                Integer.toString(envioDelay/1000));
+        if (envioDelay == 1) {
+            envioDelay = 1000;
+        }else {
+            envioDelay *= 2;
+            envioDelay = Math.min(envioDelay, MAX_ENVIO_DELAY);
+        }
+    }
+    
+    private void enviarTentativasTimed() {
 
         servidor.atualizaTentativas(jogoDeShannon.getTodasTentativas(),
                 new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable caught) {
+                        if (enviofail == 6) {
+                            mostrarFimJogo("\nGrrr... O servidor está demorando " +
+                            		"demais para responder.\nDados para coleta" +
+                            		" manual:\n"+jogoDeShannon.strWriteTentativas());
+                        }
+                        
                         if (caught instanceof SessaoInvalidaException) {
                             mostrarSessaoExpirada();
                         } else {
+                            ++enviofail;
                             enviarTentativas();
                         }
                     }
@@ -141,9 +175,6 @@ public class PrincipalApresentador implements Apresentador {
 
     private void doRespostaMudou(char tentativa) {
 
-        // char tentativa = view.getResposta();
-        // view.limparResposta();
-
         if (!VerificadorDeCampo.letraValida(tentativa)) {
             view.setTextoErro("Digite apenas letras ou espaços.");
             return;
@@ -167,10 +198,8 @@ public class PrincipalApresentador implements Apresentador {
 
     private void doFimDeJogo() {
         view.setEstadoServidor(PrincipalApresentador.EstadosServidor.AGUARDANDO_RESPOSTA);
+        mostrarFimJogo("");
         enviarTentativas();
-        view.exibeFimDeJogo("Fim de jogo", "Parabéns, você concluiu o jogo!\n"
-                + "Obrigado pela sua participacao.\n"
-                + "(para jogar novamente, recarregue a página)");
     }
 
     public PrincipalApresentador(HandlerManager eventos, Exibicao view,
@@ -215,37 +244,23 @@ public class PrincipalApresentador implements Apresentador {
         });
     }
 
-//    private void baixarFrases() {
-//        servidor.getFrases(null, new AsyncCallback<Frase[]>() {
-//            @Override
-//            public void onSuccess(Frase[] result) {
-//                jogoDeShannon = new ModeloJogoDeShannon(result);
-//                view.setCarregando(false);
-//                view.setDesafio(jogoDeShannon.getFraseParcial());
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable caught) {
-//                if (caught instanceof SessaoInvalidaException) {
-//                    mostrarSessaoExpirada();
-//                } else {
-//                    ++idfail;
-//                    if (idfail > 5) {
-//                        mostrarErroConexao();
-//                    } else {
-//                        baixarFrases();
-//                    }
-//                }
-//            }
-//        });
-//    }
-
     private void mostrarSessaoExpirada() {
         view.exibeFimDeJogo("Sessão expirou.", MENSAGEM_SESSAO_EXPIRADA);
     }
 
     private void mostrarErroConexao() {
         view.exibeFimDeJogo("Problemas com a conexão", MENSAGEM_ERRO_CONEXAO);
+    }
+    
+    private void mostrarFimJogo (String extra) {
+        
+        String msg = "Parabéns, você concluiu o jogo!\n" 
+        + "Obrigado pela sua participacao.\n"
+        + "(para jogar novamente, recarregue a página)";
+        
+        msg += extra;
+        
+        view.exibeFimDeJogo("Fim de jogo", msg);
     }
 
 }

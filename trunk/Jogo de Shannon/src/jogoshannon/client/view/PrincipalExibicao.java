@@ -150,6 +150,19 @@ implements PrincipalApresentador.Exibicao {
     }
 
     public void setEstadoServidor(PrincipalApresentador.EstadosServidor estadoAtual) {
+        setEstadoServidor(estadoAtual, null);
+    }
+    
+    public void setEstadoServidor(PrincipalApresentador.EstadosServidor estadoAtual, String info) {
+        
+        if (info != null) {
+            Label lab = (Label) situacaoServidor.getWidget();
+            lab.setText("Comunicando com o servidor ("+info+")");
+        } else {
+            Label lab = (Label) situacaoServidor.getWidget();
+            lab.setText("Comunicando com o servidor");
+        }
+        
         switch (estadoAtual) {
         case AGUARDANDO_RESPOSTA:
             situacaoServidor.setPopupPositionAndShow(new PositionCallback() {
