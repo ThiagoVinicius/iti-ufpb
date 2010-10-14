@@ -78,7 +78,9 @@ HasValueChangeHandlers<Character>, ValueChangeHandler<Character> {
         public void pressionarTecla(char tecla) {
             BotaoTeclado aPropria = teclas.get(Character.toUpperCase(tecla));
             if (aPropria != null) {
-                ValueChangeEvent.fire(self, tecla);
+                if (aPropria.isEnabled()) {
+                    ValueChangeEvent.fire(self, tecla);
+                }
             }
         }
 
