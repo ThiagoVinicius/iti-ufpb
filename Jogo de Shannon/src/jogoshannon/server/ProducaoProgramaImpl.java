@@ -6,7 +6,7 @@ import java.util.UUID;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import jogoshannon.client.ProducaoPrograma;
+import jogoshannon.client.remote.ProducaoPrograma;
 import jogoshannon.server.persistent.ConjuntoFrases;
 import jogoshannon.server.persistent.Experimento;
 import jogoshannon.server.persistent.Obra;
@@ -46,31 +46,6 @@ public class ProducaoProgramaImpl extends RemoteServiceServlet implements Produc
             pm.close();
         }
         
-    }
-
-    @Override
-    public ExperimentoStub[] getExperimentos() {
-        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
-        
-        Query consulta = pm.newQuery(Experimento.class);
-
-        List<Experimento> resposta;
-        try {
-            resposta = (List<Experimento>) consulta.execute();
-
-            ExperimentoStub resultado[] = new ExperimentoStub[resposta.size()];
-            for (int i = 0; i < resultado.length; ++i) {
-                Experimento cur = resposta.get(i);
-                resultado[i] = cur.toStub();
-            }
-            
-            logger.info("Retornando {} experimentos.", resultado.length);
-            
-            return resultado;
-        } finally {
-            pm.close();
-        }
-
     }
 
     @Override

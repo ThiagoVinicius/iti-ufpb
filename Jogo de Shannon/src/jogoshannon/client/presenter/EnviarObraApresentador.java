@@ -1,7 +1,7 @@
 package jogoshannon.client.presenter;
 
 import jogoshannon.client.PedidoEncerramento;
-import jogoshannon.client.ProducaoProgramaAsync;
+import jogoshannon.client.remote.ProducaoProgramaAsync;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

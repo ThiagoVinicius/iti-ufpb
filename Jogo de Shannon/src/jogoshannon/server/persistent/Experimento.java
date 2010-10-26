@@ -13,6 +13,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import jogoshannon.server.GestorPersistencia;
+import jogoshannon.shared.ConjuntoFrasesStub;
 import jogoshannon.shared.ExperimentoStub;
 
 import com.google.appengine.api.datastore.Key;
@@ -89,6 +90,14 @@ public class Experimento {
         return (List<Cobaia>) q.execute(getKey().toString());
     }
     
+    public List<Long> getIdCobaias () {
+        List<Long> result = new ArrayList<Long>();
+        for (Key k : lazyGetCobaias()) {
+            result.add(k.getId());
+        }
+        return result;
+    }
+    
     public boolean addCobaia (Cobaia cob) {
         boolean result = lazyGetCobaias().add(cob.getKey());
         if (result == true) {
@@ -126,6 +135,11 @@ public class Experimento {
     }
 
     public ConjuntoFrases getFrases() {
+        
+        if (frases == null) {
+            return null;
+        }
+        
         PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
         ConjuntoFrases result = null;
         try {
@@ -143,8 +157,10 @@ public class Experimento {
     public ExperimentoStub toStub() {
         ExperimentoStub result = new ExperimentoStub();
         result.setDescricao(getDescricao());
-        result.setFrases(getFrases().toStub());
+        result.setFrases(ConjuntoFrases.toStub(getFrases()));
         result.setId(getId());
+        result.setIdCobaias(getIdCobaias());
+        result.getMostrarLetras().addAll(getMostrarLetras());
         return result;
     }
 

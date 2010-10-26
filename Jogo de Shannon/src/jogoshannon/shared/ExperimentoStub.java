@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ExperimentoStub implements Serializable {
 
-    private static final long serialVersionUID = -6397330948400245867L;
+    private static final long serialVersionUID = 6198623605640057286L;
 
     private long id;
     
@@ -15,6 +15,8 @@ public class ExperimentoStub implements Serializable {
     private ConjuntoFrasesStub frases;
     
     private List<Integer> mostrarLetras;
+    
+    private List<Long> idCobaias;
 
     public long getId() {
         return id;
@@ -45,6 +47,14 @@ public class ExperimentoStub implements Serializable {
 
     public void setId(long id) {
         this.id = id; 
+    }
+
+    public List<Long> getIdCobaias() {
+        return idCobaias;
+    }
+    
+    public void setIdCobaias (List<Long> ids) {
+        idCobaias = ids;
     }
 
 }

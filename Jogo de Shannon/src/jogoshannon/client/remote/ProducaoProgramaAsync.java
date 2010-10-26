@@ -1,4 +1,4 @@
-package jogoshannon.client;
+package jogoshannon.client.remote;
 
 import jogoshannon.shared.ConjuntoFrasesStub;
 import jogoshannon.shared.ExperimentoStub;
@@ -8,8 +8,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface ProducaoProgramaAsync {
 
     void getConjuntosFrases(AsyncCallback<ConjuntoFrasesStub[]> callback);
-
-    void getExperimentos(AsyncCallback<ExperimentoStub[]> callback);
 
     void putExperimento(ExperimentoStub exp, AsyncCallback<Long> callback);
 

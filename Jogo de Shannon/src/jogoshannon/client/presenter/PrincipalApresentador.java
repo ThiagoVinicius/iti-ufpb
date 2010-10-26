@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jogoshannon.client.ControladorAplicacao;
-import jogoshannon.client.JuizSoletrandoAsync;
 import jogoshannon.client.ModeloJogoDeShannon;
 import jogoshannon.client.PedidoEncerramento;
 import jogoshannon.client.event.FraseCompletaEvent;
@@ -13,6 +12,7 @@ import jogoshannon.client.event.JogoCompletoEvent;
 import jogoshannon.client.event.JogoCompletoHandler;
 import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.client.event.TentativaHandler;
+import jogoshannon.client.remote.JuizSoletrandoAsync;
 import jogoshannon.client.util.VerificadorDeCampo;
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.SessaoInvalidaException;

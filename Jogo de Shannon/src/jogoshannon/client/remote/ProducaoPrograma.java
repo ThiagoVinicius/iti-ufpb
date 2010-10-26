@@ -1,4 +1,4 @@
-package jogoshannon.client;
+package jogoshannon.client.remote;
 
 import jogoshannon.shared.ConjuntoFrasesStub;
 import jogoshannon.shared.ExperimentoStub;
@@ -11,7 +11,6 @@ public interface ProducaoPrograma extends RemoteService {
     
     public void checkAdmin();
     public ConjuntoFrasesStub[] getConjuntosFrases();
-    public ExperimentoStub[] getExperimentos();
     public long putExperimento (ExperimentoStub exp);
     public String getUploadUrl (String titulo, String autor, String descricao);
     

@@ -79,4 +79,12 @@ public class ConjuntoFrases {
         return result;
     }
     
+    public static ConjuntoFrasesStub toStub (ConjuntoFrases alvo) {
+        if (alvo == null) {
+            return null;
+        } else {
+            return alvo.toStub();
+        }
+    }
+    
 }

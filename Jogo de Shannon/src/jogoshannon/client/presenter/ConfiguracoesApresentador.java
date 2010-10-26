@@ -1,7 +1,7 @@
 package jogoshannon.client.presenter;
 
 import jogoshannon.client.PedidoEncerramento;
-import jogoshannon.client.ProducaoProgramaAsync;
+import jogoshannon.client.remote.ProducaoProgramaAsync;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.HasWidgets;

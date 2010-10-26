@@ -45,6 +45,9 @@
 		</g:HorizontalPanel>
 		
 		<g:FlowPanel ui:field="usuarios"></g:FlowPanel>
+		
+		<!-- 
+		
 		<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
 			<g:cell>
 				<g:Label>Adicionar ID:&nbsp;</g:Label>
@@ -56,6 +59,9 @@
 				<g:Button ui:field="botaoAdicionar">Adicionar</g:Button>
 			</g:cell>
 		</g:HorizontalPanel>
+		
+		 -->
+		 
 		<g:FlexTable ui:field="tabelaTentativas"></g:FlexTable>
 	</g:HTMLPanel>
 </ui:UiBinder> 

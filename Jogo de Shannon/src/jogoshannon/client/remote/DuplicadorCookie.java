@@ -1,4 +1,4 @@
-package jogoshannon.client;
+package jogoshannon.client.remote;
 
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.client.Cookies;
