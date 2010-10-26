@@ -18,6 +18,24 @@ public class ControladorAplicacao implements Apresentador,
         ValueChangeHandler<String> {
 
     private HasWidgets pagina;
+    private Apresentador atual;
+    private String tokenAtual;
+    
+    private class PedidoEncerramentoImpl implements PedidoEncerramento {
+        public boolean obrigatorio;
+        public boolean encerrar = true;
+        public PedidoEncerramentoImpl (boolean obrigatorio) {
+            this.obrigatorio = obrigatorio;
+        }
+        @Override
+        public boolean getEncerramentoObrigatorio() {
+            return obrigatorio;
+        }
+        @Override
+        public void impossivelEncerrarAgora() {
+            encerrar = false;
+        }
+    }
 
     public ControladorAplicacao() {
         amarra();
@@ -25,6 +43,15 @@ public class ControladorAplicacao implements Apresentador,
 
     private void amarra() {
         History.addValueChangeHandler(this);
+    }
+    
+    public static void mudarToken (String novoToken) {
+        Jogo_de_Shannon.getApresentadorChefe().mudarTokenImpl(novoToken);
+    }
+    
+    private void mudarTokenImpl (String novoToken) {
+        History.newItem(novoToken, false);
+        tokenAtual = novoToken;
     }
 
     @Override
@@ -41,7 +68,7 @@ public class ControladorAplicacao implements Apresentador,
     @Override
     public void onValueChange(ValueChangeEvent<String> event) {
         String token = event.getValue();
-
+        
         if (token != null) {
             Apresentador oEscolhido = null;
             HandlerManager eventos = new HandlerManager(null);
@@ -75,11 +102,32 @@ public class ControladorAplicacao implements Apresentador,
             }
 
             if (oEscolhido != null) {
-                oEscolhido.vai(pagina);
+                despachar(oEscolhido, token);
             }
 
         }
 
+    }
+    
+    private void despachar(Apresentador oEscolhido, String novoToken) {
+        
+        if (atual != null) {
+            PedidoEncerramentoImpl vaiCooperar = new PedidoEncerramentoImpl(false);
+            atual.encerrar(vaiCooperar);
+            if (vaiCooperar.encerrar == false) {
+                History.newItem(tokenAtual, false);
+                return;
+            }
+        }
+        
+        atual = oEscolhido;
+        tokenAtual = novoToken;
+        oEscolhido.vai(pagina);
+    }
+
+    @Override
+    public void encerrar(PedidoEncerramento notaDeFalecimento) {
+        //nada tenho a fazer.
     }
 
 }

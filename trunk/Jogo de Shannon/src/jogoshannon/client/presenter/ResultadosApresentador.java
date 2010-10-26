@@ -2,6 +2,7 @@ package jogoshannon.client.presenter;
 
 import jogoshannon.client.JuizSoletrandoAsync;
 import jogoshannon.client.ModeloResposta;
+import jogoshannon.client.PedidoEncerramento;
 import jogoshannon.client.event.UsuarioRemovidoEvent;
 import jogoshannon.client.event.UsuarioRemovidoHandler;
 import jogoshannon.shared.ExperimentoStub;
@@ -154,6 +155,10 @@ public class ResultadosApresentador implements Apresentador {
     public void vai(HasWidgets pagina) {
         pagina.clear();
         pagina.add(view.asWidget());
+    }
+    
+    @Override
+    public void encerrar(PedidoEncerramento notaDeFalecimento) {
     }
 
 }

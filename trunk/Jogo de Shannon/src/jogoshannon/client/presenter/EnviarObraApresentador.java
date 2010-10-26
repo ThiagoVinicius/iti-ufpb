@@ -1,5 +1,6 @@
 package jogoshannon.client.presenter;
 
+import jogoshannon.client.PedidoEncerramento;
 import jogoshannon.client.ProducaoProgramaAsync;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -111,6 +112,11 @@ public class EnviarObraApresentador implements Apresentador {
         resetaFormulario();
         pagina.clear();
         pagina.add(view.asWidget());
+    }
+    
+    @Override
+    public void encerrar(PedidoEncerramento notaDeFalecimento) {
+        // TODO Auto-generated method stub
     }
     
 }

@@ -18,13 +18,11 @@ public class Jogo_de_Shannon implements EntryPoint {
     
     private static JuizSoletrandoAsync juizSoletrando;
     private static ProducaoProgramaAsync producaoPrograma;
+    private static ControladorAplicacao chefe;
 
     public void onModuleLoad() {
-        JuizSoletrandoAsync servidor = GWT.create(JuizSoletrando.class);
-        ((ServiceDefTarget) servidor)
-                .setRpcRequestBuilder(new DuplicadorCookie());
-        Apresentador appViewer = new ControladorAplicacao();
-        appViewer.vai(RootPanel.get("principal"));
+        chefe = new ControladorAplicacao();
+        chefe.vai(RootPanel.get("principal"));
     }
     
     public synchronized static JuizSoletrandoAsync getJuizSoletrando () {
@@ -41,5 +39,9 @@ public class Jogo_de_Shannon implements EntryPoint {
             ((ServiceDefTarget) producaoPrograma).setRpcRequestBuilder(new DuplicadorCookie());
         }
         return producaoPrograma;
+    }
+    
+    public static ControladorAplicacao getApresentadorChefe () {
+        return chefe;
     }
 }

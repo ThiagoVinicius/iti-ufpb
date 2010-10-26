@@ -1,7 +1,12 @@
 package jogoshannon.client.presenter;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import jogoshannon.client.ControladorAplicacao;
 import jogoshannon.client.JuizSoletrandoAsync;
 import jogoshannon.client.ModeloJogoDeShannon;
+import jogoshannon.client.PedidoEncerramento;
 import jogoshannon.client.event.FraseCompletaEvent;
 import jogoshannon.client.event.FraseCompletaHandler;
 import jogoshannon.client.event.JogoCompletoEvent;
@@ -16,9 +21,12 @@ import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
+import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -26,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class PrincipalApresentador implements Apresentador {
 
     public interface Exibicao {
-        // HasKeyUpHandlers getCampoResposta();
+        
         HasValueChangeHandlers<Character> getTeclado();
 
         void setDesafio(String frase);
@@ -48,7 +56,7 @@ public class PrincipalApresentador implements Apresentador {
         void desativaTecla(char tecla);
 
         void ativaTodasTeclas();
-
+        
         Widget asWidget();
     }
 
@@ -61,7 +69,9 @@ public class PrincipalApresentador implements Apresentador {
     ModeloJogoDeShannon jogoDeShannon;
     JuizSoletrandoAsync servidor;
     Long idExperimento;
-
+    List<HandlerRegistration> desregistrar = new LinkedList<HandlerRegistration>();
+    boolean jogoEmAndamento = false;
+    
     static final String MENSAGEM_SESSAO_EXPIRADA = "Muito tempo se passou desde sua última visita - não será possível "
             + "continuar. Você terá que recomeçar o jogo, recarregando a página."
             + "Desculpe o incomodo.";
@@ -71,13 +81,20 @@ public class PrincipalApresentador implements Apresentador {
             + "recarregar a página. Se este erro persistir, "
             + "Tente novamente mais tarde.";
     
+    static final String MENSAGEM_ENCERRAMENTO_USUARIO = "Este jogo ainda não terminou. "
+            + "Deseja mesmo sair?";
+    
+    static final String MENSAGEM_ENCERRAMENTO_OCUPADO = "Estou ocupado " +
+    		"enviando dados para o servidor. Deseja mesmo sair?";
+    
     static final int MAX_ENVIO_DELAY = 30000;
 
     int idfail = 0;
     int frasesfail = 0;
     int enviofail = 0;
     int envioDelay = 1;
-
+    volatile int tarefasAguardandoResposta = 0;
+    
     private void bind() {
 
         view.getTeclado().addValueChangeHandler(
@@ -108,7 +125,29 @@ public class PrincipalApresentador implements Apresentador {
                 doFimDeJogo();
             }
         });
+        
+        desregistrar.add(Window.addWindowClosingHandler(new ClosingHandler() {
+            @Override
+            public void onWindowClosing(ClosingEvent event) {
+                if (jogoEmAndamento) {
+                    event.setMessage(MENSAGEM_ENCERRAMENTO_USUARIO);
+                }
+                
+                if (tarefasAguardandoResposta > 0) {
+                    event.setMessage(MENSAGEM_ENCERRAMENTO_OCUPADO);
+                }
+                
+            }
+        }));
 
+    }
+    
+    private void iniciaTarefa () {
+        ++tarefasAguardandoResposta;
+    }
+    
+    private void encerraTarefa () {
+        --tarefasAguardandoResposta;
     }
 
     Timer enviaTimer = new Timer() {
@@ -119,13 +158,14 @@ public class PrincipalApresentador implements Apresentador {
     };
     
     private void enviarTentativas () {
+        iniciaTarefa();
         enviaTimer.cancel();
         enviaTimer.schedule(envioDelay);
         view.setEstadoServidor(EstadosServidor.AGUARDANDO_RESPOSTA, 
                 Integer.toString(envioDelay/1000));
         if (envioDelay == 1) {
             envioDelay = 1000;
-        }else {
+        } else {
             envioDelay *= 2;
             envioDelay = Math.min(envioDelay, MAX_ENVIO_DELAY);
         }
@@ -138,9 +178,9 @@ public class PrincipalApresentador implements Apresentador {
                     @Override
                     public void onFailure(Throwable caught) {
                         if (enviofail == 6) {
-                            mostrarFimJogo("\nGrrr... O servidor está demorando " +
-                            		"demais para responder.\nDados para coleta" +
-                            		" manual:\n"+jogoDeShannon.strWriteTentativas());
+                            mostrarFimJogo("Grrr... O servidor está demorando " +
+                            		"demais para responder.<br/>Dados para coleta" +
+                            		" manual:<br/>"+jogoDeShannon.strWriteTentativas());
                         }
                         
                         if (caught instanceof SessaoInvalidaException) {
@@ -149,12 +189,15 @@ public class PrincipalApresentador implements Apresentador {
                             ++enviofail;
                             enviarTentativas();
                         }
+                        
+                        encerraTarefa();
                     }
 
                     @Override
                     public void onSuccess(Void result) {
                         destruirSessao();
                         view.setEstadoServidor(PrincipalApresentador.EstadosServidor.TUDO_CERTO);
+                        encerraTarefa();
                     }
                 });
 
@@ -198,6 +241,7 @@ public class PrincipalApresentador implements Apresentador {
 
     private void doFimDeJogo() {
         view.setEstadoServidor(PrincipalApresentador.EstadosServidor.AGUARDANDO_RESPOSTA);
+        encerraJogo();
         mostrarFimJogo("");
         enviarTentativas();
     }
@@ -221,12 +265,12 @@ public class PrincipalApresentador implements Apresentador {
     private void pegarId() {
         servidor.getFrases(idExperimento, new AsyncCallback<DadosJogo>() {
             public void onSuccess(DadosJogo result) {
-                History.newItem("jogar/"+result.idExperimento, false);
+                ControladorAplicacao.mudarToken("jogar/"+result.idExperimento);
                 view.setId(""+result.idUsuario);
                 jogoDeShannon = new ModeloJogoDeShannon(result);
                 view.setCarregando(false);
                 view.setDesafio(jogoDeShannon.getFraseParcial());
-                //baixarFrases();
+                iniciaJogo();
             }
 
             public void onFailure(Throwable caught) {
@@ -261,6 +305,37 @@ public class PrincipalApresentador implements Apresentador {
         msg += extra;
         
         view.exibeFimDeJogo("Fim de jogo", msg);
+    }
+    
+    @Override
+    public void encerrar(PedidoEncerramento notaDeFalecimento) {
+        boolean obrigatorio = notaDeFalecimento.getEncerramentoObrigatorio();
+        boolean sair = true;
+        
+        if (obrigatorio == false && jogoEmAndamento) {
+            sair = Window.confirm(MENSAGEM_ENCERRAMENTO_USUARIO);
+        } else if (obrigatorio == false && tarefasAguardandoResposta > 0) {
+            sair = Window.confirm(MENSAGEM_ENCERRAMENTO_OCUPADO);
+        } else {
+            sair = true;
+        }
+        
+        if (sair == true) {
+            for (HandlerRegistration h : desregistrar) {
+                h.removeHandler();
+            }
+        } else {
+            notaDeFalecimento.impossivelEncerrarAgora();
+        }
+        
+    }
+    
+    private void iniciaJogo () {
+        jogoEmAndamento = true;
+    }
+    
+    private void encerraJogo () {
+        jogoEmAndamento = false;
     }
 
 }

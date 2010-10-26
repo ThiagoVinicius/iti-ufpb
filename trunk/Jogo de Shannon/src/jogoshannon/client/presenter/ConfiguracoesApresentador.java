@@ -1,5 +1,6 @@
 package jogoshannon.client.presenter;
 
+import jogoshannon.client.PedidoEncerramento;
 import jogoshannon.client.ProducaoProgramaAsync;
 
 import com.google.gwt.event.shared.HandlerManager;
@@ -25,6 +26,10 @@ public class ConfiguracoesApresentador implements Apresentador {
     @Override
     public void vai(HasWidgets pagina) {
         
+    }
+    
+    @Override
+    public void encerrar(PedidoEncerramento notaDeFalecimento) {
     }
     
 }

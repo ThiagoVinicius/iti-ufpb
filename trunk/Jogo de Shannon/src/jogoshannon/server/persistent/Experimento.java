@@ -97,6 +97,10 @@ public class Experimento {
         return result;
     }
     
+    public boolean addCobaiaKey (Key cob) {
+        return lazyGetCobaias().add(cob);
+    }
+    
     public boolean removeCobaia (Cobaia cob) {
         return lazyGetCobaias().remove(cob.getKey());
     }
