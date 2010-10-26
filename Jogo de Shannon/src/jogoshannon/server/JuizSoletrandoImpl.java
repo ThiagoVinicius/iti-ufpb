@@ -132,7 +132,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         Cobaia usuario;
         try {
             //resposta = (List<FraseStore>) consulta.execute();
-            exp = getExperimento(idExperimento);
+            exp = getExperimento(idExperimento, pm);
             usuario = getUsuarioAtual(exp, pm);
             exp.addCobaia(usuario);
             setExperimentoAtual(exp);
@@ -248,31 +248,29 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         }
     }
 
-    private Experimento getExperimento (Long id) {
-        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+    private Experimento getExperimento (Long id, PersistenceManager pm) {
         if (id == 0L) {
             try {
                 return ExperimentoDefault.getDefault(pm);
             } catch (IOException e) {
                 logger.warn("Erro ao carregar experimento padrão: ", e);
                 throw new RuntimeException(e);
-            } finally {
-                pm.close();
             }
         } else {
-            try {
-                Experimento exp = pm.getObjectById(Experimento.class, id);
-                return exp;
-            } finally {
-                pm.close();
-            }
+            Experimento exp = pm.getObjectById(Experimento.class, id);
+            return exp;
         }
         
     }
     
     @Override
     public ExperimentoStub getExperimentoStub(Long id) {
-        return getExperimento(id).toStub();
+        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+        try {
+            return getExperimento(id, pm).toStub();
+        } finally {
+            pm.close();
+        }
     }
     
     @Override

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package jogoshannon.client.view;
 
 import java.util.LinkedList;
