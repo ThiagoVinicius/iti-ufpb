@@ -6,10 +6,11 @@ import java.util.List;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.jdo.Transaction;
 import javax.servlet.http.HttpSession;
 
-import jogoshannon.client.JuizSoletrando;
+import jogoshannon.client.remote.JuizSoletrando;
 import jogoshannon.server.persistent.Cobaia;
 import jogoshannon.server.persistent.ConjuntoFrases;
 import jogoshannon.server.persistent.Experimento;
@@ -279,5 +280,31 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         boolean result = userService.isUserLoggedIn() && userService.isUserAdmin();
         return result;
     }
+    
 
+    @Override
+    public ExperimentoStub[] getExperimentos() {
+        PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
+        
+        Query consulta = pm.newQuery(Experimento.class);
+
+        List<Experimento> resposta;
+        try {
+            resposta = (List<Experimento>) consulta.execute();
+
+            ExperimentoStub resultado[] = new ExperimentoStub[resposta.size()];
+            for (int i = 0; i < resultado.length; ++i) {
+                Experimento cur = resposta.get(i);
+                resultado[i] = cur.toStub();
+            }
+            
+            logger.info("Retornando {} experimentos.", resultado.length);
+            
+            return resultado;
+        } finally {
+            pm.close();
+        }
+
+    }
+    
 }

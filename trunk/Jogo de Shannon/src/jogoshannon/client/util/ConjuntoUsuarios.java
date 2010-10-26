@@ -1,5 +1,6 @@
 package jogoshannon.client.util;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import jogoshannon.client.event.UsuarioRemovidoEvent;
@@ -46,6 +47,14 @@ public class ConjuntoUsuarios {
 
     public UsuarioWidget remover(long id) {
         return oProprio.remove(id);
+    }
+    
+    public Collection<UsuarioWidget> getValores() {
+        return oProprio.values();
+    }
+    
+    public void clear () {
+        oProprio.clear();
     }
 
 }

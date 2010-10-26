@@ -1,4 +1,4 @@
-package jogoshannon.client;
+package jogoshannon.client.remote;
 
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.ExperimentoStub;
@@ -21,6 +21,8 @@ public interface JuizSoletrando extends RemoteService {
             throws UsuarioNaoEncontradoException;
     
     public ExperimentoStub getExperimentoStub (Long id);
+    
+    public ExperimentoStub[] getExperimentos();
     
     public boolean souAdmin ();
 

@@ -4,6 +4,7 @@ import jogoshannon.client.presenter.ResultadosApresentador;
 import jogoshannon.client.util.ConjuntoUsuarios;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -17,7 +18,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -54,13 +57,21 @@ implements ResultadosApresentador.Exibicao {
     protected FlowPanel usuarios;
     
     @UiField
+    protected ListBox listaExperimentos;
+    
+    /*
+    @UiField
     protected TextBox entradaId;
     
     @UiField
     protected Button botaoAdicionar;
+    */
     
     @UiField
     protected FlexTable tabelaTentativas;
+    
+    @UiField
+    protected Image carregando;
     
     private ConjuntoUsuarios conjUsuarios;
     private int maxLinha;
@@ -69,33 +80,10 @@ implements ResultadosApresentador.Exibicao {
     public ResultadosExibicao (HandlerManager eventos) {
         initWidget(uiBinder.createAndBindUi(this));
         conjUsuarios = new ConjuntoUsuarios(eventos);
-        
-        tabelaTentativas.getRowFormatter().addStyleName(0, style.tituloTabela());
-        tabelaTentativas.addStyleName(style.corpoTabela());
-        tabelaTentativas.getCellFormatter().setStyleName(0, 0, style.zeroZero());
-        
+        listaExperimentos.addItem("Selecione o experimento");
+        reset();
     }
     
-    @UiHandler({"entradaId"})
-    protected void onKeyUp(KeyUpEvent event) {
-        checaCorrigeEntradaId();
-        if (event.getNativeKeyCode() == 13) { //enter
-            botaoAdicionar.click();
-        }
-    }
-    
-    private void checaCorrigeEntradaId () {
-        String text = entradaId.getValue();
-        if (text.isEmpty() == false) {
-            try {
-                Long.parseLong(text);
-                ultimaEntradaValida = text;
-            } catch (NumberFormatException e) {
-                entradaId.setText(ultimaEntradaValida);
-            }
-        }
-    }
-
     @Override
     public Widget asWidget() {
         return this;
@@ -113,25 +101,6 @@ implements ResultadosApresentador.Exibicao {
             }
 
         }
-    }
-
-    @Override
-    public HasClickHandlers botaoAdicionar() {
-        return botaoAdicionar;
-    }
-
-    @Override
-    public long getIdAdicionar() {
-        String texto = entradaId.getText().trim();
-        if (texto.isEmpty()) {
-            texto = "0";
-        }
-        return new Long(texto);
-    }
-
-    @Override
-    public void limparIdAdicionar() {
-        entradaId.setText("");
     }
 
     @Override
@@ -208,9 +177,35 @@ implements ResultadosApresentador.Exibicao {
     }
     
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        entradaId.setFocus(true);
+    public void adicionarExperimento(String nome) {
+        listaExperimentos.addItem(nome);
+    }
+
+    @Override
+    public HasChangeHandlers getListaExperimentos() {
+        return listaExperimentos;
+    }
+    
+    @Override
+    public void reset() {
+        for (Widget w : conjUsuarios.getValores()) {
+            usuarios.remove(w);
+        }
+        conjUsuarios.clear();
+        tabelaTentativas.removeAllRows();
+        tabelaTentativas.getRowFormatter().addStyleName(0, style.tituloTabela());
+        tabelaTentativas.addStyleName(style.corpoTabela());
+        tabelaTentativas.getCellFormatter().setStyleName(0, 0, style.zeroZero());
+    }
+
+    @Override
+    public int getExperimentoSelecionado() {
+        return listaExperimentos.getSelectedIndex() - 1;
+    }
+    
+    @Override
+    public void setExperimentosCarregando(boolean estaCarregando) {
+        carregando.setVisible(estaCarregando);
     }
 
 }

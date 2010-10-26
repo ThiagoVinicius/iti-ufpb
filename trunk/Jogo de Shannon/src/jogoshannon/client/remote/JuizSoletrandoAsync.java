@@ -1,4 +1,6 @@
-package jogoshannon.client;
+package jogoshannon.client.remote;
+
+import java.util.List;
 
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.ExperimentoStub;
@@ -18,5 +20,7 @@ public interface JuizSoletrandoAsync {
     void souAdmin(AsyncCallback<Boolean> callback);
 
     void getExperimentoStub(Long id, AsyncCallback<ExperimentoStub> callback);
+
+    void getExperimentos(AsyncCallback<ExperimentoStub[]> callback);
 
 }

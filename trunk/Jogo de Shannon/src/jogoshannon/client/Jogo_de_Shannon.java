@@ -1,6 +1,11 @@
 package jogoshannon.client;
 
 import jogoshannon.client.presenter.Apresentador;
+import jogoshannon.client.remote.DuplicadorCookie;
+import jogoshannon.client.remote.JuizSoletrando;
+import jogoshannon.client.remote.JuizSoletrandoAsync;
+import jogoshannon.client.remote.ProducaoPrograma;
+import jogoshannon.client.remote.ProducaoProgramaAsync;
 import jogoshannon.client.resources.Imagens;
 
 import com.google.gwt.core.client.EntryPoint;
