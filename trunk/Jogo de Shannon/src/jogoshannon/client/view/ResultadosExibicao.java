@@ -5,15 +5,11 @@ import jogoshannon.client.util.ConjuntoUsuarios;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -21,8 +17,13 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.LegendPosition;
+import com.google.gwt.visualization.client.VisualizationUtils;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.LineChart;
 
 public class ResultadosExibicao extends Composite 
 implements ResultadosApresentador.Exibicao {
@@ -73,9 +74,14 @@ implements ResultadosApresentador.Exibicao {
     @UiField
     protected Image carregando;
     
+    @UiField
+    protected SimplePanel painelGrafico;
+    
     private ConjuntoUsuarios conjUsuarios;
     private int maxLinha;
-    private String ultimaEntradaValida = "";
+    
+    private double entropiaMax[];
+    private double entropiaMin[];
     
     public ResultadosExibicao (HandlerManager eventos) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -101,6 +107,7 @@ implements ResultadosApresentador.Exibicao {
             }
 
         }
+        
     }
 
     @Override
@@ -131,6 +138,14 @@ implements ResultadosApresentador.Exibicao {
                 legenda);
     }
 
+    private static double[] copyArray (double[] orig) {
+        double result[] = new double[orig.length];
+        for (int i = 0; i < orig.length; ++i) {
+            result[i] = orig[i];
+        }
+        return result;
+    }
+    
     @Override
     public void atualizaEntropiaMinima(int linha, double[] dados) {
         linha += ENTROPIA_MIN_END_OFFSET;
@@ -141,6 +156,7 @@ implements ResultadosApresentador.Exibicao {
             tabelaTentativas.setWidget(OFFSET_LINHA + linha, OFFSET_COLUNA + i,
                     texto);
         }
+        entropiaMin = copyArray(dados);
     }
 
     @Override
@@ -153,6 +169,7 @@ implements ResultadosApresentador.Exibicao {
             tabelaTentativas.setWidget(OFFSET_LINHA + linha, OFFSET_COLUNA + i,
                     texto);
         }
+        entropiaMax = copyArray(dados);
     }
 
     @Override
@@ -207,5 +224,40 @@ implements ResultadosApresentador.Exibicao {
     public void setExperimentosCarregando(boolean estaCarregando) {
         carregando.setVisible(estaCarregando);
     }
+    
+    @Override
+    public void plotar () {
+        VisualizationUtils.loadVisualizationApi(new Runnable() {
+            @Override
+            public void run() {
+                plotarImpl();
+            }
+        } , LineChart.PACKAGE);
+    }
+    
+    private void plotarImpl () {
+        LineChart.Options opt = LineChart.Options.create();
+        opt.setWidth(600);
+        opt.setHeight(450);
+        opt.setSmoothLine(true);
+        opt.setLegend(LegendPosition.RIGHT);
+        
+        DataTable dados = DataTable.create();
+        dados.addColumn(ColumnType.STRING, "Letras exibidas");
+        dados.addColumn(ColumnType.NUMBER, "Entropia máxima");
+        dados.addColumn(ColumnType.NUMBER, "Entropia Mínima");
+        dados.addRows(entropiaMin.length);
+        for (int i = 0; i < entropiaMin.length; ++i) {
+            dados.setValue(i, 0, tabelaTentativas.getText(LINHA_TITULO, OFFSET_COLUNA + i));
+            dados.setValue(i, 1, entropiaMax[i]);
+            dados.setValue(i, 2, entropiaMin[i]);
+        }
+        
+        LineChart grafico = new LineChart(dados, opt);
+        painelGrafico.setWidget(grafico);
+        
+    }
+    
+    
 
 }

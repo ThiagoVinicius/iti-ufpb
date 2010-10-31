@@ -45,6 +45,8 @@ public class ResultadosApresentador implements Apresentador {
         void atualizaEntropiaMaxima(int linha, double[] dados);
 
         void atualizaEntropiaMinima(int linha, double[] dados);
+
+        void plotar();
     }
 
     private HandlerManager eventos;
@@ -149,6 +151,7 @@ public class ResultadosApresentador implements Apresentador {
         }
         view.atualizaEntropiaMaxima(max, entropia.getEntropiaMaxima());
         view.atualizaEntropiaMinima(max, entropia.getEntropiaMinima());
+        view.plotar();
     }
 
     private void removerId(long id) {
