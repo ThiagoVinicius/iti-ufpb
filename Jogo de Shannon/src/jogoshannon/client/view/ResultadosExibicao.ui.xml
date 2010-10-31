@@ -2,6 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	
+	
 	<ui:with type="jogoshannon.client.resources.Imagens" field="img" />
 	
 	<ui:style type="jogoshannon.client.view.ResultadosExibicao.TabelaCss">
@@ -63,5 +64,6 @@
 		 -->
 		 
 		<g:FlexTable ui:field="tabelaTentativas"></g:FlexTable>
+		<g:SimplePanel ui:field="painelGrafico"/>
 	</g:HTMLPanel>
 </ui:UiBinder> 

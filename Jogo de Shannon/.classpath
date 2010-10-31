@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SLF4J API - 1.6"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Commons FileUpload"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/gwt-visualization-1.1"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

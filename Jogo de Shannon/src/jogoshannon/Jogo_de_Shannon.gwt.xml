@@ -2,6 +2,7 @@
 <module rename-to='jogo_de_shannon'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.visualization.Visualization'/>
   
   <!-- Todas as Línguas disponíveis. -->
   <extend-property name="locale" values="pt_BR"/>
