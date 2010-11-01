@@ -18,7 +18,7 @@ import jogoshannon.shared.ExperimentoStub;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
-@PersistenceCapable
+@PersistenceCapable(detachable="true")
 public class Experimento {
     
     @PrimaryKey

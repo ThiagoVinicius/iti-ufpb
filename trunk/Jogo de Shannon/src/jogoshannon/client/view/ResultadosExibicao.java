@@ -4,12 +4,15 @@ import jogoshannon.client.presenter.ResultadosApresentador;
 import jogoshannon.client.util.ConjuntoUsuarios;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -69,6 +72,12 @@ implements ResultadosApresentador.Exibicao {
     */
     
     @UiField
+    protected Anchor mostrarOcultarUsuarios;
+    
+    @UiField 
+    protected Anchor mostrarOcultarTabela;
+    
+    @UiField
     protected FlexTable tabelaTentativas;
     
     @UiField
@@ -87,7 +96,38 @@ implements ResultadosApresentador.Exibicao {
         initWidget(uiBinder.createAndBindUi(this));
         conjUsuarios = new ConjuntoUsuarios(eventos);
         listaExperimentos.addItem("Selecione o experimento");
+        atualizarLabelsVisibilidade();
         reset();
+    }
+    
+    @UiHandler({"mostrarOcultarUsuarios", "mostrarOcultarTabela"})
+    public void onClick (ClickEvent evt) {
+        if (evt.getSource() == mostrarOcultarUsuarios) {
+            trocarVisibilidade(usuarios);
+        } else if (evt.getSource() == mostrarOcultarTabela) {
+            trocarVisibilidade(tabelaTentativas);
+        }
+        atualizarLabelsVisibilidade();
+    }
+    
+    private void trocarVisibilidade (Widget onde) {
+        boolean orig = onde.isVisible();
+        boolean novo = !orig;
+        onde.setVisible(novo);
+        
+    }
+    
+    private void atualizarLabelsVisibilidade() {
+        mostrarOcultarUsuarios.setText(textoVisibilidade(usuarios.isVisible()));
+        mostrarOcultarTabela.setText(textoVisibilidade(tabelaTentativas.isVisible()));
+    }
+    
+    private String textoVisibilidade (boolean visivel) {
+        if (visivel == false) {
+            return "-mostrar-";
+        } else {
+            return "-ocultar-";
+        }
     }
     
     @Override

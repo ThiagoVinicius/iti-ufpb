@@ -32,6 +32,7 @@
 		}
 		
 	</ui:style>
+	
 	<g:HTMLPanel>
 		<g:HorizontalPanel>
 			<g:cell>
@@ -45,7 +46,14 @@
 			</g:cell>
 		</g:HorizontalPanel>
 		
-		<g:FlowPanel ui:field="usuarios"></g:FlowPanel>
+		
+		
+		<g:Anchor ui:field="mostrarOcultarUsuarios" 
+		      href="javascript:void(0)"></g:Anchor>
+		<div/>
+		
+		<g:FlowPanel ui:field="usuarios" visible="false"></g:FlowPanel>
+		
 		
 		<!-- 
 		
@@ -62,7 +70,9 @@
 		</g:HorizontalPanel>
 		
 		 -->
-		 
+        <g:Anchor ui:field="mostrarOcultarTabela" 
+              href="javascript:void(0)"></g:Anchor>
+        <div/>
 		<g:FlexTable ui:field="tabelaTentativas"></g:FlexTable>
 		<g:SimplePanel ui:field="painelGrafico"/>
 	</g:HTMLPanel>
