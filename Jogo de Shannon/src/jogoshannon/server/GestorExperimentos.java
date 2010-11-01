@@ -67,6 +67,12 @@ public class GestorExperimentos {
     
     public static ConjuntoFrases criarAleatorio (List<Key> origemKeys, int nFrases, 
             List<Integer> letras, PersistenceManager pm) throws IOException {
+        return criarAleatorio(origemKeys, nFrases, letras, pm, false);
+    }
+    
+    public static ConjuntoFrases criarAleatorio (List<Key> origemKeys, int nFrases, 
+            List<Integer> letras, PersistenceManager pm, 
+            boolean iniciarComPalavraCompleta) throws IOException {
 
         Random rand = new Random();
         int top = Collections.max(letras);
@@ -94,7 +100,9 @@ public class GestorExperimentos {
             Selecao res = separa(origem.get(escolhido), top);
             String lido = res.result;
             lido = StringUtils.desacentua(lido);
-            lido = lido.substring(localizaPrimeiraPalavra(lido));
+            if (iniciarComPalavraCompleta) {
+                lido = lido.substring(localizaPrimeiraPalavra(lido));
+            }
             lido = StringUtils.normalizar(lido);
             frases.putFrase(lido);
             
