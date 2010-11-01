@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-@PersistenceCapable
+@PersistenceCapable(detachable="true")
 public class Cobaia implements StoreCallback, Comparable<Cobaia> {
 
     @NotPersistent
@@ -56,6 +56,8 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     public synchronized List<Rodada> getDesafios() {
         if (desafios == null) {
             desafios = new RegistroRodadas();
+        } else {
+            desafios = desafios.copiaRasa();
         }
         return desafios.getRodadas();
     }
@@ -111,6 +113,8 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
         if (desafios != null) {
             //Substituindo objeto antigo, para que o JDO perceba que foi alterado.
             desafios = desafios.copiaRasa();
+        } else if  (desafios.getRodadas().isEmpty()) {
+            desafios = null;
         }
         setLastModified(new Date());
     }

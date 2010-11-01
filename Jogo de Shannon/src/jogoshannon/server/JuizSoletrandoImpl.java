@@ -203,31 +203,30 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         logger.info("Executando: getResultados(long)");
         
         Key chave = KeyFactory.createKey(Cobaia.class.getSimpleName(), id);
+        Cobaia usuario = null;
         try {
-
-            Cobaia usuario = pm.getObjectById(Cobaia.class, chave);
-            List<Rodada> desafios = usuario.getDesafios();
-            Tentativas resultado[] = new Tentativas[desafios.size()];
-
-            for (int i = 0; i < resultado.length; ++i) {
-                Rodada des = desafios.get(i);
-                resultado[i] = new Tentativas(des.getTentativas());
-            }
-            
-            logger.info("Retornando {} tentativas para o usuário {}", 
-                    resultado.length, id); 
-            
-            return resultado;
-
+            usuario = pm.getObjectById(Cobaia.class, chave);
+            usuario = pm.detachCopy(usuario);
         } catch (JDOObjectNotFoundException e) {
             logger.info("Usuário de id '{}' não foi encontrado.", id);
-            throw new UsuarioNaoEncontradoException();
-        } catch (Exception e) {
-            logger.error("Excecao inesperada.", e);
             throw new UsuarioNaoEncontradoException();
         } finally {
             pm.close();
         }
+        
+        List<Rodada> desafios = usuario.getDesafios();
+        Tentativas resultado[] = new Tentativas[desafios.size()];
+
+        for (int i = 0; i < resultado.length; ++i) {
+            Rodada des = desafios.get(i);
+            resultado[i] = new Tentativas(des.getTentativas());
+        }
+        
+        logger.info("Retornando {} tentativas para o usuário {}", 
+                resultado.length, id); 
+        
+        return resultado;
+
 
     }
 
