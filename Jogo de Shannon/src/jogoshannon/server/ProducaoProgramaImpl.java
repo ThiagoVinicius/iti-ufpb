@@ -23,6 +23,7 @@ public class ProducaoProgramaImpl extends RemoteServiceServlet implements Produc
 
     private static final Logger logger = LoggerFactory.getLogger(ProducaoProgramaImpl.class);
     
+    @SuppressWarnings("unchecked")
     @Override
     public ConjuntoFrasesStub[] getConjuntosFrases() {
         PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();

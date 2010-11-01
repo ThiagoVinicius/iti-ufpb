@@ -65,16 +65,6 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         sessao.setAttribute("experimento", exp.getKey());
     }
     
-    private Experimento getExperimentoAtual (PersistenceManager pm) {
-        HttpSession sessao = getThreadLocalRequest().getSession();
-        Key chave = (Key) sessao.getAttribute("experimento");
-        if (chave == null) {
-            return null;
-        } else {
-            return pm.getObjectById(Experimento.class, chave);
-        }
-    }
-
     private void forcarSessaoValida() throws SessaoInvalidaException {
         if (!checarSessaoValida() || !temSessao()) {
             logger.info("A sessao era inválida, mas isso não era permitido " +
@@ -282,6 +272,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
     }
     
 
+    @SuppressWarnings("unchecked")
     @Override
     public ExperimentoStub[] getExperimentos() {
         PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();

@@ -5,7 +5,7 @@ import jogoshannon.client.util.ConjuntoUsuarios;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -83,7 +83,7 @@ implements ResultadosApresentador.Exibicao {
     private double entropiaMax[];
     private double entropiaMin[];
     
-    public ResultadosExibicao (HandlerManager eventos) {
+    public ResultadosExibicao (SimpleEventBus eventos) {
         initWidget(uiBinder.createAndBindUi(this));
         conjUsuarios = new ConjuntoUsuarios(eventos);
         listaExperimentos.addItem("Selecione o experimento");

@@ -52,6 +52,7 @@ public class GestorExperimentos {
         return novo;
     }
     
+    @SuppressWarnings("unchecked")
     public static ConjuntoFrases criarAleatorio (PersistenceManager pmo, Experimento exp) throws IOException {
         PersistenceManager pm = GestorPersistencia.get().getPersistenceManager();
         Query query = pm.newQuery("select key from "+Obra.class.getName());
