@@ -1,6 +1,5 @@
 package jogoshannon.client;
 
-import jogoshannon.client.presenter.Apresentador;
 import jogoshannon.client.remote.DuplicadorCookie;
 import jogoshannon.client.remote.JuizSoletrando;
 import jogoshannon.client.remote.JuizSoletrandoAsync;

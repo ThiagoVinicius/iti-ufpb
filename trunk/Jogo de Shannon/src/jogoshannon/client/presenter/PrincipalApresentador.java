@@ -20,8 +20,8 @@ import jogoshannon.shared.SessaoInvalidaException;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -65,7 +65,7 @@ public class PrincipalApresentador implements Apresentador {
     }
 
     Exibicao view;
-    HandlerManager eventos;
+    SimpleEventBus eventos;
     ModeloJogoDeShannon jogoDeShannon;
     JuizSoletrandoAsync servidor;
     Long idExperimento;
@@ -246,7 +246,7 @@ public class PrincipalApresentador implements Apresentador {
         enviarTentativas();
     }
 
-    public PrincipalApresentador(HandlerManager eventos, Exibicao view,
+    public PrincipalApresentador(SimpleEventBus eventos, Exibicao view,
             JuizSoletrandoAsync servidor, Long expId) {
         this.view = view;
         this.eventos = eventos;

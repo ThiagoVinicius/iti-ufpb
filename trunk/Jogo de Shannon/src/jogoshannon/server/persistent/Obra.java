@@ -76,6 +76,7 @@ public class Obra implements StoreCallback {
     @Persistent
     private long charLen;
     
+    @SuppressWarnings("unused")
     private Obra() {
     }
     

@@ -13,6 +13,7 @@ public class DadosJogo implements Serializable {
     public long idUsuario;
     public long idExperimento;
 
+    @SuppressWarnings("unused")
     private DadosJogo() {
     }
 

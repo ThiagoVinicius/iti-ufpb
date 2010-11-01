@@ -25,6 +25,7 @@ public class UploadObra extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(UploadObra.class);
     
+    @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

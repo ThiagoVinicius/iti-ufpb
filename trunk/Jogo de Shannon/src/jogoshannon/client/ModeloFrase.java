@@ -7,7 +7,7 @@ import jogoshannon.client.event.TentativaEvent;
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.Tentativas;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.SimpleEventBus;
 
 public class ModeloFrase {
 
@@ -26,7 +26,7 @@ public class ModeloFrase {
         this.tentativas = new Tentativas(contagemDesafios);
     }
 
-    public boolean atualiza(char tentativa, HandlerManager eventos) {
+    public boolean atualiza(char tentativa, SimpleEventBus eventos) {
 
         boolean result = false;
 

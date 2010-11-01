@@ -11,7 +11,7 @@ import jogoshannon.shared.Tentativas;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -49,14 +49,14 @@ public class ResultadosApresentador implements Apresentador {
         void plotar();
     }
 
-    private HandlerManager eventos;
+    private SimpleEventBus eventos;
     private Exibicao view;
     private JuizSoletrandoAsync servidor;
     private ModeloResposta entropia;
     private ExperimentoStub experimentos[];
     private ExperimentoStub experimentoAtual;
 
-    public ResultadosApresentador(HandlerManager eventos, Exibicao view,
+    public ResultadosApresentador(SimpleEventBus eventos, Exibicao view,
             JuizSoletrandoAsync servidor) {
         this.eventos = eventos;
         this.view = view;
@@ -85,11 +85,6 @@ public class ResultadosApresentador implements Apresentador {
             }
 
         });
-    }
-    
-    private void postInit() {
-        preparaTitulos();
-        amarrar();
     }
 
     private void preparaTitulos() {

@@ -13,7 +13,6 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import jogoshannon.server.GestorPersistencia;
-import jogoshannon.shared.ConjuntoFrasesStub;
 import jogoshannon.shared.ExperimentoStub;
 
 import com.google.appengine.api.datastore.Key;
@@ -80,6 +79,7 @@ public class Experimento {
         return cobaias;
     }
     
+    @SuppressWarnings("unchecked")
     public List<Cobaia> getCobaias(PersistenceManager pm) {
         //TODO testar este método
         Query q = pm.newQuery(Cobaia.class);

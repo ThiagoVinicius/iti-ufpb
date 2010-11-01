@@ -10,7 +10,7 @@ import jogoshannon.client.view.ResultadosExibicao;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -71,7 +71,7 @@ public class ControladorAplicacao implements Apresentador,
         
         if (token != null) {
             Apresentador oEscolhido = null;
-            HandlerManager eventos = new HandlerManager(null);
+            SimpleEventBus eventos = new SimpleEventBus();
 
             if (token.equals("jogar")) {
                 oEscolhido = new PrincipalApresentador(

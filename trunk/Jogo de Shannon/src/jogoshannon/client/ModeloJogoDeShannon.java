@@ -9,7 +9,7 @@ import jogoshannon.client.event.JogoCompletoEvent;
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.Tentativas;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.SimpleEventBus;
 
 public class ModeloJogoDeShannon {
 
@@ -28,7 +28,7 @@ public class ModeloJogoDeShannon {
         letrasUsadas = new HashSet<Character>();
     }
 
-    public void atualiza(char tentativa, HandlerManager eventos) {
+    public void atualiza(char tentativa, SimpleEventBus eventos) {
         // jogo havia acabado antes
         if (acabou()) {
             eventos.fireEvent(new JogoCompletoEvent());

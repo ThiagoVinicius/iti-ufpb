@@ -8,14 +8,14 @@ import jogoshannon.client.view.UsuarioWidget;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.SimpleEventBus;
 
 public class ConjuntoUsuarios {
 
     private HashMap<Long, UsuarioWidget> oProprio;
-    private final HandlerManager eventos;
+    private final SimpleEventBus eventos;
 
-    public ConjuntoUsuarios(HandlerManager eventos) {
+    public ConjuntoUsuarios(SimpleEventBus eventos) {
         this.eventos = eventos;
         this.oProprio = new HashMap<Long, UsuarioWidget>();
     }

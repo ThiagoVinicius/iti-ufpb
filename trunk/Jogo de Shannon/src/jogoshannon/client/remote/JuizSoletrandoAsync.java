@@ -1,7 +1,5 @@
 package jogoshannon.client.remote;
 
-import java.util.List;
-
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.Tentativas;

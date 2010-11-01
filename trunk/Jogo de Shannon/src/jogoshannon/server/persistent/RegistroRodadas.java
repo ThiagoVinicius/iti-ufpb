@@ -27,6 +27,7 @@ public class RegistroRodadas implements Externalizable {
         return rodadas;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException {

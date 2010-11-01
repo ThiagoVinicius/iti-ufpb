@@ -14,6 +14,7 @@ public class ConjuntoFrasesStub implements Serializable {
     
     public List<String> frases;
 
+    @SuppressWarnings("unused")
     private ConjuntoFrasesStub () {
     }
     
