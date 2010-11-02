@@ -43,6 +43,7 @@ implements ResultadosApresentador.Exibicao {
         String corpoTabela();
         String primeiraColuna();
         String zeroZero();
+        String rotulo_info();
     }
 
     private static final int LINHA_TITULO = 0;
@@ -85,6 +86,12 @@ implements ResultadosApresentador.Exibicao {
     
     @UiField
     protected SimplePanel painelGrafico;
+    
+    @UiField
+    protected Label contagemIniciados;
+    
+    @UiField
+    protected Label contagemFinalizados;
     
     private ConjuntoUsuarios conjUsuarios;
     private int maxLinha;
@@ -299,7 +306,23 @@ implements ResultadosApresentador.Exibicao {
         painelGrafico.setVisible(true);
         
     }
-    
-    
+
+    @Override
+    public void setInfoCobaia(long id, String info) {
+        UsuarioWidget alvo = conjUsuarios.get(id);
+        if (alvo != null) {
+            alvo.setInfo(info);
+        }
+    }
+
+    @Override
+    public void setContagemIniciados(int contagem) {
+        contagemIniciados.setText(Integer.toString(contagem));
+    }
+
+    @Override
+    public void setContagemTerminados(int contagem) {
+        contagemFinalizados.setText(Integer.toString(contagem));
+    }
 
 }

@@ -54,6 +54,13 @@ public class ResultadosApresentador implements Apresentador {
         void atualizaEntropiaMinima(int linha, double[] dados);
 
         void plotar();
+        
+        void setInfoCobaia(long id, String info);
+        
+        void setContagemIniciados(int contagem);
+        
+        void setContagemTerminados(int contagem);
+        
     }
 
     private SimpleEventBus eventos;
@@ -62,6 +69,7 @@ public class ResultadosApresentador implements Apresentador {
     private ModeloResposta entropia;
     private ExperimentoStub experimentos[];
     private ExperimentoStub experimentoAtual;
+    private int contagemFinalizados;
 
     public ResultadosApresentador(SimpleEventBus eventos, Exibicao view,
             JuizSoletrandoAsync servidor) {
@@ -132,8 +140,14 @@ public class ResultadosApresentador implements Apresentador {
             public void onSuccess(CobaiaStub[] resultado) {
                 for (CobaiaStub cada : resultado) {
                     view.setCarregandoId(cada.getId(), false);
-                    adicionaResultado(cada.getDesafios().
-                            toArray(new Tentativas[0]));
+                    Tentativas adicionar[] = cada.getDesafios().
+                            toArray(new Tentativas[0]); 
+                    adicionaResultado(adicionar);
+                    if (adicionar.length == 0) {
+                        view.setInfoCobaia(cada.getId(), "Não completou o experimento");
+                    } else {
+                        ++contagemFinalizados;
+                    }
                 }
                 atualizaTabelas();
                 
@@ -164,6 +178,7 @@ public class ResultadosApresentador implements Apresentador {
     }
 
     private void atualizaTabelas() {
+        view.setContagemTerminados(contagemFinalizados);
         entropia.calculaEntropia();
         int max = entropia.getLinhaCount();
         for (int i = 0; i < max; ++i) {
@@ -184,9 +199,11 @@ public class ResultadosApresentador implements Apresentador {
         view.reset();
         entropia = new ModeloResposta(experimentoAtual);
         preparaTitulos();
+        contagemFinalizados = 0;
         List<Long> requisitar = new ArrayList<Long>(experimentoAtual.getIdCobaias());
         Collections.sort(requisitar);
         adicionarId(requisitar);
+        view.setContagemIniciados(requisitar.size());
     }
 
     @Override

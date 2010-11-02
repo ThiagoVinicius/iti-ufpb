@@ -50,7 +50,7 @@ public class ModeloResposta {
     public double[] getEntropiaMaxima() {
         return entropiaMaxima;
     }
-
+    
     public void calculaEntropia() {
         double entropiaMax;
         double entropiaMin;

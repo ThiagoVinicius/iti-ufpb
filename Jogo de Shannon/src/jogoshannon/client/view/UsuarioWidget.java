@@ -3,6 +3,7 @@ package jogoshannon.client.view;
 import jogoshannon.client.Jogo_de_Shannon;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -17,6 +18,7 @@ public class UsuarioWidget extends Composite {
     private Label idLabel;
     private Button remover;
     private Image carregando;
+    private Label infoLabel;
 
     public UsuarioWidget(long id) {
         super();
@@ -26,13 +28,15 @@ public class UsuarioWidget extends Composite {
         SimplePanel root = new SimplePanel();
         initWidget(root);
 
-        idLabel = new Label("" + id);
-        idLabel.setWidth("5em");
+        idLabel = new Label("ID = " + id);
+        idLabel.setWidth("7em");
 
         remover = new Button("Remover");
         remover.setEnabled(false);
 
         carregando = new Image(Jogo_de_Shannon.IMAGENS.ampulheta());
+        
+        infoLabel = new Label();
 
         HorizontalPanel painelPrincipal = new HorizontalPanel();
         painelPrincipal
@@ -40,6 +44,7 @@ public class UsuarioWidget extends Composite {
         painelPrincipal.add(idLabel);
         painelPrincipal.add(remover);
         painelPrincipal.add(carregando);
+        painelPrincipal.add(infoLabel);
 
         root.setWidget(painelPrincipal);
 
@@ -59,6 +64,14 @@ public class UsuarioWidget extends Composite {
 
     public void setCarregando(boolean estado) {
         carregando.setVisible(estado);
+    }
+    
+    public void setInfo (String info) {
+        SafeHtmlBuilder safe = new SafeHtmlBuilder();
+        safe.appendEscaped("(");
+        safe.appendEscaped(info);
+        safe.appendEscaped(")");
+        infoLabel.setText(safe.toSafeHtml().asString());
     }
 
     @Override

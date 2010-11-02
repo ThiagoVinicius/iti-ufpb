@@ -51,12 +51,6 @@
 	</ui:style>
 
 	<g:HTMLPanel>
-		<!--
-			Add GWT widgets here. Enter < and hit Ctrl-Space to auto-complete
-			widget names. The ui:field attribute binds an element to a field in
-			the owner class. See the GWT docs on UI Binder for more details.
-		-->
-
 
 		<g:HorizontalPanel styleName="{style.jogo-id}" spacing="10">
 			<g:cell>
@@ -89,7 +83,7 @@
 			</g:VerticalPanel>
 		</g:SimplePanel>
 
-		<v:TecladoVirtual ui:field="teclado" styleName="{style.centralizado}"></v:TecladoVirtual>
+		<v:TecladoVirtual ui:field="teclado" styleName="{style.centralizado}"/>
 
 	</g:HTMLPanel>
 </ui:UiBinder> 
