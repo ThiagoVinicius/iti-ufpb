@@ -1,5 +1,8 @@
 package jogoshannon.client.remote;
 
+import java.util.List;
+
+import jogoshannon.shared.CobaiaStub;
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.SessaoInvalidaException;
@@ -17,7 +20,7 @@ public interface JuizSoletrando extends RemoteService {
     public void atualizaTentativas(Tentativas contadores[])
             throws SessaoInvalidaException;
 
-    public Tentativas[] getResultados(long id)
+    public CobaiaStub[] getResultados(List<Long> id)
             throws UsuarioNaoEncontradoException;
     
     public ExperimentoStub getExperimentoStub (Long id);

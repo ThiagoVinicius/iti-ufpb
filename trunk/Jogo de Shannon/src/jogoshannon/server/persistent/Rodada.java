@@ -6,6 +6,8 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Arrays;
 
+import jogoshannon.shared.Tentativas;
+
 public class Rodada implements Externalizable {
 
     private static final long serialVersionUID = 1L;
@@ -21,6 +23,10 @@ public class Rodada implements Externalizable {
 
     public Rodada(int tentativas[]) {
         this.tentativas = tentativas;
+    }
+    
+    public Rodada (Tentativas tentativas) {
+        this(tentativas.contagens);
     }
 
     public int[] getTentativas() {
@@ -82,6 +88,11 @@ public class Rodada implements Externalizable {
         if (!Arrays.equals(tentativas, other.tentativas))
             return false;
         return true;
+    }
+    
+    public Tentativas toStub () {
+        Tentativas resultado = new Tentativas(getTentativas());
+        return resultado;
     }
     
 }

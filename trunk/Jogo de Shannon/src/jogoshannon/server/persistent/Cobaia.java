@@ -1,5 +1,6 @@
 package jogoshannon.server.persistent;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -14,6 +15,8 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.listener.StoreCallback;
 
 import jogoshannon.server.GestorPersistencia;
+import jogoshannon.shared.CobaiaStub;
+import jogoshannon.shared.Tentativas;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,21 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     
     @Persistent
     private Key conjuntoFrases;
+    
+    public Cobaia () {
+    }
+    
+    public Cobaia (CobaiaStub copiar) {
+        experimento = KeyFactory.createKey(Experimento.class.getSimpleName(), 
+                copiar.getExperimentoId());
+        conjuntoFrases = KeyFactory.createKey(ConjuntoFrases.class.getSimpleName(), 
+                copiar.getConjuntoFrasesId());
+        List<Rodada> rodadas = getDesafiosImpl();
+        for (Tentativas t : copiar.getDesafios()) {
+            rodadas.add(new Rodada(t));
+        }
+    }
+    
     
     public long getIdSessao() {
         return key.getId();
@@ -120,7 +138,7 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     
     @Override
     public void jdoPreStore() {
-        logger.info("Usuario [{}] sendo armazenado. Atualizando timestamp.", key);
+        logger.debug("Usuario [{}] sendo armazenado. Atualizando timestamp.", key);
         if (desafios != null && desafios.getRodadas().isEmpty()) {
             desafios = null;
         }
@@ -144,6 +162,21 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
         } else {
             return 0;
         }
+    }
+    
+    public CobaiaStub toStub () {
+        CobaiaStub resultado = new CobaiaStub();
+        
+        resultado.setConjuntoFrasesId(conjuntoFrases.getId());
+        List<Tentativas> nDesafios = new ArrayList<Tentativas>();
+        for (Rodada r : getDesafios()) {
+            nDesafios.add(r.toStub());
+        }
+        resultado.setDesafios(nDesafios);
+        resultado.setExperimentoId(experimento.getId());
+        resultado.setId(key.getId());
+        
+        return resultado;
     }
     
 }

@@ -253,6 +253,7 @@ implements ResultadosApresentador.Exibicao {
         tabelaTentativas.getRowFormatter().addStyleName(0, style.tituloTabela());
         tabelaTentativas.addStyleName(style.corpoTabela());
         tabelaTentativas.getCellFormatter().setStyleName(0, 0, style.zeroZero());
+        painelGrafico.setVisible(false);
     }
 
     @Override
@@ -277,7 +278,7 @@ implements ResultadosApresentador.Exibicao {
     
     private void plotarImpl () {
         LineChart.Options opt = LineChart.Options.create();
-        opt.setWidth(600);
+        opt.setWidth(800);
         opt.setHeight(450);
         opt.setSmoothLine(true);
         opt.setLegend(LegendPosition.RIGHT);
@@ -295,6 +296,7 @@ implements ResultadosApresentador.Exibicao {
         
         LineChart grafico = new LineChart(dados, opt);
         painelGrafico.setWidget(grafico);
+        painelGrafico.setVisible(true);
         
     }
     

@@ -1,12 +1,18 @@
 package jogoshannon.client.presenter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import jogoshannon.client.ModeloResposta;
 import jogoshannon.client.PedidoEncerramento;
 import jogoshannon.client.event.UsuarioRemovidoEvent;
 import jogoshannon.client.event.UsuarioRemovidoHandler;
 import jogoshannon.client.remote.JuizSoletrandoAsync;
+import jogoshannon.shared.CobaiaStub;
 import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.Tentativas;
+import jogoshannon.shared.UsuarioNaoEncontradoException;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -14,6 +20,7 @@ import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -114,20 +121,39 @@ public class ResultadosApresentador implements Apresentador {
                 });
     }
 
-    private void adicionarId(final long id) {
-        view.adicionarId(id);
-        view.setCarregandoId(id, true);
+    private void adicionarId(final List<Long> requisitar) {
+        for (long id : requisitar) {
+            view.adicionarId(id);
+            view.setCarregandoId(id, true);
+        }
 
-        servidor.getResultados(id, new AsyncCallback<Tentativas[]>() {
+        servidor.getResultados(requisitar, new AsyncCallback<CobaiaStub[]>() {
             @Override
-            public void onSuccess(Tentativas[] resultado) {
-                view.setCarregandoId(id, false);
-                adicionaResultado(resultado);
+            public void onSuccess(CobaiaStub[] resultado) {
+                for (CobaiaStub cada : resultado) {
+                    view.setCarregandoId(cada.getId(), false);
+                    adicionaResultado(cada.getDesafios().
+                            toArray(new Tentativas[0]));
+                }
+                atualizaTabelas();
+                
+                if (resultado.length != requisitar.size()) {
+                    adicionarId(requisitar.subList(resultado.length-1, requisitar.size()));
+                }
+                
             }
 
             @Override
             public void onFailure(Throwable caught) {
-                removerId(id);
+                try {
+                    throw caught; 
+                } catch (UsuarioNaoEncontradoException e) {
+                    requisitar.remove(e.getId());
+                    removerId(e.getId());
+                } catch (InvocationException e) {
+                    Window.alert(e.getMessage());
+                } catch (Throwable e) {
+                }
             }
         });
 
@@ -135,7 +161,6 @@ public class ResultadosApresentador implements Apresentador {
 
     private void adicionaResultado(Tentativas resultado[]) {
         entropia.adiciona(resultado);
-        atualizaTabelas();
     }
 
     private void atualizaTabelas() {
@@ -159,9 +184,9 @@ public class ResultadosApresentador implements Apresentador {
         view.reset();
         entropia = new ModeloResposta(experimentoAtual);
         preparaTitulos();
-        for (Long id : experimentoAtual.getIdCobaias()) {
-            adicionarId(id);
-        }
+        List<Long> requisitar = new ArrayList<Long>(experimentoAtual.getIdCobaias());
+        Collections.sort(requisitar);
+        adicionarId(requisitar);
     }
 
     @Override
