@@ -16,6 +16,7 @@ import jogoshannon.server.persistent.ConjuntoFrases;
 import jogoshannon.server.persistent.Experimento;
 import jogoshannon.server.persistent.ExperimentoDefault;
 import jogoshannon.server.persistent.Rodada;
+import jogoshannon.shared.CobaiaStub;
 import jogoshannon.shared.DadosJogo;
 import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.SessaoInvalidaException;
@@ -29,6 +30,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.apphosting.api.DeadlineExceededException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 @SuppressWarnings("serial")
@@ -48,11 +50,11 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             usuario = GestorExperimentos.novaCobaia(exp, pm);
             chave = usuario.getKey();
             sessao.setAttribute("usuario", chave);
-            logger.info("Criando NOVO usuario, id = {}; Sessao = {}", 
+            logger.debug("Criando NOVO usuario, id = {}; Sessao = {}", 
                     usuario.getKey(), sessao.getId());
         } else {
             usuario = pm.getObjectById(Cobaia.class, chave);
-            logger.info("RECUPERANDO usuario, id = {}; Sessao = {}", 
+            logger.debug("RECUPERANDO usuario, id = {}; Sessao = {}", 
                     usuario.getKey(), sessao.getId());
         }
 
@@ -75,7 +77,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
     private boolean checarSessaoValida() {
         
-        logger.info("Checando validade da sessão.");
+        logger.debug("Checando validade da sessão.");
         
         String idSessaoBrowser = getThreadLocalRequest().getParameter(
                 "id_sessao");
@@ -105,7 +107,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
 
     public DadosJogo getFrases(Long idExperimento) throws SessaoInvalidaException {
 
-        logger.info("Executando: getFrases()");
+        logger.debug("Executando: getFrases()");
         
         boolean sessaoValida = checarSessaoValida();
         
@@ -132,7 +134,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             ConjuntoFrases frases = usuario.getFrases(pm);
             
             pm.close();
-            logger.info("Retornando {} frases.", frases.getFrases().size());
+            logger.debug("Retornando {} frases.", frases.getFrases().size());
             
             return new DadosJogo(exibirLetras, frases.toStub(), 
                     usuario.getIdSessao(), exp.getId());
@@ -195,37 +197,34 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
     }
 
     @Override
-    public Tentativas[] getResultados(long id)
+    public CobaiaStub[] getResultados(List<Long> requisitados)
             throws UsuarioNaoEncontradoException {
         PersistenceManager pm = GestorPersistencia.get()
                 .getPersistenceManager();
         
-        logger.info("Executando: getResultados(long)");
+        logger.debug("Executando: getResultados(long)");
         
-        Key chave = KeyFactory.createKey(Cobaia.class.getSimpleName(), id);
-        Cobaia usuario = null;
+        List<CobaiaStub> resultado = new LinkedList<CobaiaStub>();
+        
+        long id = 0;
         try {
-            usuario = pm.getObjectById(Cobaia.class, chave);
-            
-            List<Rodada> desafios = usuario.getDesafios();
-            Tentativas resultado[] = new Tentativas[desafios.size()];
-
-            for (int i = 0; i < resultado.length; ++i) {
-                Rodada des = desafios.get(i);
-                resultado[i] = new Tentativas(des.getTentativas());
+            for (long iter : requisitados) {
+                id = iter;
+                Key chave = KeyFactory.createKey(Cobaia.class.getSimpleName(), id);
+                Cobaia usuario = pm.getObjectById(Cobaia.class, chave);
+                resultado.add(usuario.toStub());
             }
-            
-            logger.info("Retornando {} tentativas para o usuário {}", 
-                    resultado.length, id); 
-            
-            return resultado;
+        } catch (DeadlineExceededException e) {
+            //retornara logo em seguida, apenas com os resultados que já foram
+            //recuperados.
         } catch (JDOObjectNotFoundException e) {
             logger.info("Usuário de id '{}' não foi encontrado.", id);
-            throw new UsuarioNaoEncontradoException();
+            throw new UsuarioNaoEncontradoException(id);
         } finally {
             pm.close();
         }
         
+        return resultado.toArray(new CobaiaStub[0]);
 
     }
 

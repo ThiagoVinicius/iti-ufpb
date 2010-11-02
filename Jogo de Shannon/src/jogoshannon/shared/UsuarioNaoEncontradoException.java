@@ -6,6 +6,8 @@ import java.io.Serializable;
 public class UsuarioNaoEncontradoException extends Exception implements
         Serializable {
 
+    private long id;
+    
     public UsuarioNaoEncontradoException() {
         super();
         // TODO Auto-generated constructor stub
@@ -24,6 +26,15 @@ public class UsuarioNaoEncontradoException extends Exception implements
     public UsuarioNaoEncontradoException(Throwable cause) {
         super(cause);
         // TODO Auto-generated constructor stub
+    }
+    
+    public UsuarioNaoEncontradoException(long id) {
+        super();
+        this.id = id;
+    }
+    
+    public long getId () {
+        return id;
     }
 
 }
