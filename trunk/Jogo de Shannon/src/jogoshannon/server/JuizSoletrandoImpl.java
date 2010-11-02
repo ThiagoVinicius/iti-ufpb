@@ -177,7 +177,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
                 		"tentativas cadastradas.");
             }
             
-            usuario.getDesafios().addAll(tmp);
+            usuario.setDesafios(tmp);
 
             tx.commit();
         } catch (IOException e) {
@@ -206,7 +206,19 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
         Cobaia usuario = null;
         try {
             usuario = pm.getObjectById(Cobaia.class, chave);
-            usuario = pm.detachCopy(usuario);
+            
+            List<Rodada> desafios = usuario.getDesafios();
+            Tentativas resultado[] = new Tentativas[desafios.size()];
+
+            for (int i = 0; i < resultado.length; ++i) {
+                Rodada des = desafios.get(i);
+                resultado[i] = new Tentativas(des.getTentativas());
+            }
+            
+            logger.info("Retornando {} tentativas para o usuário {}", 
+                    resultado.length, id); 
+            
+            return resultado;
         } catch (JDOObjectNotFoundException e) {
             logger.info("Usuário de id '{}' não foi encontrado.", id);
             throw new UsuarioNaoEncontradoException();
@@ -214,19 +226,6 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
             pm.close();
         }
         
-        List<Rodada> desafios = usuario.getDesafios();
-        Tentativas resultado[] = new Tentativas[desafios.size()];
-
-        for (int i = 0; i < resultado.length; ++i) {
-            Rodada des = desafios.get(i);
-            resultado[i] = new Tentativas(des.getTentativas());
-        }
-        
-        logger.info("Retornando {} tentativas para o usuário {}", 
-                resultado.length, id); 
-        
-        return resultado;
-
 
     }
 

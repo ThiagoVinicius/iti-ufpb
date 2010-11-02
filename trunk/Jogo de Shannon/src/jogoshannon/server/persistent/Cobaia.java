@@ -1,5 +1,7 @@
 package jogoshannon.server.persistent;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -53,13 +55,22 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
         return key;
     }
     
-    public synchronized List<Rodada> getDesafios() {
+    private synchronized List<Rodada> getDesafiosImpl () {
         if (desafios == null) {
             desafios = new RegistroRodadas();
-        } else {
-            desafios = desafios.copiaRasa();
         }
         return desafios.getRodadas();
+    }
+    
+    public synchronized List<Rodada> getDesafios() {
+        return Collections.unmodifiableList(getDesafiosImpl());
+    }
+    
+    public synchronized void setDesafios (Collection<Rodada> novo) {
+        List<Rodada> dados = getDesafiosImpl();
+        desafios = desafios.copiaRasa();
+        dados.clear();
+        dados.addAll(novo);
     }
     
     public void setLastModified(Date lastModified) {
@@ -110,10 +121,7 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     @Override
     public void jdoPreStore() {
         logger.info("Usuario [{}] sendo armazenado. Atualizando timestamp.", key);
-        if (desafios != null) {
-            //Substituindo objeto antigo, para que o JDO perceba que foi alterado.
-            desafios = desafios.copiaRasa();
-        } else if  (desafios.getRodadas().isEmpty()) {
+        if (desafios != null && desafios.getRodadas().isEmpty()) {
             desafios = null;
         }
         setLastModified(new Date());
