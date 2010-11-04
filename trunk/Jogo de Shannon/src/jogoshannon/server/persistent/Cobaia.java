@@ -139,9 +139,6 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
     @Override
     public void jdoPreStore() {
         logger.debug("Usuario [{}] sendo armazenado. Atualizando timestamp.", key);
-        if (desafios != null && desafios.getRodadas().isEmpty()) {
-            desafios = null;
-        }
         setLastModified(new Date());
     }
 
