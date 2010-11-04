@@ -123,9 +123,6 @@ public class GestorExperimentos {
         
         frases.setDescricao(descricao.toString());
         
-        Experimento result = new Experimento();
-        result.getMostrarLetras().addAll(letras);
-        
         pm.makePersistent(frases);
         return frases;
         
