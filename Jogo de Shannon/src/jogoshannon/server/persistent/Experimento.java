@@ -1,6 +1,8 @@
 package jogoshannon.server.persistent;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -123,11 +125,21 @@ public class Experimento {
         }
     }
     
-    public synchronized List<Integer> getMostrarLetras () {
+    private synchronized List<Integer> getMostrarLetrasImpl () {
         if (mostrarLetras == null) {
             mostrarLetras = new ArrayList<Integer>();
         }
         return mostrarLetras;
+    }
+    
+    public synchronized List<Integer> getMostrarLetras () {
+        return Collections.unmodifiableList(getMostrarLetrasImpl());
+    }
+    
+    public synchronized void setMostrarLetras (Collection<Integer> novo) {
+        List<Integer> alvo = getMostrarLetrasImpl();
+        alvo.clear();
+        alvo.addAll(novo);
     }
     
     public Key getFrasesKey () {
