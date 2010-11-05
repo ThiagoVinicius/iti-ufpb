@@ -1,11 +1,11 @@
 package jogoshannon.client.view;
 
 import jogoshannon.client.presenter.ResultadosApresentador;
-import jogoshannon.client.util.ConjuntoUsuarios;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
@@ -59,18 +59,13 @@ implements ResultadosApresentador.Exibicao {
     TabelaCss style; 
     
     @UiField
-    protected FlowPanel usuarios;
+    protected FlowPanel conteinerListaUsuarios;
+    
+    @UiField
+    protected FlowPanel listaUsuarios;
     
     @UiField
     protected ListBox listaExperimentos;
-    
-    /*
-    @UiField
-    protected TextBox entradaId;
-    
-    @UiField
-    protected Button botaoAdicionar;
-    */
     
     @UiField
     protected Anchor mostrarOcultarUsuarios;
@@ -93,7 +88,12 @@ implements ResultadosApresentador.Exibicao {
     @UiField
     protected Label contagemFinalizados;
     
-    private ConjuntoUsuarios conjUsuarios;
+    @UiField
+    protected Anchor marcarTodos;
+    
+    @UiField
+    protected Anchor desmarcarTodos;
+    
     private int maxLinha;
     
     private double entropiaMax[];
@@ -101,7 +101,6 @@ implements ResultadosApresentador.Exibicao {
     
     public ResultadosExibicao (SimpleEventBus eventos) {
         initWidget(uiBinder.createAndBindUi(this));
-        conjUsuarios = new ConjuntoUsuarios(eventos);
         listaExperimentos.addItem("Selecione o experimento");
         atualizarLabelsVisibilidade();
         reset();
@@ -110,7 +109,7 @@ implements ResultadosApresentador.Exibicao {
     @UiHandler({"mostrarOcultarUsuarios", "mostrarOcultarTabela"})
     public void onClick (ClickEvent evt) {
         if (evt.getSource() == mostrarOcultarUsuarios) {
-            trocarVisibilidade(usuarios);
+            trocarVisibilidade(conteinerListaUsuarios);
         } else if (evt.getSource() == mostrarOcultarTabela) {
             trocarVisibilidade(tabelaTentativas);
         }
@@ -125,7 +124,7 @@ implements ResultadosApresentador.Exibicao {
     }
     
     private void atualizarLabelsVisibilidade() {
-        mostrarOcultarUsuarios.setText(textoVisibilidade(usuarios.isVisible()));
+        mostrarOcultarUsuarios.setText(textoVisibilidade(conteinerListaUsuarios.isVisible()));
         mostrarOcultarTabela.setText(textoVisibilidade(tabelaTentativas.isVisible()));
     }
     
@@ -143,34 +142,8 @@ implements ResultadosApresentador.Exibicao {
     }
 
     @Override
-    public void adicionarId(long id) {
-        if (id != 0) {
-            UsuarioWidget novo = new UsuarioWidget(id);
-            novo.ativaBotaoRemover(true);
-            boolean foi = conjUsuarios.adiciona(novo);
-
-            if (foi) {
-                usuarios.add(novo);
-            }
-
-        }
-        
-    }
-
-    @Override
-    public void removerId(long id) {
-        UsuarioWidget cara = conjUsuarios.remover(id);
-        if (cara != null) {
-            usuarios.remove(cara);
-        }
-    }
-
-    @Override
-    public void setCarregandoId(long id, boolean carregando) {
-        UsuarioWidget cara = conjUsuarios.get(id);
-        if (cara != null) {
-            cara.setCarregando(carregando);
-        }
+    public void adicionarId(UsuarioWidget widget) {
+        listaUsuarios.add(widget);
     }
 
     private String doubleToString(double numero) {
@@ -252,10 +225,7 @@ implements ResultadosApresentador.Exibicao {
     
     @Override
     public void reset() {
-        for (Widget w : conjUsuarios.getValores()) {
-            usuarios.remove(w);
-        }
-        conjUsuarios.clear();
+        listaUsuarios.clear();
         tabelaTentativas.removeAllRows();
         tabelaTentativas.getRowFormatter().addStyleName(0, style.tituloTabela());
         tabelaTentativas.addStyleName(style.corpoTabela());
@@ -308,21 +278,23 @@ implements ResultadosApresentador.Exibicao {
     }
 
     @Override
-    public void setInfoCobaia(long id, String info) {
-        UsuarioWidget alvo = conjUsuarios.get(id);
-        if (alvo != null) {
-            alvo.setInfo(info);
-        }
+    public void setContagemIniciados(String contagem) {
+        contagemIniciados.setText(contagem);
     }
 
     @Override
-    public void setContagemIniciados(int contagem) {
-        contagemIniciados.setText(Integer.toString(contagem));
+    public void setContagemTerminados(String contagem) {
+        contagemFinalizados.setText(contagem);
     }
 
     @Override
-    public void setContagemTerminados(int contagem) {
-        contagemFinalizados.setText(Integer.toString(contagem));
+    public HasClickHandlers getDesmarcarTodos() {
+        return desmarcarTodos;
+    }
+
+    @Override
+    public HasClickHandlers getMarcarTodos() {
+        return marcarTodos;
     }
 
 }

@@ -6,9 +6,11 @@ import java.util.List;
 
 import jogoshannon.client.ModeloResposta;
 import jogoshannon.client.PedidoEncerramento;
-import jogoshannon.client.event.UsuarioRemovidoEvent;
-import jogoshannon.client.event.UsuarioRemovidoHandler;
+import jogoshannon.client.event.UsuarioCheckBoxEvent;
+import jogoshannon.client.event.UsuarioCheckBoxHandler;
 import jogoshannon.client.remote.JuizSoletrandoAsync;
+import jogoshannon.client.util.ConjuntoUsuarios;
+import jogoshannon.client.view.UsuarioWidget;
 import jogoshannon.shared.CobaiaStub;
 import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.Tentativas;
@@ -16,7 +18,10 @@ import jogoshannon.shared.UsuarioNaoEncontradoException;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,7 +36,7 @@ public class ResultadosApresentador implements Apresentador {
         
         void reset();
 
-        void adicionarId(long id);
+        void adicionarId(UsuarioWidget widget);
         
         void adicionarExperimento(String nome);
         
@@ -39,11 +44,7 @@ public class ResultadosApresentador implements Apresentador {
         
         int getExperimentoSelecionado ();
 
-        void setCarregandoId(long id, boolean carregando);
-        
         void setExperimentosCarregando (boolean carregando);
-
-        void removerId(long id);
 
         void atualizarLinha(int linha, int dados[]);
 
@@ -55,11 +56,13 @@ public class ResultadosApresentador implements Apresentador {
 
         void plotar();
         
-        void setInfoCobaia(long id, String info);
+        void setContagemIniciados(String contagem);
         
-        void setContagemIniciados(int contagem);
+        void setContagemTerminados(String contagem);
         
-        void setContagemTerminados(int contagem);
+        HasClickHandlers getMarcarTodos();
+        
+        HasClickHandlers getDesmarcarTodos();
         
     }
 
@@ -70,12 +73,14 @@ public class ResultadosApresentador implements Apresentador {
     private ExperimentoStub experimentos[];
     private ExperimentoStub experimentoAtual;
     private int contagemFinalizados;
+    private ConjuntoUsuarios conjUsuarios;
 
     public ResultadosApresentador(SimpleEventBus eventos, Exibicao view,
             JuizSoletrandoAsync servidor) {
         this.eventos = eventos;
         this.view = view;
         this.servidor = servidor;
+        conjUsuarios = new ConjuntoUsuarios(eventos);
         //this.entropia = new ModeloResposta();
 
         //preparaTitulos();
@@ -119,32 +124,64 @@ public class ResultadosApresentador implements Apresentador {
             }
         });
 
-        eventos.addHandler(UsuarioRemovidoEvent.TIPO,
-                new UsuarioRemovidoHandler() {
+        eventos.addHandler(UsuarioCheckBoxEvent.TIPO,
+                new UsuarioCheckBoxHandler() {
                     @Override
-                    public void onUsuarioRemovido(UsuarioRemovidoEvent evento) {
+                    public void onCheckboxMudou(UsuarioCheckBoxEvent evento) {
                         // TODO remover ao clicar em remover;
                         // removerId(evento.getOrigem().getId());
+                        if (evento.getOrigem().getCheckboxMarcada() == false) {
+                            desconsiderarId(evento.getOrigem().getId());
+                        } else {
+                            reconsiderarId(evento.getOrigem().getId());
+                        }
                     }
                 });
+        
+        view.getDesmarcarTodos().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                desconsiderarTodos();
+            }
+        });
+        
+        view.getMarcarTodos().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                reconsiderarTodos();
+            }
+        });
+        
     }
 
     private void adicionarId(final List<Long> requisitar) {
         for (long id : requisitar) {
-            view.adicionarId(id);
-            view.setCarregandoId(id, true);
+            
+            UsuarioWidget novo = new UsuarioWidget(id);
+            novo.ativaBotaoRemover(true);
+            boolean foi = conjUsuarios.adicionaWidget(novo);
+            if (foi) {
+                view.adicionarId(novo);
+                novo.setCarregando(true);
+            }
         }
 
         servidor.getResultados(requisitar, new AsyncCallback<CobaiaStub[]>() {
             @Override
             public void onSuccess(CobaiaStub[] resultado) {
                 for (CobaiaStub cada : resultado) {
-                    view.setCarregandoId(cada.getId(), false);
+                    
+                    conjUsuarios.adicionaCobaia(cada);
+                    UsuarioWidget visualizacaoUsuario = conjUsuarios.getWidget(cada.getId());
+                    visualizacaoUsuario.setCarregando(false);
+                    visualizacaoUsuario.setCheckboxMarcada(true);
+                    
                     Tentativas adicionar[] = cada.getDesafios().
                             toArray(new Tentativas[0]); 
                     adicionaResultado(adicionar);
                     if (adicionar.length == 0) {
-                        view.setInfoCobaia(cada.getId(), "Não completou o experimento");
+                        visualizacaoUsuario.setInfo("Não completou o experimento");
+                        visualizacaoUsuario.setCheckboxVisivel(false);
                     } else {
                         ++contagemFinalizados;
                     }
@@ -163,7 +200,7 @@ public class ResultadosApresentador implements Apresentador {
                     throw caught; 
                 } catch (UsuarioNaoEncontradoException e) {
                     requisitar.remove(e.getId());
-                    removerId(e.getId());
+                    desconsiderarId(e.getId());
                 } catch (InvocationException e) {
                     Window.alert(e.getMessage());
                 } catch (Throwable e) {
@@ -178,7 +215,7 @@ public class ResultadosApresentador implements Apresentador {
     }
 
     private void atualizaTabelas() {
-        view.setContagemTerminados(contagemFinalizados);
+        view.setContagemTerminados(""+contagemFinalizados);
         entropia.calculaEntropia();
         int max = entropia.getLinhaCount();
         for (int i = 0; i < max; ++i) {
@@ -189,13 +226,52 @@ public class ResultadosApresentador implements Apresentador {
         view.plotar();
     }
 
-    private void removerId(long id) {
-        view.removerId(id);
+    private void desconsiderarId(long id) {
+        // view.removerId(id);
         // view.limparIdAdicionar();
+        CobaiaStub paraRemover = conjUsuarios.getCobaia(id);
+        UsuarioWidget representacaoGrafica = conjUsuarios.getWidget(id);
+        if (paraRemover != null && representacaoGrafica != null) {
+            entropia.remove(paraRemover.getDesafios().toArray(new Tentativas[0]));
+            representacaoGrafica.setCheckboxMarcada(false);
+            atualizaTabelas();
+        }
+        
+        //entropia.remove()
+    }
+    
+    private void reconsiderarId (long id) {
+        CobaiaStub paraRemover = conjUsuarios.getCobaia(id);
+        UsuarioWidget representacaoGrafica = conjUsuarios.getWidget(id);
+        if (paraRemover != null && representacaoGrafica != null) {
+            entropia.adiciona(paraRemover.getDesafios().toArray(new Tentativas[0]));
+            representacaoGrafica.setCheckboxMarcada(true);
+            atualizaTabelas();
+        }
+    }
+    
+    private void desconsiderarTodos () {
+        for (UsuarioWidget w : conjUsuarios.getTodosWidgets()) {
+            w.setCheckboxMarcada(false);
+        }
+        entropia = new ModeloResposta(experimentoAtual);
+        atualizaTabelas();
+    }
+    
+    private void reconsiderarTodos () {
+        for (UsuarioWidget w : conjUsuarios.getTodosWidgets()) {
+            w.setCheckboxMarcada(true);
+        }
+        entropia = new ModeloResposta(experimentoAtual);
+        for (CobaiaStub c : conjUsuarios.getTodasCobaias()) {
+            entropia.adiciona(c.getDesafios().toArray(new Tentativas[0]));
+        }
+        atualizaTabelas();
     }
     
     private void doExperimentoMudou () {
         experimentoAtual = experimentos[view.getExperimentoSelecionado()];
+        conjUsuarios.limparTudo();
         view.reset();
         entropia = new ModeloResposta(experimentoAtual);
         preparaTitulos();
@@ -203,7 +279,8 @@ public class ResultadosApresentador implements Apresentador {
         List<Long> requisitar = new ArrayList<Long>(experimentoAtual.getIdCobaias());
         Collections.sort(requisitar);
         adicionarId(requisitar);
-        view.setContagemIniciados(requisitar.size());
+        view.setContagemIniciados(""+requisitar.size());
+        view.setContagemTerminados(" - indisponível - ");
     }
 
     @Override

@@ -34,6 +34,22 @@ public class ModeloResposta {
             }
         }
     }
+    
+    public void remove(Tentativas[] tentativas) {
+        total -= tentativas.length;
+        int[] contages;
+        int valor;
+
+        for (int i = 0; i < tentativas.length; i++) {
+            contages = tentativas[i].contagens;
+
+            for (int j = 0; j < contages.length; j++) {
+                valor = Math.min(contages[j], 28);
+
+                tabela[valor - 1][j]--;
+            }
+        }    
+    }
 
     public int getLinhaCount() {
         return tabela.length;

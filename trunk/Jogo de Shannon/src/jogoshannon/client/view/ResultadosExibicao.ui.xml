@@ -85,8 +85,25 @@
 		<g:Anchor ui:field="mostrarOcultarUsuarios" href="javascript:void(0)" />
 
 		<div />
-
-		<g:FlowPanel ui:field="usuarios" visible="false" />
+        
+        <g:FlowPanel ui:field="conteinerListaUsuarios" visible="false">
+        
+        <g:HorizontalPanel spacing="20">
+            <g:cell>
+                <g:Anchor ui:field="marcarTodos" href="javascript:void(0)">
+                    Marcar todos
+                </g:Anchor>
+            </g:cell>
+            <g:cell>
+                <g:Anchor ui:field="desmarcarTodos" href="javascript:void(0)">
+                    Desmarcar todos
+                </g:Anchor>
+            </g:cell>
+        </g:HorizontalPanel>
+        
+		<g:FlowPanel ui:field="listaUsuarios" />
+		
+		</g:FlowPanel>
 
 
 		<!--

@@ -4,7 +4,7 @@ import jogoshannon.client.Jogo_de_Shannon;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -16,7 +16,7 @@ public class UsuarioWidget extends Composite {
 
     private final long id;
     private Label idLabel;
-    private Button remover;
+    private CheckBox valendo;
     private Image carregando;
     private Label infoLabel;
 
@@ -31,8 +31,8 @@ public class UsuarioWidget extends Composite {
         idLabel = new Label("ID = " + id);
         idLabel.setWidth("7em");
 
-        remover = new Button("Remover");
-        remover.setEnabled(false);
+        valendo = new CheckBox("Considerar resultados");
+        valendo.setEnabled(false);
 
         carregando = new Image(Jogo_de_Shannon.IMAGENS.ampulheta());
         
@@ -42,7 +42,7 @@ public class UsuarioWidget extends Composite {
         painelPrincipal
                 .setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         painelPrincipal.add(idLabel);
-        painelPrincipal.add(remover);
+        painelPrincipal.add(valendo);
         painelPrincipal.add(carregando);
         painelPrincipal.add(infoLabel);
 
@@ -51,11 +51,11 @@ public class UsuarioWidget extends Composite {
     }
 
     public HasClickHandlers getBotaoRemover() {
-        return remover;
+        return valendo;
     }
 
     public void ativaBotaoRemover(boolean ativar) {
-        remover.setEnabled(ativar);
+        valendo.setEnabled(ativar);
     }
 
     public long getId() {
@@ -93,4 +93,16 @@ public class UsuarioWidget extends Composite {
         return true;
     }
 
+    public void setCheckboxMarcada(boolean marcado) {
+        valendo.setValue(marcado, false);
+    }
+    
+    public boolean getCheckboxMarcada() {
+        return valendo.getValue();
+    }
+
+    public void setCheckboxVisivel(boolean b) {
+        valendo.setVisible(false);
+    }
+    
 }
