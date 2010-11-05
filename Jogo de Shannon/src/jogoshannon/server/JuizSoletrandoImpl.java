@@ -231,7 +231,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
     private void destruirSessao() {
         HttpSession session = getThreadLocalRequest().getSession(false);
         if (session != null) {
-            logger.info("Destruindo sessão: {}", session.getId());
+            logger.debug("Destruindo sessão: {}", session.getId());
             session.invalidate();
         }
     }
@@ -286,7 +286,7 @@ public class JuizSoletrandoImpl extends RemoteServiceServlet implements
                 resultado[i] = cur.toStub();
             }
             
-            logger.info("Retornando {} experimentos.", resultado.length);
+            logger.debug("Retornando {} experimentos.", resultado.length);
             
             return resultado;
         } finally {
