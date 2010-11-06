@@ -103,6 +103,10 @@ public class Cobaia implements StoreCallback, Comparable<Cobaia> {
         experimento = exp.getKey();
     }
     
+    public Experimento getExperimento (PersistenceManager pm) {
+        return pm.getObjectById(Experimento.class, experimento);
+    }
+    
     public void setConjuntoFrases (ConjuntoFrases frases) {
         conjuntoFrases = frases.getKey();
     }

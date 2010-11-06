@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jogoshannon.server.persistent.Cobaia;
+import jogoshannon.server.persistent.ConjuntoFrases;
+import jogoshannon.server.persistent.Experimento;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -23,11 +25,13 @@ public class Resultado extends HttpServlet {
 
         PrintWriter out = resp.getWriter();
 
-        out.println("<html>");
-        out.println("<head><title>Hello World</title></title>");
-        out.println("<body>");
-
         PersistenceManager pm = null;
+        
+        String idString = req.getParameter("id");
+        
+        out.println("<html>");
+        out.println("<head><title>Resultados para id = "+idString+"</title></head>");
+        out.println("<body>");
 
         try {
             Key id = KeyFactory.createKey(Cobaia.class.getSimpleName(),
@@ -35,18 +39,25 @@ public class Resultado extends HttpServlet {
 
             pm = GestorPersistencia.get().getPersistenceManager();
             Cobaia fulano = pm.getObjectById(Cobaia.class, id);
+            ConjuntoFrases frases = fulano.getFrases(pm);
+            Experimento experimento = fulano.getExperimento(pm);
+            
 
-            out.println("Dados do usuário: " + fulano.toString());
+            out.println("<h2>Dados de usuário:</h2><br/>"); 
+            out.println("<h3>ID</h3>"+idString+"<br/>");
+            out.printf("<h3>Experimento</h3>(ID = %s)<br/>", 
+                    String.valueOf(experimento.getKey().getId()));
+            out.println("<h3>Conjunto de frases utilizado</h3><br/>");
+            out.println("&nbsp; - Descição: "+frases.getDescricao().replaceAll("\n", "<br/>"));
+            out.println("&nbsp; - Frases utilizadas: "+frases.getFrases());
+            out.println("<h3>Tentativas[frase]</h3>" + fulano.getDesafios());
 
-        } catch (Exception e) {
-            out
-                    .println("Houve um erro enquanto sua requisição era processada.");
         } finally {
             if (pm != null) {
                 pm.close();
             }
         }
-
+        
         out.println("</body></html>");
 
     }
