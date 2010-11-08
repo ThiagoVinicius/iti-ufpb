@@ -99,7 +99,7 @@ implements PrincipalApresentador.Exibicao {
                             boolean aceito = !VerificadorDeCampo
                                     .teclaModificadora(ne);
                             if (aceito) {
-                                char tecla = (char) (ne.getKeyCode() & 0xffff);
+                                char tecla = (char)ne.getCharCode();
                                 teclado.pressionaTecla(tecla);
                             }
                         }
