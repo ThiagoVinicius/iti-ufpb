@@ -13,6 +13,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -44,6 +45,7 @@ implements ResultadosApresentador.Exibicao {
         String primeiraColuna();
         String zeroZero();
         String rotulo_info();
+        String celula();
     }
 
     private static final int LINHA_TITULO = 0;
@@ -93,6 +95,9 @@ implements ResultadosApresentador.Exibicao {
     
     @UiField
     protected Anchor desmarcarTodos;
+    
+    @UiField
+    protected CheckBox distribuirContagens;
     
     private int maxLinha;
     
@@ -193,15 +198,27 @@ implements ResultadosApresentador.Exibicao {
     }
 
     @Override
-    public void atualizarLinha(int linha, int[] dados) {
+    public void atualizarLinha(int linha, double[] dados) {
         maxLinha = Math.max(maxLinha, linha);
         legendar(linha, ""+(linha+1));
         
         for (int i = 0; i < dados.length; ++i) {
-            Label texto = new Label(dados[i] == 0 ? "" : "" + dados[i]);
-            texto.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+            
+            String texto;
+            double valor = dados[i];
+            boolean exato = Math.rint(valor) == valor;
+            if (exato) {
+                int valorInt = (int) valor;
+                texto = valorInt == 0 ? "" : ""+valorInt;
+            } else {
+                texto = valor == 0.0d ? "" : doubleToString(valor);
+            }
+            
+            Label label = new Label(texto);
+            label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+            label.addStyleName(style.celula());
             tabelaTentativas.setWidget(OFFSET_LINHA + linha, OFFSET_COLUNA + i,
-                    texto);
+                    label);
         }
     }
 
@@ -295,6 +312,15 @@ implements ResultadosApresentador.Exibicao {
     @Override
     public HasClickHandlers getMarcarTodos() {
         return marcarTodos;
+    }
+
+    @Override
+    public boolean getDistribuir() {
+        return distribuirContagens.getValue();
+    }
+    
+    public HasClickHandlers getDistribuirWidget() {
+        return distribuirContagens;
     }
 
 }

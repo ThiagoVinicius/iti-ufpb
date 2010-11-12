@@ -46,7 +46,7 @@ public class ResultadosApresentador implements Apresentador {
 
         void setExperimentosCarregando (boolean carregando);
 
-        void atualizarLinha(int linha, int dados[]);
+        void atualizarLinha(int linha, double dados[]);
 
         void setTitulosTabela(String titulos[]);
 
@@ -59,6 +59,10 @@ public class ResultadosApresentador implements Apresentador {
         void setContagemIniciados(String contagem);
         
         void setContagemTerminados(String contagem);
+        
+        boolean getDistribuir();
+        
+        HasClickHandlers getDistribuirWidget();
         
         HasClickHandlers getMarcarTodos();
         
@@ -152,13 +156,20 @@ public class ResultadosApresentador implements Apresentador {
             }
         });
         
+        view.getDistribuirWidget().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                atualizaTabelas();
+            }
+        });
+        
     }
 
     private void adicionarId(final List<Long> requisitar) {
         for (long id : requisitar) {
             
             UsuarioWidget novo = new UsuarioWidget(id);
-            novo.ativaBotaoRemover(true);
+            novo.setCheckboxHabilitada(false);
             boolean foi = conjUsuarios.adicionaWidget(novo);
             if (foi) {
                 view.adicionarId(novo);
@@ -175,6 +186,7 @@ public class ResultadosApresentador implements Apresentador {
                     UsuarioWidget visualizacaoUsuario = conjUsuarios.getWidget(cada.getId());
                     visualizacaoUsuario.setCarregando(false);
                     visualizacaoUsuario.setCheckboxMarcada(true);
+                    visualizacaoUsuario.setCheckboxHabilitada(true);
                     
                     Tentativas adicionar[] = cada.getDesafios().
                             toArray(new Tentativas[0]); 
@@ -216,7 +228,7 @@ public class ResultadosApresentador implements Apresentador {
 
     private void atualizaTabelas() {
         view.setContagemTerminados(""+contagemFinalizados);
-        entropia.calculaEntropia();
+        entropia.calculaEntropia(view.getDistribuir());
         int max = entropia.getLinhaCount();
         for (int i = 0; i < max; ++i) {
             view.atualizarLinha(i, entropia.getLinha(i));
