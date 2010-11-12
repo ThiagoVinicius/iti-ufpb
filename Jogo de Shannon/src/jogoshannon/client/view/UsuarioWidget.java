@@ -54,10 +54,6 @@ public class UsuarioWidget extends Composite {
         return valendo;
     }
 
-    public void ativaBotaoRemover(boolean ativar) {
-        valendo.setEnabled(ativar);
-    }
-
     public long getId() {
         return id;
     }
@@ -103,6 +99,10 @@ public class UsuarioWidget extends Composite {
 
     public void setCheckboxVisivel(boolean b) {
         valendo.setVisible(false);
+    }
+    
+    public void setCheckboxHabilitada(boolean ativa) {
+        valendo.setEnabled(ativa);
     }
     
 }
