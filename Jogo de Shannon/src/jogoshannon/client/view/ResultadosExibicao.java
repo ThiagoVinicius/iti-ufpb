@@ -18,15 +18,16 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 
 public class ResultadosExibicao extends Composite 
@@ -48,14 +49,15 @@ implements ResultadosApresentador.Exibicao {
         String celula();
     }
 
-    private static final int LINHA_TITULO = 0;
-    private static final int OFFSET_LINHA = 1;
+    private static final int LINHA_TITULO = 1;
+    private static final int LINHA_BRANCO = 2;
+    private static final int OFFSET_LINHA = 3;
 
     private static final int LEGENDA_COLUNA = 0;
     private static final int OFFSET_COLUNA = 1;
 
-    private static final int ENTROPIA_MIN_END_OFFSET = 1;
-    private static final int ENTROPIA_MAX_END_OFFSET = 2;
+    private static final int ENTROPIA_MIN_END_OFFSET = 2;
+    private static final int ENTROPIA_MAX_END_OFFSET = 1;
     
     @UiField 
     TabelaCss style; 
@@ -228,10 +230,22 @@ implements ResultadosApresentador.Exibicao {
             tabelaTentativas.setText(LINHA_TITULO, OFFSET_COLUNA + i,
                     titulos[i]);
         }
+        tabelaTentativas.getCellFormatter().setStyleName(LINHA_TITULO, 
+                LEGENDA_COLUNA, style.zeroZero());
+        
+        tabelaTentativas.setText(LINHA_BRANCO, LEGENDA_COLUNA, 
+                "Acertos na tentativa");
+        tabelaTentativas.getCellFormatter().setStyleName(LINHA_BRANCO, 
+                LEGENDA_COLUNA, style.primeiraColuna());
+        tabelaTentativas.getCellFormatter().addStyleName(LINHA_BRANCO, 
+                LEGENDA_COLUNA, style.celula());
     }
     
     @Override
     public void adicionarExperimento(String nome) {
+        if (nome.length() > 53) {
+            nome = nome.substring(0, 50).concat("...");
+        }
         listaExperimentos.addItem(nome);
     }
 
@@ -244,9 +258,19 @@ implements ResultadosApresentador.Exibicao {
     public void reset() {
         listaUsuarios.clear();
         tabelaTentativas.removeAllRows();
-        tabelaTentativas.getRowFormatter().addStyleName(0, style.tituloTabela());
+        tabelaTentativas.getRowFormatter().addStyleName(LINHA_TITULO, style.tituloTabela());
         tabelaTentativas.addStyleName(style.corpoTabela());
         tabelaTentativas.getCellFormatter().setStyleName(0, 0, style.zeroZero());
+        
+        //tabelaTentativas.addCell(0); //TODO arumar depois
+        tabelaTentativas.setText(0, OFFSET_COLUNA, 
+                "Contexto (Número de letras conhecidas ao chutar)");
+        tabelaTentativas.getFlexCellFormatter().setColSpan(0, OFFSET_COLUNA, 1000);
+        tabelaTentativas.getCellFormatter().setHorizontalAlignment(0, 
+                OFFSET_COLUNA, HorizontalPanel.ALIGN_CENTER);
+        
+        tabelaTentativas.setTitle("Densidade de acertos por tentativa por contexto");
+        
         painelGrafico.setVisible(false);
     }
 
@@ -276,6 +300,11 @@ implements ResultadosApresentador.Exibicao {
         opt.setHeight(450);
         opt.setSmoothLine(true);
         opt.setLegend(LegendPosition.RIGHT);
+        opt.setEnableTooltip(true);
+        opt.setTitleX("Contexto");
+        opt.setTitleY("Entropia calculada");
+        opt.setMin(0.0);
+        opt.setMax(5.0);
         
         DataTable dados = DataTable.create();
         dados.addColumn(ColumnType.STRING, "Letras exibidas");
