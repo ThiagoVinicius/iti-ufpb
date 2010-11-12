@@ -15,16 +15,32 @@
 }
 html, body, #conteudo { height: 100%; }
 body > #conteudo { height: auto; min-height: 100%; }
-#poweredby {
+#rodape {
   clear: both;
   position: relative;
   /*z-index: 10;*/
   height: 40px;
   margin-top: -40px;
-  float: right;
 }
 #principal { 
   padding-bottom: 40px; 
+}
+
+#bugs {
+  display: inline;
+  text-align: center;
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 0px;
+  position: absolute;
+}
+
+#poweredby {
+  display: inline;
+  height: 40px;
+  width: 130px;
+  float: right;
 }
     </style>
     <script type="text/javascript" language="javascript" src="jogo_de_shannon/jogo_de_shannon.nocache.js"></script>
@@ -45,16 +61,22 @@ body > #conteudo { height: auto; min-height: 100%; }
     
     <div id="conteudo">
         <div id="principal">
-        </div>
-	</div>
+        </div> <!-- Não remova essa tag. Coisas ruins acontecem -->
+    </div>
 	
-    <div id="poweredby">
-    <a href="http://code.google.com/appengine/">
-    <img src="https://code.google.com/appengine/images/appengine-noborder-120x30.gif" 
-         alt="Powered by Google App Engine" 
-         height="30" width="120" />
-    </a>
-	</div>
+	<div id="rodape">
+	    <div id="bugs" >
+	       <a href="http://code.google.com/p/iti-ufpb/issues/list" >defeitos / sugestões</a> 
+    	</div>
+        <div id="poweredby">
+            <a href="http://code.google.com/appengine/">
+            <img src="https://code.google.com/appengine/images/appengine-noborder-120x30.gif" 
+                alt="Powered by Google App Engine" 
+                height="30" width="120" />
+            </a>
+	    </div>
+	
+    </div>
 
   </body>
 </html>
