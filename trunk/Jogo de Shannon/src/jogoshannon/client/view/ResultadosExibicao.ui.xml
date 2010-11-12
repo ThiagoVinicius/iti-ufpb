@@ -92,10 +92,10 @@
 			</g:VerticalPanel>
 		</div>
 
+        <h3>Lista de usuários</h3>
 		<g:Anchor ui:field="mostrarOcultarUsuarios" href="javascript:void(0)" />
 
 		<div />
-
 		<g:FlowPanel ui:field="conteinerListaUsuarios" visible="false">
 
 			<g:HorizontalPanel spacing="20">
@@ -121,12 +121,13 @@
 			</g:cell> <g:cell> <g:Button ui:field="botaoAdicionar">Adicionar</g:Button> 
 			</g:cell> </g:HorizontalPanel> -->
 		<g:CheckBox ui:field="distribuirContagens" checked="false">Distribuir
-			contagens</g:CheckBox>
+			contagens (a.k.a. "Modo Shannon")</g:CheckBox>
 		<div />
 		<g:Anchor ui:field="mostrarOcultarTabela" href="javascript:void(0)" />
 		<div />
 		<g:FlexTable ui:field="tabelaTentativas" />
 		<div />
+		<h3>Entropia calculada / Contexto </h3>
 		<g:SimplePanel ui:field="painelGrafico" />
 	</g:HTMLPanel>
 </ui:UiBinder> 
