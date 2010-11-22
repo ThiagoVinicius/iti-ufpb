@@ -1,6 +1,8 @@
 package jogoshannon.client;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import jogoshannon.shared.ExperimentoStub;
 import jogoshannon.shared.Tentativas;
@@ -9,18 +11,46 @@ public class ModeloResposta {
 
     private int tabelaOriginal[][];
     private double tabelaDistribuida[][];
-    private double entropiaMinima[];
-    private double entropiaMaxima[];
+    private Integer letras[];
+    private Map<Integer, Double> entropiaMinima;
+    private Map<Integer, Double> entropiaMaxima;
     private int total;
     
     private static final int MANTER_AO_DISTRIBUIR = 3;
     
+    private static final double ENTROPIA_MIN_COMPUTADOR[] = {
+            3.1600259355719564, 2.441825336632946, 2.062062873794058,
+            1.7386289034350682, 1.4875990540830597, 1.333504854675903 };
+    private static final double ENTROPIA_MAX_COMPUTADOR[] = {
+            3.9644886965772352, 3.3758368895217634, 3.0531281084633104,
+            2.734754534623812, 2.4777192559070302, 2.3089651529879633 };
+    
+    private static Map<Integer, Double> ENTROPIA_MAX_COMPUTADOR_MAPA;
+    private static Map<Integer, Double> ENTROPIA_MIN_COMPUTADOR_MAPA;
+    
+    static {
+        init();
+    }
+    
+    private static void init() {
+        ENTROPIA_MAX_COMPUTADOR_MAPA = new HashMap<Integer, Double>();
+        ENTROPIA_MIN_COMPUTADOR_MAPA = new HashMap<Integer, Double>();
+        for (int i = 0; i < ENTROPIA_MAX_COMPUTADOR.length; ++i) {
+            ENTROPIA_MAX_COMPUTADOR_MAPA.put(i, ENTROPIA_MAX_COMPUTADOR[i]);
+        }
+        for (int i = 0; i < ENTROPIA_MIN_COMPUTADOR.length; ++i) {
+            ENTROPIA_MIN_COMPUTADOR_MAPA.put(i, ENTROPIA_MIN_COMPUTADOR[i]);
+        }
+        ENTROPIA_MAX_COMPUTADOR_MAPA = Collections.unmodifiableMap(ENTROPIA_MAX_COMPUTADOR_MAPA);
+        ENTROPIA_MIN_COMPUTADOR_MAPA = Collections.unmodifiableMap(ENTROPIA_MIN_COMPUTADOR_MAPA);
+    }
+    
     public ModeloResposta(ExperimentoStub exp) {
-        List<Integer> letras = exp.getMostrarLetras();
-        tabelaOriginal = new int[28][letras.size()];
-        tabelaDistribuida = new double[28][letras.size()];
-        entropiaMaxima = new double[letras.size()];
-        entropiaMinima = new double[letras.size()];
+        letras = exp.getMostrarLetras().toArray(new Integer[0]);
+        tabelaOriginal = new int[28][letras.length];
+        tabelaDistribuida = new double[28][letras.length];
+        entropiaMaxima = new HashMap<Integer, Double>();
+        entropiaMinima = new HashMap<Integer, Double>();
     }
 
     public void adiciona(Tentativas[] tentativas) {
@@ -63,16 +93,24 @@ public class ModeloResposta {
         return tabelaDistribuida[linha];
     }
 
-    public double[] getEntropiaMinima() {
+    public Map<Integer, Double> getEntropiaMinima() {
         return entropiaMinima;
     }
 
-    public double[] getEntropiaMaxima() {
+    public Map<Integer, Double> getEntropiaMaxima() {
         return entropiaMaxima;
     }
     
+    public static Map<Integer, Double> getEntropiaMinimaComputador() {
+        return ENTROPIA_MIN_COMPUTADOR_MAPA;
+    }
+    
+    public static Map<Integer, Double> getEntropiaMaximaComputador() {
+        return ENTROPIA_MAX_COMPUTADOR_MAPA;
+    }
+    
     private void distribuirUniforme () {
-        for (int i = 0; i < entropiaMaxima.length; ++i) {
+        for (int i = 0; i < letras.length; ++i) {
             
             for (int j = 0 ; j < MANTER_AO_DISTRIBUIR; ++j) { 
                 //copiando esses sem alterações
@@ -119,7 +157,7 @@ public class ModeloResposta {
         double entropiaMin;
         final double denominador = this.total;
 
-        for (int n = 0; n < entropiaMaxima.length; n++) {
+        for (int n = 0; n < letras.length; n++) {
             entropiaMax = entropiaMin = 0;
 
             double atualInt;
@@ -145,8 +183,8 @@ public class ModeloResposta {
                 entropiaMax += atual * log2(atual);
             }
 
-            entropiaMaxima[n] = -entropiaMax;
-            entropiaMinima[n] = entropiaMin;
+            entropiaMaxima.put(letras[n], -entropiaMax);
+            entropiaMinima.put(letras[n], entropiaMin);
         }
     }
 

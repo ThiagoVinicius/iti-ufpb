@@ -3,6 +3,7 @@ package jogoshannon.client.presenter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import jogoshannon.client.ModeloResposta;
 import jogoshannon.client.PedidoEncerramento;
@@ -50,9 +51,9 @@ public class ResultadosApresentador implements Apresentador {
 
         void setTitulosTabela(String titulos[]);
 
-        void atualizaEntropiaMaxima(int linha, double[] dados);
+        void atualizaEntropiaMaxima(int linha, Map<Integer, Double> dados);
 
-        void atualizaEntropiaMinima(int linha, double[] dados);
+        void atualizaEntropiaMinima(int linha, Map<Integer, Double> dados);
 
         void plotar();
         
@@ -112,7 +113,7 @@ public class ResultadosApresentador implements Apresentador {
     }
 
     private void preparaTitulos() {
-        String titulos[] = new String[entropia.getEntropiaMaxima().length];
+        String titulos[] = new String[experimentoAtual.getMostrarLetras().size()];
         for (int i = 0; i < titulos.length; ++i) {
             titulos[i] = Integer.toString(experimentoAtual.getMostrarLetras().get(i));
         }
