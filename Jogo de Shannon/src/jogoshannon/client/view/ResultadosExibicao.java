@@ -1,5 +1,12 @@
 package jogoshannon.client.view;
 
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import jogoshannon.client.ModeloResposta;
 import jogoshannon.client.presenter.ResultadosApresentador;
 
 import com.google.gwt.core.client.GWT;
@@ -103,8 +110,8 @@ implements ResultadosApresentador.Exibicao {
     
     private int maxLinha;
     
-    private double entropiaMax[];
-    private double entropiaMin[];
+    private SortedMap<Integer, Double> entropiaMax;
+    private SortedMap<Integer, Double> entropiaMin;
     
     public ResultadosExibicao (SimpleEventBus eventos) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -174,29 +181,33 @@ implements ResultadosApresentador.Exibicao {
     }
     
     @Override
-    public void atualizaEntropiaMinima(int linha, double[] dados) {
+    public void atualizaEntropiaMinima(int linha, Map<Integer, Double> dados) {
+        entropiaMin = new TreeMap<Integer, Double>(dados);
         linha += ENTROPIA_MIN_END_OFFSET;
         legendar(linha, "Entropia Mínima");
-        for (int i = 0; i < dados.length; ++i) {
-            Label texto = new Label(doubleToString(dados[i]));
+        int i = 0;
+        for (Double v : entropiaMin.values()) {
+            Label texto = new Label(doubleToString(v));
             texto.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
             tabelaTentativas.setWidget(OFFSET_LINHA + linha, OFFSET_COLUNA + i,
                     texto);
+            ++i;
         }
-        entropiaMin = copyArray(dados);
     }
 
     @Override
-    public void atualizaEntropiaMaxima(int linha, double[] dados) {
+    public void atualizaEntropiaMaxima(int linha, Map<Integer, Double> dados) {
+        entropiaMax = new TreeMap<Integer, Double>(dados);
         linha += ENTROPIA_MAX_END_OFFSET;
         legendar(linha, "Entropia Máxima");
-        for (int i = 0; i < dados.length; ++i) {
-            Label texto = new Label(doubleToString(dados[i]));
+        int i = 0;
+        for (Double v : entropiaMax.values()) {
+            Label texto = new Label(doubleToString(v));
             texto.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
             tabelaTentativas.setWidget(OFFSET_LINHA + linha, OFFSET_COLUNA + i,
                     texto);
+            ++i;
         }
-        entropiaMax = copyArray(dados);
     }
 
     @Override
@@ -294,13 +305,6 @@ implements ResultadosApresentador.Exibicao {
         } , LineChart.PACKAGE);
     }
     
-    private static final double ENTROPIA_MIN_COMPUTADOR[] = 
-          { 3.1600259355719564, 2.441825336632946, 2.062062873794058,
-            1.7386289034350682, 1.4875990540830597, 1.333504854675903 };
-    private static final double ENTROPIA_MAX_COMPUTADOR[] = 
-          { 3.9644886965772352, 3.3758368895217634, 3.0531281084633104, 
-            2.734754534623812, 2.4777192559070302, 2.3089651529879633};
-    
     private void plotarImpl () {
         LineChart.Options opt = LineChart.Options.create();
         opt.setWidth(800);
@@ -320,27 +324,32 @@ implements ResultadosApresentador.Exibicao {
         dados.addColumn(ColumnType.NUMBER, "Entropia Máxima (computador)");
         dados.addColumn(ColumnType.NUMBER, "Entropia Mínima (computador)");
         
-        int primeiro = new Integer(tabelaTentativas.getText(LINHA_TITULO, OFFSET_COLUNA));
-        int total = entropiaMin.length + primeiro;
+        Map<Integer, Double> entropiaMaxComp = ModeloResposta.getEntropiaMaximaComputador();
+        Map<Integer, Double> entropiaMinComp = ModeloResposta.getEntropiaMinimaComputador();
         
-        dados.addRows(total);
+        SortedSet<Integer> chaves = new TreeSet<Integer>(entropiaMaxComp.keySet());
+        chaves.addAll(entropiaMin.keySet()); //uniao dos conjuntos
         
-        for (int i = 0; i < total; ++i) {
-            if (i >= primeiro) {
-                int i_correto = i-primeiro;
-                dados.setValue(i, 0, tabelaTentativas.getText(LINHA_TITULO, OFFSET_COLUNA + i_correto));
-                dados.setValue(i, 1, entropiaMax[i_correto]);
-                dados.setValue(i, 2, entropiaMin[i_correto]);
-            } else {
-                dados.setValue(i, 0, ""+i);
+        dados.addRows(chaves.size());
+        
+        int i = 0;
+        for (Integer chaveAtual : chaves) {
+            dados.setValue(i, 0, ""+chaveAtual);
+            
+            if (entropiaMax.containsKey(chaveAtual)) {
+                dados.setValue(i, 1, entropiaMax.get(chaveAtual));
+            }
+            if (entropiaMin.containsKey(chaveAtual)) {
+                dados.setValue(i, 2, entropiaMin.get(chaveAtual));
+            }
+            if (entropiaMaxComp.containsKey(chaveAtual)) {
+                dados.setValue(i, 3, entropiaMaxComp.get(chaveAtual));
+            }
+            if (entropiaMinComp.containsKey(chaveAtual)) {
+                dados.setValue(i, 4, entropiaMinComp.get(chaveAtual));
             }
             
-            if (i < ENTROPIA_MAX_COMPUTADOR.length) {
-                dados.setValue(i, 3, ENTROPIA_MAX_COMPUTADOR[i]);
-            }
-            if (i < ENTROPIA_MIN_COMPUTADOR.length) {
-                dados.setValue(i, 4, ENTROPIA_MIN_COMPUTADOR[i]);
-            }
+            ++i;
         }
         
         LineChart grafico = new LineChart(dados, opt);
