@@ -152,7 +152,7 @@ public class ModeloResposta {
 
     private static final double LOG_2 = Math.log(2);
 
-    private double log2(double x) {
+    private static double log2(double x) {
         return Math.log(x) / LOG_2;
     }
 
