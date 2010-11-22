@@ -172,14 +172,6 @@ implements ResultadosApresentador.Exibicao {
                 legenda);
     }
 
-    private static double[] copyArray (double[] orig) {
-        double result[] = new double[orig.length];
-        for (int i = 0; i < orig.length; ++i) {
-            result[i] = orig[i];
-        }
-        return result;
-    }
-    
     @Override
     public void atualizaEntropiaMinima(int linha, Map<Integer, Double> dados) {
         entropiaMin = new TreeMap<Integer, Double>(dados);
