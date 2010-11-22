@@ -294,6 +294,13 @@ implements ResultadosApresentador.Exibicao {
         } , LineChart.PACKAGE);
     }
     
+    private static final double ENTROPIA_MIN_COMPUTADOR[] = 
+          { 3.1600259355719564, 2.441825336632946, 2.062062873794058,
+            1.7386289034350682, 1.4875990540830597, 1.333504854675903 };
+    private static final double ENTROPIA_MAX_COMPUTADOR[] = 
+          { 3.9644886965772352, 3.3758368895217634, 3.0531281084633104, 
+            2.734754534623812, 2.4777192559070302, 2.3089651529879633};
+    
     private void plotarImpl () {
         LineChart.Options opt = LineChart.Options.create();
         opt.setWidth(800);
@@ -308,13 +315,32 @@ implements ResultadosApresentador.Exibicao {
         
         DataTable dados = DataTable.create();
         dados.addColumn(ColumnType.STRING, "Letras exibidas");
-        dados.addColumn(ColumnType.NUMBER, "Entropia máxima");
-        dados.addColumn(ColumnType.NUMBER, "Entropia Mínima");
-        dados.addRows(entropiaMin.length);
-        for (int i = 0; i < entropiaMin.length; ++i) {
-            dados.setValue(i, 0, tabelaTentativas.getText(LINHA_TITULO, OFFSET_COLUNA + i));
-            dados.setValue(i, 1, entropiaMax[i]);
-            dados.setValue(i, 2, entropiaMin[i]);
+        dados.addColumn(ColumnType.NUMBER, "Entropia Máxima (jogadores)");
+        dados.addColumn(ColumnType.NUMBER, "Entropia Mínima (jogadores)");
+        dados.addColumn(ColumnType.NUMBER, "Entropia Máxima (computador)");
+        dados.addColumn(ColumnType.NUMBER, "Entropia Mínima (computador)");
+        
+        int primeiro = new Integer(tabelaTentativas.getText(LINHA_TITULO, OFFSET_COLUNA));
+        int total = entropiaMin.length + primeiro;
+        
+        dados.addRows(total);
+        
+        for (int i = 0; i < total; ++i) {
+            if (i >= primeiro) {
+                int i_correto = i-primeiro;
+                dados.setValue(i, 0, tabelaTentativas.getText(LINHA_TITULO, OFFSET_COLUNA + i_correto));
+                dados.setValue(i, 1, entropiaMax[i_correto]);
+                dados.setValue(i, 2, entropiaMin[i_correto]);
+            } else {
+                dados.setValue(i, 0, ""+i);
+            }
+            
+            if (i < ENTROPIA_MAX_COMPUTADOR.length) {
+                dados.setValue(i, 3, ENTROPIA_MAX_COMPUTADOR[i]);
+            }
+            if (i < ENTROPIA_MIN_COMPUTADOR.length) {
+                dados.setValue(i, 4, ENTROPIA_MIN_COMPUTADOR[i]);
+            }
         }
         
         LineChart grafico = new LineChart(dados, opt);
